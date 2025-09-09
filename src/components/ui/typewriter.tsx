@@ -8,42 +8,58 @@ interface TypewriterProps extends React.HTMLAttributes<HTMLDivElement> {
   text: string;
   speed?: number;
   delay?: number;
+  loop?: boolean;
 }
 
-export function Typewriter({ text, speed = 50, delay = 0, className, ...props }: TypewriterProps) {
+export function Typewriter({ text, speed = 50, delay = 0, loop = true, className, ...props }: TypewriterProps) {
   const [displayedText, setDisplayedText] = React.useState('');
-  const [isTyping, setIsTyping] = React.useState(false);
+  const [isTyping, setIsTyping] = React.useState(true);
+  const [isDeleting, setIsDeleting] = React.useState(false);
 
   React.useEffect(() => {
     let timeoutId: NodeJS.Timeout;
 
-    const startTyping = () => {
-      setIsTyping(true);
-      setDisplayedText('');
-      let i = 0;
-      const intervalId = setInterval(() => {
+    const handleTyping = () => {
+      let i = displayedText.length;
+
+      if (isDeleting) {
+        if (i > 0) {
+          setDisplayedText((prev) => prev.substring(0, prev.length - 1));
+          timeoutId = setTimeout(handleTyping, speed / 2);
+        } else {
+          setIsDeleting(false);
+          if (loop) {
+            timeoutId = setTimeout(handleTyping, 500); // Pause before re-typing
+          } else {
+             setIsTyping(false);
+          }
+        }
+      } else {
         if (i < text.length) {
           setDisplayedText((prev) => prev + text.charAt(i));
-          i++;
+          timeoutId = setTimeout(handleTyping, speed);
         } else {
-          clearInterval(intervalId);
-          setIsTyping(false);
+          if (loop) {
+            timeoutId = setTimeout(() => setIsDeleting(true), 2000); // Pause before deleting
+          } else {
+            setIsTyping(false);
+          }
         }
-      }, speed);
+      }
     };
-
-    if (delay > 0) {
-      timeoutId = setTimeout(startTyping, delay);
-    } else {
-      startTyping();
+    
+    const start = () => {
+      setIsTyping(true);
+      timeoutId = setTimeout(handleTyping, speed);
     }
+    
+    const startTimeout = setTimeout(start, delay);
 
     return () => {
       clearTimeout(timeoutId);
+      clearTimeout(startTimeout);
     };
-  }, [text, speed, delay]);
-
-  const hasFinishedTyping = displayedText.length === text.length;
+  }, [text, speed, delay, loop, isDeleting, displayedText]);
 
   return (
     <div className={cn('inline', className)} {...props}>
@@ -53,7 +69,7 @@ export function Typewriter({ text, speed = 50, delay = 0, className, ...props }:
       <span
         className={cn(
           'inline-block h-full w-[2px] animate-pulse bg-primary align-text-bottom',
-          (isTyping || !hasFinishedTyping) ? 'opacity-100' : 'opacity-0'
+          isTyping ? 'opacity-100' : 'opacity-0'
         )}
         style={{ animation: 'blink-caret 1s step-end infinite' }}
       ></span>

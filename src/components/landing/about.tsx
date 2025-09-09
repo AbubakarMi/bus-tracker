@@ -13,15 +13,15 @@ export function About() {
         <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-16">
           <div className="relative order-last lg:order-first">
              <div className="absolute -left-4 -top-4 -bottom-4 w-2/3 rounded-lg bg-primary/10 lg:-bottom-8 lg:-left-8" />
-            <div className="relative z-10 space-y-4 rounded-lg bg-card p-8 shadow-2xl lg:p-12 animate-zoom-in">
+            <div className="relative z-10 space-y-4 rounded-lg bg-card p-8 shadow-2xl lg:p-12">
               <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl">
                  <Typewriter text={title} />
               </h2>
               <div className="text-lg text-muted-foreground">
-                <Typewriter text={p1} delay={1500} />
+                <Typewriter text={p1} delay={3000} />
               </div>
               <div className="text-lg text-muted-foreground">
-                 <Typewriter text={p2} delay={5000} />
+                 <Typewriter text={p2} delay={12000} />
               </div>
             </div>
           </div>
