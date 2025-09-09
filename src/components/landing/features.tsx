@@ -37,17 +37,15 @@ const features = [
 
 const FeatureCard = ({ feature, index }: { feature: (typeof features)[0], index: number }) => (
     <div className="mx-4 flex-shrink-0" style={{ width: 'clamp(20rem, 30vw, 24rem)'}}>
-      <Card className="card-glow h-full text-center flex flex-col transform transition-transform duration-300 hover:scale-105">
-        <CardHeader className="flex-grow">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+      <div className="card-glow group h-full text-center flex flex-col rounded-lg border bg-card p-6 shadow-sm transition-transform duration-300 hover:!scale-105">
+        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
             <div className="animate-icon-pulse" style={{ animationDelay: `${index * 250}ms` }}>
               {feature.icon}
             </div>
-          </div>
-          <CardTitle className="font-headline text-xl">{feature.title}</CardTitle>
-          <CardDescription className="pt-2">{feature.description}</CardDescription>
-        </CardHeader>
-      </Card>
+        </div>
+        <h3 className="font-headline text-xl font-semibold text-card-foreground transition-colors group-hover:text-primary">{feature.title}</h3>
+        <p className="mt-2 text-sm text-muted-foreground">{feature.description}</p>
+      </div>
     </div>
 );
 
@@ -66,12 +64,12 @@ export function Features() {
         </div>
         <div className="mt-12">
             <div
-              className="group relative w-full overflow-hidden"
+              className="group/container relative w-full overflow-hidden"
               style={{
                 maskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)',
               }}
             >
-              <div className="animate-scroll flex w-max items-stretch group-hover:[animation-play-state:paused]">
+              <div className="animate-scroll flex w-max items-stretch group-hover/container:[animation-play-state:paused]">
                 {/* Render cards twice for a seamless loop */}
                 {features.map((feature, index) => (
                     <FeatureCard key={feature.title} feature={feature} index={index} />
