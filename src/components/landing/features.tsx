@@ -37,7 +37,7 @@ const features = [
 
 const FeatureCard = ({ feature, index }: { feature: (typeof features)[0], index: number }) => (
     <div className="mx-4 flex-shrink-0" style={{ width: 'clamp(20rem, 30vw, 24rem)'}}>
-      <Card className="card-glow h-full text-center flex flex-col transform transition-transform duration-300 hover:!scale-105">
+      <Card className="card-glow h-full text-center flex flex-col transform transition-transform duration-300 hover:scale-105">
         <CardHeader className="flex-grow">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
             <div className="animate-icon-pulse" style={{ animationDelay: `${index * 250}ms` }}>
