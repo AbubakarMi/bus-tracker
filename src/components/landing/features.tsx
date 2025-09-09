@@ -1,4 +1,15 @@
+
+'use client';
+
+import * as React from 'react';
+import Autoplay from "embla-carousel-autoplay";
+
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "@/components/ui/carousel";
 import { Bell, Map, ShieldCheck, Ticket } from 'lucide-react';
 
 const features = [
@@ -25,6 +36,10 @@ const features = [
 ];
 
 export function Features() {
+   const plugin = React.useRef(
+    Autoplay({ delay: 2000, stopOnInteraction: true })
+  )
+
   return (
     <section id="features" className="py-16 sm:py-24">
       <div className="container max-w-7xl px-4">
@@ -36,20 +51,37 @@ export function Features() {
             From live tracking to easy booking, SwiftRoute simplifies your daily commute.
           </p>
         </div>
-        <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          {features.map((feature, index) => (
-            <Card key={feature.title} className="card-glow text-center">
-              <CardHeader>
-                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-                  <div className="animate-icon-pulse" style={{ animationDelay: `${index * 250}ms` }}>
-                    {feature.icon}
-                  </div>
-                </div>
-                <CardTitle className="font-headline text-xl">{feature.title}</CardTitle>
-                <CardDescription className="pt-2">{feature.description}</CardDescription>
-              </CardHeader>
-            </Card>
-          ))}
+        <div className="mt-12">
+           <Carousel
+            plugins={[plugin.current]}
+            className="w-full"
+            onMouseEnter={plugin.current.stop}
+            onMouseLeave={plugin.current.reset}
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+          >
+            <CarouselContent>
+              {features.map((feature, index) => (
+                 <CarouselItem key={feature.title} className="md:basis-1/2 lg:basis-1/3">
+                    <div className="p-1 h-full">
+                      <Card className="card-glow text-center h-full flex flex-col">
+                        <CardHeader className="flex-grow">
+                          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+                            <div className="animate-icon-pulse" style={{ animationDelay: `${index * 250}ms` }}>
+                              {feature.icon}
+                            </div>
+                          </div>
+                          <CardTitle className="font-headline text-xl">{feature.title}</CardTitle>
+                          <CardDescription className="pt-2">{feature.description}</CardDescription>
+                        </CardHeader>
+                      </Card>
+                    </div>
+                 </CarouselItem>
+              ))}
+            </CarouselContent>
+          </Carousel>
         </div>
       </div>
     </section>
