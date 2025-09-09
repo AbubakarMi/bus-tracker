@@ -4,6 +4,7 @@ import { Logo } from './logo';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { Facebook, Twitter, Linkedin } from 'lucide-react';
+import { AnimatedText } from './ui/animated-text';
 
 const footerSections = [
   {
@@ -40,29 +41,28 @@ const socialLinks = [
 export function Footer() {
   return (
     <footer className="border-t bg-background text-foreground">
-      <div className="bg-muted/40">
-        <div className="container mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-          <div className="flex flex-col items-center justify-between gap-8 md:flex-row">
-            <div className="max-w-xl text-center md:text-left">
-              <h2 className="font-headline text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+      <div className="container mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="relative overflow-hidden rounded-2xl bg-primary p-8 text-primary-foreground shadow-2xl animate-fade-in-up md:p-12">
+            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+            <div className="relative z-10 mx-auto max-w-2xl text-center">
+              <h2 className="font-headline text-3xl font-bold tracking-tight text-primary-foreground sm:text-4xl">
                 Stay Updated on ADUSTECH Transport
               </h2>
-              <p className="mt-2 text-base text-muted-foreground">
+              <p className="mt-4 text-lg text-primary-foreground/80">
                 Subscribe to our newsletter for the latest updates, news, and feature announcements.
               </p>
+              <form className="mt-8 flex w-full max-w-lg mx-auto flex-col items-center gap-2 sm:flex-row">
+                <Input
+                    type="email"
+                    placeholder="Enter your email"
+                    className="h-12 flex-1 border-border bg-background/20 text-primary-foreground placeholder:text-primary-foreground/60 focus:bg-background/30"
+                    aria-label="Email for newsletter"
+                />
+                <Button type="submit" size="lg" variant="secondary" className="w-full sm:w-auto">
+                    Subscribe
+                </Button>
+              </form>
             </div>
-            <form className="flex w-full max-w-md flex-col items-center gap-2 sm:flex-row">
-              <Input
-                type="email"
-                placeholder="Enter your email"
-                className="h-12 flex-1 border-border bg-background"
-                aria-label="Email for newsletter"
-              />
-              <Button type="submit" size="lg" className="w-full sm:w-auto">
-                Subscribe
-              </Button>
-            </form>
-          </div>
         </div>
       </div>
       
