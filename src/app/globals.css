@@ -241,16 +241,18 @@
   }
 
   @keyframes zoom-in {
-    from {
-      transform: scale(1);
+    0% {
+      transform: scale(1) translateX(0) translateY(0);
+      opacity: 0.8;
     }
-    to {
-      transform: scale(1.1);
+    100% {
+      transform: scale(1.15) translateX(-2%) translateY(2%);
+      opacity: 1;
     }
   }
 
   .animate-zoom-in {
-    animation: zoom-in 8s ease-in-out forwards;
+    animation: zoom-in 20s ease-in-out infinite alternate;
   }
 
   @keyframes fade-in-up {
