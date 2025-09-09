@@ -7,9 +7,9 @@ export function Hero() {
   return (
     <section className="relative h-[calc(100vh-4rem)] w-full overflow-hidden">
       <Image
-        src="https://picsum.photos/1920/1080"
+        src="https://picsum.photos/1920/1081"
         alt="University campus with a bus"
-        data-ai-hint="university campus"
+        data-ai-hint="modern architecture"
         fill
         className="object-cover"
         priority
@@ -38,7 +38,7 @@ export function Hero() {
       </div>
        <div className="absolute bottom-1/4 left-0 w-full opacity-30">
         <div className="bus-animation w-full">
-            <Bus className="h-32 w-32 text-white" style={{ transform: 'translateX(-100%)' }} />
+            <Bus className="h-48 w-48 text-white" style={{ transform: 'translateX(-100%)' }} />
         </div>
       </div>
     </section>
