@@ -85,6 +85,37 @@
 }
 
 @layer utilities {
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+
+  .animation-delay-2s {
+    animation-delay: 2s;
+  }
+  .animation-delay-3s {
+    animation-delay: 3s;
+  }
+  .animation-delay-4s {
+    animation-delay: 4s;
+  }
+  .animation-delay-7s {
+    animation-delay: 7s;
+  }
+  .animation-delay-10s {
+    animation-delay: 10s;
+  }
+
+  .bus-container {
+    position: absolute;
+    width: 100%;
+    will-change: transform;
+  }
+
+  .road-line-animation {
+    animation: move-line 6s linear infinite;
+    transform-origin: center;
+  }
+
   @keyframes drive-by {
     from {
       transform: translateX(-150%);
@@ -96,5 +127,49 @@
 
   .bus-animation {
     animation: drive-by 15s linear infinite;
+  }
+
+  @keyframes move-line {
+    from {
+      transform: translateX(-50%) translateZ(-300px) scale(0);
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    to {
+      transform: translateX(-50%) translateZ(100px) scale(1.5);
+      opacity: 0;
+    }
+  }
+
+  @keyframes drive-right-far {
+    from { transform: translateX(-200px) translateY(80px) scale(0.6); }
+    to { transform: translateX(120%) translateY(80px) scale(0.6); }
+  }
+  @keyframes drive-right-mid {
+    from { transform: translateX(-200px) translateY(50px) scale(0.8); }
+    to { transform: translateX(120%) translateY(50px) scale(0.8); }
+  }
+  @keyframes drive-left-near {
+    from { transform: translateX(120%) translateY(20px) scale(1.1); }
+    to { transform: translateX(-200px) translateY(20px) scale(1.1); }
+  }
+  @keyframes drive-left-far {
+    from { transform: translateX(120%) translateY(90px) scale(0.5); }
+    to { transform: translateX(-200px) translateY(90px) scale(0.5); }
+  }
+
+  .animate-drive-right-far {
+    animation: drive-right-far 15s linear infinite;
+  }
+  .animate-drive-right-mid {
+    animation: drive-right-mid 12s linear infinite;
+  }
+  .animate-drive-left-near {
+    animation: drive-left-near 10s linear infinite;
+  }
+  .animate-drive-left-far {
+    animation: drive-left-far 18s linear infinite;
   }
 }

@@ -1,21 +1,21 @@
-import Link from "next/link"
-import Image from "next/image"
+import Link from 'next/link';
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Logo } from '@/components/logo';
+import {Button} from '@/components/ui/button';
+import {Input} from '@/components/ui/input';
+import {Label} from '@/components/ui/label';
+import {Logo} from '@/components/logo';
+import {RoadAnimation} from '@/components/auth/road-animation';
 
 export default function RegisterPage() {
   return (
     <div className="w-full lg:grid lg:min-h-screen lg:grid-cols-2">
-       <div className="flex items-center justify-center py-12">
+      <div className="flex items-center justify-center py-12">
         <div className="mx-auto grid w-[350px] gap-6">
-           <div className="grid gap-2 text-center">
-             <div className="mb-4 flex justify-center">
+          <div className="grid gap-2 text-center">
+            <div className="mb-4 flex justify-center">
               <Logo />
             </div>
-            <h1 className="text-3xl font-bold font-headline">Create an account</h1>
+            <h1 className="font-headline text-3xl font-bold">Create an account</h1>
             <p className="text-balance text-muted-foreground">
               Enter your information to create an account
             </p>
@@ -37,12 +37,7 @@ export default function RegisterPage() {
             </div>
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="m@example.com"
-                required
-              />
+              <Input id="email" type="email" placeholder="m@example.com" required />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="password">Password</Label>
@@ -53,23 +48,16 @@ export default function RegisterPage() {
             </Button>
           </div>
           <div className="mt-4 text-center text-sm">
-            Already have an account?{" "}
+            Already have an account?{' '}
             <Link href="/login" className="underline">
               Sign in
             </Link>
           </div>
         </div>
       </div>
-       <div className="hidden bg-muted lg:block">
-        <Image
-          src="https://picsum.photos/seed/campus-scenery/1200/1801"
-          alt="Scenic view of a university campus"
-          width="1200"
-          height="1801"
-          data-ai-hint="campus scenery"
-          className="h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
-        />
+      <div className="hidden bg-muted lg:block">
+        <RoadAnimation />
       </div>
     </div>
-  )
+  );
 }
