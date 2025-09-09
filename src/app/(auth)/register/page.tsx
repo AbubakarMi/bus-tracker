@@ -47,7 +47,7 @@ export default function RegisterPage() {
   React.useEffect(() => {
     if (idNumber) {
       setIsIdEntered(true);
-      if (/^UG\d{2}\/\w+\/\d+$/i.test(idNumber)) {
+      if (/^UG\d{2}\/[A-Z]+\/\d+$/i.test(idNumber)) {
         setUserRole('student');
       } else if (/^S\d+/i.test(idNumber)) {
         setUserRole('staff');
