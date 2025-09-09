@@ -1,11 +1,13 @@
+
 import Image from 'next/image';
 
 export function About() {
   return (
     <section id="about" className="bg-muted py-16 sm:py-24">
       <div className="container mx-auto max-w-7xl px-4">
-        <div className="relative grid items-center gap-12 lg:grid-cols-5">
-          <div className="lg:col-span-3">
+        <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-16">
+          <div className="relative order-last lg:order-first">
+             <div className="absolute -left-4 -top-4 -bottom-4 w-2/3 rounded-lg bg-primary/10 lg:-bottom-8 lg:-left-8" />
             <div className="relative z-10 space-y-4 rounded-lg bg-card p-8 shadow-2xl lg:p-12">
               <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl">
                 About Our Transport Service
@@ -18,16 +20,14 @@ export function About() {
               </p>
             </div>
           </div>
-          <div className="relative h-80 lg:col-span-3 lg:h-full">
-            <div className="absolute inset-0 -left-1/4 -right-1/4 overflow-hidden rounded-lg shadow-2xl lg:left-auto lg:-right-12">
-              <Image
-                src="https://picsum.photos/seed/uni-library/800/600"
-                alt="University library or study hall"
-                data-ai-hint="university library"
-                fill
-                className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
-              />
-            </div>
+           <div className="relative h-80 w-full lg:h-[500px]">
+            <Image
+              src="https://picsum.photos/seed/uni-library/800/600"
+              alt="University library or study hall"
+              data-ai-hint="university library"
+              fill
+              className="rounded-lg object-cover shadow-2xl transition-transform duration-500 hover:scale-105"
+            />
           </div>
         </div>
       </div>
