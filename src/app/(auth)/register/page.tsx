@@ -44,7 +44,7 @@ export default function RegisterPage() {
   const idNumber = form.watch('idNumber');
 
   React.useEffect(() => {
-    if (/^U\d+/i.test(idNumber)) {
+    if (/^UG-\d{4}\/\w+\/\d+$/i.test(idNumber)) {
       setUserRole('student');
     } else if (/^S\d+/i.test(idNumber)) {
       setUserRole('staff');
@@ -79,7 +79,7 @@ export default function RegisterPage() {
                   <FormItem>
                     <FormLabel>Registration / Staff ID Number</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g., U2024001 or S1234" {...field} />
+                      <Input placeholder="e.g., UG-2024/CSC/1012 or S1234" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -187,4 +187,3 @@ export default function RegisterPage() {
     </div>
   );
 }
-
