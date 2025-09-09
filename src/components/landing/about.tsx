@@ -16,8 +16,8 @@ export function About() {
       <div className="container mx-auto max-w-7xl px-4">
         <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-16">
           <div className="relative order-last lg:order-first">
-             <div className="absolute -left-4 -top-4 -bottom-4 w-2/3 rounded-lg bg-primary/10 lg:-bottom-8 lg:-left-8 animate-fade-in-up" />
-            <div className="relative z-10 space-y-6 rounded-lg bg-card p-8 shadow-2xl lg:p-12 animate-fade-in-up animation-delay-3s">
+             <div className="absolute -left-4 -top-4 -bottom-4 w-2/3 rounded-lg bg-primary/10 lg:-bottom-8 lg:-left-8" />
+            <div className="relative z-10 space-y-6 rounded-lg bg-card p-8 shadow-2xl lg:p-12 animate-fade-in-up">
               <AnimatedText
                 text={title}
                 el="h2"
@@ -38,7 +38,7 @@ export function About() {
               </div>
             </div>
           </div>
-          <div className="relative h-80 w-full lg:h-[500px]">
+          <div className="relative h-80 w-full lg:h-[500px] animate-fade-in-up">
             <Image
               src="https://picsum.photos/seed/uni-library/800/600"
               alt="University library or study hall"
