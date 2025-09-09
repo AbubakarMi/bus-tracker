@@ -4,7 +4,7 @@
 import * as React from 'react';
 
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Bell, Map, ShieldCheck, Ticket } from 'lucide-react';
+import { Bell, Map, ShieldCheck, Ticket, Lightbulb } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const features = [
@@ -22,6 +22,11 @@ const features = [
     icon: <Bell className="h-8 w-8 text-primary" />,
     title: 'Instant Notifications',
     description: 'Receive timely alerts for booking confirmations, departure times, and potential delays.',
+  },
+   {
+    icon: <Lightbulb className="h-8 w-8 text-primary" />,
+    title: 'AI-Powered Route Insights',
+    description: 'Get smart summaries of routes, including key stops and points of interest, to plan your travel better.',
   },
   {
     icon: <ShieldCheck className="h-8 w-8 text-primary" />,
