@@ -3,9 +3,11 @@
 
 import * as React from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,7 +17,11 @@ import { RoadAnimation } from '@/components/auth/road-animation';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
-import { UserCheck, Briefcase } from 'lucide-react';
+import { UserCheck, Briefcase, Loader2 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { app } from '@/lib/firebase';
+
+const auth = getAuth(app);
 
 const registerFormSchema = z.object({
   idNumber: z.string().min(1, 'Please enter your ID number'),
@@ -30,6 +36,9 @@ type UserRole = 'student' | 'staff' | null;
 export default function RegisterPage() {
   const [userRole, setUserRole] = React.useState<UserRole>(null);
   const [isIdEntered, setIsIdEntered] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const { toast } = useToast();
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof registerFormSchema>>({
     resolver: zodResolver(registerFormSchema),
@@ -62,8 +71,25 @@ export default function RegisterPage() {
     }
   }, [idNumber]);
 
-  function onSubmit(values: z.infer<typeof registerFormSchema>) {
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof registerFormSchema>) {
+    setIsLoading(true);
+    try {
+      await createUserWithEmailAndPassword(auth, values.email, values.password);
+      toast({
+        title: 'Account Created!',
+        description: "You've successfully signed up. Please log in.",
+      });
+      router.push('/login');
+    } catch (error: any) {
+      console.error('Registration Error:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Uh oh! Something went wrong.',
+        description: error.message || 'There was a problem with your request.',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -176,7 +202,8 @@ export default function RegisterPage() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="w-full">
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Create an account
                 </Button>
               </div>
