@@ -23,7 +23,7 @@ if (firebaseConfig.apiKey) {
         app = getApps()[0];
     }
 } else {
-    console.log("Firebase config is missing. Please set up your .env.local file.");
+    console.log("Firebase config is missing. Please set up your .env file.");
 }
 
 

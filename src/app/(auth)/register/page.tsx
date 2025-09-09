@@ -119,7 +119,7 @@ export default function RegisterPage() {
               <AlertTriangle className="h-4 w-4" />
               <AlertTitle>Configuration Error</AlertTitle>
               <AlertDescription>
-                Firebase is not configured. Please add your credentials to a <code>.env.local</code> file to enable registration.
+                Firebase is not configured. Please add your credentials to a <code>.env</code> file to enable registration.
               </AlertDescription>
             </Alert>
           )}
