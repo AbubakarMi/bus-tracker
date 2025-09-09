@@ -1,11 +1,11 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Bus } from 'lucide-react';
 
 export function Hero() {
   return (
-    <section className="relative h-[calc(100vh-4rem)] w-full">
+    <section className="relative h-[calc(100vh-4rem)] w-full overflow-hidden">
       <Image
         src="https://picsum.photos/1920/1080"
         alt="A bus on an open road"
@@ -34,6 +34,11 @@ export function Hero() {
               <Link href="/login">Login to Dashboard</Link>
             </Button>
           </div>
+        </div>
+      </div>
+       <div className="absolute bottom-1/4 left-0 w-full opacity-30">
+        <div className="bus-animation w-full">
+            <Bus className="h-24 w-24 text-white" style={{ transform: 'translateX(-100%)' }} />
         </div>
       </div>
     </section>

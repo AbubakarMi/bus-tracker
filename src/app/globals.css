@@ -83,3 +83,18 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  @keyframes drive-by {
+    from {
+      transform: translateX(-150%);
+    }
+    to {
+      transform: translateX(150%);
+    }
+  }
+
+  .bus-animation {
+    animation: drive-by 15s linear infinite;
+  }
+}
