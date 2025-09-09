@@ -22,8 +22,6 @@ import { useToast } from '@/hooks/use-toast';
 import { app } from '@/lib/firebase';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
-const auth = app ? getAuth(app) : null;
-
 const registerFormSchema = z.object({
   idNumber: z.string().min(1, 'Please enter your ID number'),
   firstName: z.string().min(1, 'First name is required'),
@@ -40,6 +38,8 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = React.useState(false);
   const { toast } = useToast();
   const router = useRouter();
+
+  const auth = app ? getAuth(app) : null;
 
   const form = useForm<z.infer<typeof registerFormSchema>>({
     resolver: zodResolver(registerFormSchema),

@@ -20,8 +20,6 @@ import { app } from '@/lib/firebase';
 import { Loader2, AlertTriangle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
-const auth = app ? getAuth(app) : null;
-
 const loginFormSchema = z.object({
   email: z.string().email('Please enter a valid email'),
   password: z.string().min(1, 'Password is required'),
@@ -31,6 +29,8 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = React.useState(false);
   const { toast } = useToast();
   const router = useRouter();
+
+  const auth = app ? getAuth(app) : null;
 
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
