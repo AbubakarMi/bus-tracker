@@ -1,7 +1,8 @@
+
 'use client';
 
 import * as React from 'react';
-import { Map, AdvancedMarker } from '@vis.gl/react-google-maps';
+import { Map, AdvancedMarker, useMap } from '@vis.gl/react-google-maps';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -22,8 +23,17 @@ const etaFormSchema = z.object({
   stopLongitude: z.coerce.number().min(-180).max(180),
 });
 
+function MapUpdater({ position }: { position: { lat: number; lng: number } }) {
+    const map = useMap();
+    React.useEffect(() => {
+        if (map && position) {
+            map.panTo(position);
+        }
+    }, [map, position]);
+    return null;
+}
+
 export function BusTracker() {
-  const hasApiKey = !!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
   const busPosition = useMockBusLocation({ lat: 34.0522, lng: -118.2437 });
   const [etaResult, setEtaResult] = React.useState<RealTimeETAPredictionOutput | null>(null);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -77,19 +87,16 @@ export function BusTracker() {
           </CardHeader>
           <CardContent>
             <div className="h-[500px] w-full overflow-hidden rounded-md border">
-              {hasApiKey ? (
-                <Map
-                  defaultCenter={busPosition}
-                  defaultZoom={13}
-                  gestureHandling={'greedy'}
-                  disableDefaultUI={true}
-                  mapId="bus_tracker_map"
-                >
-                  <AdvancedMarker position={busPosition} title="Your Bus" />
-                </Map>
-              ) : (
-                <MapPlaceholder />
-              )}
+              <Map
+                defaultCenter={busPosition}
+                defaultZoom={13}
+                gestureHandling={'greedy'}
+                disableDefaultUI={true}
+                mapId="bus_tracker_map"
+              >
+                <AdvancedMarker position={busPosition} title="Your Bus" />
+                <MapUpdater position={busPosition} />
+              </Map>
             </div>
           </CardContent>
         </Card>
