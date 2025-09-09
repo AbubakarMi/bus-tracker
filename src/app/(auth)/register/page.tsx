@@ -15,7 +15,7 @@ import { RoadAnimation } from '@/components/auth/road-animation';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
-import { UserCheck, Briefcase, User } from 'lucide-react';
+import { UserCheck, Briefcase } from 'lucide-react';
 
 const registerFormSchema = z.object({
   idNumber: z.string().min(1, 'Please enter your ID number'),
@@ -25,7 +25,7 @@ const registerFormSchema = z.object({
   password: z.string().min(8, 'Password must be at least 8 characters'),
 });
 
-type UserRole = 'student' | 'staff' | 'general' | null;
+type UserRole = 'student' | 'staff' | null;
 
 export default function RegisterPage() {
   const [userRole, setUserRole] = React.useState<UserRole>(null);
@@ -46,17 +46,19 @@ export default function RegisterPage() {
 
   React.useEffect(() => {
     if (idNumber) {
-      setIsIdEntered(true);
       if (/^UG\d{2}\/[A-Z]+\/\d+$/i.test(idNumber)) {
         setUserRole('student');
+        setIsIdEntered(true);
       } else if (/^S\d+/i.test(idNumber)) {
         setUserRole('staff');
+        setIsIdEntered(true);
       } else {
-        setUserRole('general');
+        setUserRole(null);
+        setIsIdEntered(false);
       }
     } else {
-      setIsIdEntered(false);
       setUserRole(null);
+      setIsIdEntered(false);
     }
   }, [idNumber]);
 
@@ -116,15 +118,6 @@ export default function RegisterPage() {
                     <Badge variant="secondary" className="w-fit py-2 px-3">
                       <Briefcase className="mr-2 h-4 w-4 text-blue-500"/>
                       <span>Staff Account Detected</span>
-                    </Badge>
-                  </div>
-                )}
-                {userRole === 'general' && (
-                   <div className="grid gap-2">
-                    <Label>Account Type</Label>
-                    <Badge variant="outline" className="w-fit py-2 px-3">
-                      <User className="mr-2 h-4 w-4"/>
-                      <span>General User</span>
                     </Badge>
                   </div>
                 )}
