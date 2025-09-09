@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, type Auth } from 'firebase/auth';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,7 +19,7 @@ import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { UserCheck, Briefcase, Loader2, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { auth, isFirebaseConfigured } from '@/lib/firebase';
+import { auth as staticAuth, isFirebaseConfigured } from '@/lib/firebase';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const registerFormSchema = z.object({
@@ -36,8 +36,13 @@ export default function RegisterPage() {
   const [userRole, setUserRole] = React.useState<UserRole>(null);
   const [isIdEntered, setIsIdEntered] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
+  const [auth, setAuth] = React.useState<Auth | null>(null);
   const { toast } = useToast();
   const router = useRouter();
+
+  React.useEffect(() => {
+    setAuth(staticAuth);
+  }, []);
 
   const form = useForm<z.infer<typeof registerFormSchema>>({
     resolver: zodResolver(registerFormSchema),
@@ -71,7 +76,7 @@ export default function RegisterPage() {
   }, [idNumber]);
 
   async function onSubmit(values: z.infer<typeof registerFormSchema>) {
-     if (!isFirebaseConfigured) {
+     if (!isFirebaseConfigured || !auth) {
        toast({
         variant: 'destructive',
         title: 'Configuration Error',
@@ -87,13 +92,12 @@ export default function RegisterPage() {
         description: "You've successfully signed up. Please log in.",
       });
       router.push('/login');
-    } catch (error: any)
-{
+    } catch (error: any) {
       console.error('Registration Error:', error);
       toast({
         variant: 'destructive',
         title: 'Uh oh! Something went wrong.',
-        description: error.message || 'There was a problem with your request.',
+        description: 'An unknown error occurred. Please check your configuration and try again.',
       });
     } finally {
       setIsLoading(false);
@@ -118,7 +122,7 @@ export default function RegisterPage() {
               <AlertTriangle className="h-4 w-4" />
               <AlertTitle>Configuration Error</AlertTitle>
               <AlertDescription>
-                Firebase is not configured. Please add your credentials to a <code>.env</code> file to enable registration.
+                Firebase is not configured. Please add your credentials to the <code>.env</code> file to enable registration.
               </AlertDescription>
             </Alert>
           )}

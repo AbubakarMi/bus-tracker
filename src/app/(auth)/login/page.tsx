@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, type Auth } from 'firebase/auth';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,7 +16,7 @@ import { Label } from '@/components/ui/label';
 import { Logo } from '@/components/logo';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { auth, isFirebaseConfigured } from '@/lib/firebase';
+import { auth as staticAuth, isFirebaseConfigured } from '@/lib/firebase';
 import { Loader2, AlertTriangle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
@@ -27,8 +27,13 @@ const loginFormSchema = z.object({
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = React.useState(false);
+  const [auth, setAuth] = React.useState<Auth | null>(null);
   const { toast } = useToast();
   const router = useRouter();
+
+  React.useEffect(() => {
+    setAuth(staticAuth);
+  }, []);
 
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
@@ -39,7 +44,7 @@ export default function LoginPage() {
   });
 
   async function onSubmit(values: z.infer<typeof loginFormSchema>) {
-    if (!isFirebaseConfigured) {
+    if (!isFirebaseConfigured || !auth) {
        toast({
         variant: 'destructive',
         title: 'Configuration Error',
@@ -60,7 +65,7 @@ export default function LoginPage() {
       toast({
         variant: 'destructive',
         title: 'Login Failed',
-        description: error.code === 'auth/invalid-credential' ? 'Invalid email or password. Please try again.' : error.message,
+        description: error.code === 'auth/invalid-credential' ? 'Invalid email or password. Please try again.' : 'An unknown error occurred. Please check your configuration.',
       });
     } finally {
       setIsLoading(false);
@@ -85,7 +90,7 @@ export default function LoginPage() {
               <AlertTriangle className="h-4 w-4" />
               <AlertTitle>Configuration Error</AlertTitle>
               <AlertDescription>
-                Firebase is not configured. Please add your credentials to a <code>.env</code> file to enable login.
+                Firebase is not configured. Please add your credentials to the <code>.env</code> file to enable login.
               </AlertDescription>
             </Alert>
           )}

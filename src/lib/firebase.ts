@@ -1,10 +1,7 @@
 
-// Import the functions you need from the SDKs you need
 import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
 import { getAuth, type Auth } from "firebase/auth";
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -15,24 +12,26 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-// Initialize Firebase
-let app: FirebaseApp;
-let auth: Auth;
 const isFirebaseConfigured = !!firebaseConfig.apiKey;
 
+let app: FirebaseApp;
+let auth: Auth | null = null;
+
 if (isFirebaseConfigured) {
-    if (!getApps().length) {
-        app = initializeApp(firebaseConfig);
-    } else {
-        app = getApps()[0];
+  if (!getApps().length) {
+    try {
+      app = initializeApp(firebaseConfig);
+      auth = getAuth(app);
+    } catch (e) {
+      console.error("Failed to initialize Firebase", e)
     }
+  } else {
+    app = getApps()[0];
     auth = getAuth(app);
+  }
 } else {
-    console.warn("Firebase config is missing. Please set up your .env file.");
-    // Provide a dummy app and auth object to prevent crashing
-    app = {} as FirebaseApp;
-    auth = {} as Auth;
+  console.warn("Firebase config is missing. Please set up your .env file.");
 }
 
 
-export { app, auth, isFirebaseConfigured };
+export { auth, isFirebaseConfigured };
