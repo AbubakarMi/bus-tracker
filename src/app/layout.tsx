@@ -3,8 +3,8 @@ import { Toaster } from '@/components/ui/toaster';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'SwiftRoute',
-  description: 'A modern bus tracking and booking solution.',
+  title: 'ADUSTECH Transport',
+  description: 'A modern bus tracking and booking solution for ADUSTECH, Wudil.',
 };
 
 export default function RootLayout({

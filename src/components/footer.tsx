@@ -27,7 +27,7 @@ export function Footer() {
           </nav>
         </div>
         <div className="mt-6 border-t pt-6 text-center text-sm text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} SwiftRoute. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} ADUSTECH Transport. All rights reserved.</p>
         </div>
       </div>
     </footer>
