@@ -2,15 +2,10 @@
 'use client';
 
 import * as React from 'react';
-import Autoplay from "embla-carousel-autoplay";
 
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "@/components/ui/carousel";
 import { Bell, Map, ShieldCheck, Ticket } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const features = [
   {
@@ -35,11 +30,24 @@ const features = [
   },
 ];
 
-export function Features() {
-   const plugin = React.useRef(
-    Autoplay({ delay: 2000, stopOnInteraction: true })
-  )
+const FeatureCard = ({ feature, index }: { feature: (typeof features)[0], index: number }) => (
+    <div className="mx-4 flex-shrink-0" style={{ width: 'clamp(20rem, 30vw, 24rem)'}}>
+      <Card className="card-glow text-center h-full flex flex-col transform transition-transform duration-300 hover:-translate-y-2">
+        <CardHeader className="flex-grow">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+            <div className="animate-icon-pulse" style={{ animationDelay: `${index * 250}ms` }}>
+              {feature.icon}
+            </div>
+          </div>
+          <CardTitle className="font-headline text-xl">{feature.title}</CardTitle>
+          <CardDescription className="pt-2">{feature.description}</CardDescription>
+        </CardHeader>
+      </Card>
+    </div>
+);
 
+
+export function Features() {
   return (
     <section id="features" className="py-16 sm:py-24">
       <div className="container max-w-7xl px-4">
@@ -52,36 +60,22 @@ export function Features() {
           </p>
         </div>
         <div className="mt-12">
-           <Carousel
-            plugins={[plugin.current]}
-            className="w-full"
-            onMouseEnter={plugin.current.stop}
-            onMouseLeave={plugin.current.reset}
-            opts={{
-              align: "start",
-              loop: true,
-            }}
-          >
-            <CarouselContent>
-              {features.map((feature, index) => (
-                 <CarouselItem key={feature.title} className="md:basis-1/2 lg:basis-1/3">
-                    <div className="p-1 h-full">
-                      <Card className="card-glow text-center h-full flex flex-col">
-                        <CardHeader className="flex-grow">
-                          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-                            <div className="animate-icon-pulse" style={{ animationDelay: `${index * 250}ms` }}>
-                              {feature.icon}
-                            </div>
-                          </div>
-                          <CardTitle className="font-headline text-xl">{feature.title}</CardTitle>
-                          <CardDescription className="pt-2">{feature.description}</CardDescription>
-                        </CardHeader>
-                      </Card>
-                    </div>
-                 </CarouselItem>
-              ))}
-            </CarouselContent>
-          </Carousel>
+            <div
+              className="group relative w-full overflow-hidden"
+              style={{
+                maskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)',
+              }}
+            >
+              <div className="animate-scroll flex w-max items-stretch group-hover:[animation-play-state:paused]">
+                {/* Render cards twice for a seamless loop */}
+                {features.map((feature, index) => (
+                    <FeatureCard key={feature.title} feature={feature} index={index} />
+                ))}
+                 {features.map((feature, index) => (
+                    <FeatureCard key={`${feature.title}-duplicate`} feature={feature} index={index} aria-hidden="true"/>
+                ))}
+              </div>
+            </div>
         </div>
       </div>
     </section>

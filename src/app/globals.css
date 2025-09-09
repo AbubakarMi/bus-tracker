@@ -204,4 +204,17 @@
     transform: translateY(-0.5rem);
     box-shadow: 0 0 30px 5px hsl(var(--primary) / 0.4);
   }
+
+  @keyframes scroll {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  .animate-scroll {
+    animation: scroll 40s linear infinite;
+  }
 }
