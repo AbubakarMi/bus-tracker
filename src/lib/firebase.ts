@@ -18,8 +18,9 @@ const firebaseConfig = {
 // Initialize Firebase
 let app: FirebaseApp;
 let auth: Auth;
+const isFirebaseConfigured = !!firebaseConfig.apiKey;
 
-if (process.env.NEXT_PUBLIC_FIREBASE_API_KEY) {
+if (isFirebaseConfigured) {
     if (!getApps().length) {
         app = initializeApp(firebaseConfig);
     } else {
@@ -27,11 +28,11 @@ if (process.env.NEXT_PUBLIC_FIREBASE_API_KEY) {
     }
     auth = getAuth(app);
 } else {
-    console.warn("Firebase config is missing. Please set up your .env.local file.");
+    console.warn("Firebase config is missing. Please set up your .env file.");
     // Provide a dummy app and auth object to prevent crashing
     app = {} as FirebaseApp;
     auth = {} as Auth;
 }
 
 
-export { app, auth };
+export { app, auth, isFirebaseConfigured };

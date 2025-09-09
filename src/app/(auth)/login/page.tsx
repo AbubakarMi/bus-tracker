@@ -16,7 +16,7 @@ import { Label } from '@/components/ui/label';
 import { Logo } from '@/components/logo';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { auth } from '@/lib/firebase';
+import { auth, isFirebaseConfigured } from '@/lib/firebase';
 import { Loader2, AlertTriangle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
@@ -29,7 +29,6 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = React.useState(false);
   const { toast } = useToast();
   const router = useRouter();
-  const isFirebaseConfigured = !!process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
 
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
@@ -61,7 +60,7 @@ export default function LoginPage() {
       toast({
         variant: 'destructive',
         title: 'Login Failed',
-        description: error.message || 'Invalid email or password. Please try again.',
+        description: error.code === 'auth/invalid-credential' ? 'Invalid email or password. Please try again.' : error.message,
       });
     } finally {
       setIsLoading(false);
@@ -86,7 +85,7 @@ export default function LoginPage() {
               <AlertTriangle className="h-4 w-4" />
               <AlertTitle>Configuration Error</AlertTitle>
               <AlertDescription>
-                Firebase is not configured. Please add your credentials to a <code>.env.local</code> file to enable login.
+                Firebase is not configured. Please add your credentials to a <code>.env</code> file to enable login.
               </AlertDescription>
             </Alert>
           )}
