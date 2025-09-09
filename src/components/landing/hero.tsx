@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Bus } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { HeroAnimation } from './hero-animation';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -34,7 +33,6 @@ const itemVariants = {
 export function Hero() {
   return (
     <section className="relative h-screen w-full overflow-hidden bg-background dark:bg-black">
-       <HeroAnimation />
        <div className="absolute bottom-[20%] left-0 w-full h-20 bus-animation animation-delay-3s">
           <Bus className="h-full w-auto text-primary/30" />
         </div>
@@ -64,7 +62,7 @@ export function Hero() {
                         className="mx-auto mt-6 max-w-lg text-lg text-muted-foreground md:mx-0"
                     >
                         Reliable, real-time bus tracking and seamless seat booking for the Aliko Dangote University of Science and Technology, Wudil.
-                    </motion.p>
+                    </p>
                      <motion.div
                         variants={itemVariants}
                         className="mt-8 flex flex-col items-center gap-4 sm:flex-row md:justify-start"
