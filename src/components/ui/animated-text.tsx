@@ -2,27 +2,27 @@
 'use client';
 
 import * as React from 'react';
-import { motion, useAnimation } from 'framer-motion';
-import { useInView } from 'react-intersection-observer';
+import { motion, useAnimation, useInView } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 interface AnimatedTextProps extends React.HTMLAttributes<HTMLDivElement> {
   text: string;
   el?: keyof JSX.IntrinsicElements;
   stagger?: number;
+  once?: boolean;
 }
 
-export const AnimatedText = ({ text, el: Wrapper = 'p', className, stagger = 0, ...props }: AnimatedTextProps) => {
+export const AnimatedText = ({ text, el: Wrapper = 'p', className, stagger = 0, once = false, ...props }: AnimatedTextProps) => {
   const words = text.split(' ');
   const controls = useAnimation();
-  const { ref, inView } = useInView({
-    triggerOnce: true,
-    threshold: 0.1,
-  });
+  const ref = React.useRef(null);
+  const inView = useInView(ref, { once });
 
   React.useEffect(() => {
     if (inView) {
       controls.start('visible');
+    } else {
+      controls.start('hidden');
     }
   }, [controls, inView]);
 
