@@ -202,7 +202,7 @@ export default function RegisterPage() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="w-full" disabled={isLoading}>
+                <Button type="submit" className="w-full" disabled={!isIdEntered || isLoading}>
                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Create an account
                 </Button>
