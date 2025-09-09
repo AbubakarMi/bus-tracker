@@ -37,11 +37,13 @@ export function Features() {
           </p>
         </div>
         <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          {features.map((feature) => (
-            <Card key={feature.title} className="text-center transition-all hover:shadow-lg hover:-translate-y-1">
+          {features.map((feature, index) => (
+            <Card key={feature.title} className="card-glow text-center">
               <CardHeader>
                 <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-                  {feature.icon}
+                  <div className="animate-icon-pulse" style={{ animationDelay: `${index * 250}ms` }}>
+                    {feature.icon}
+                  </div>
                 </div>
                 <CardTitle className="font-headline text-xl">{feature.title}</CardTitle>
                 <CardDescription className="pt-2">{feature.description}</CardDescription>

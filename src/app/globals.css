@@ -182,4 +182,26 @@
   .animate-drive-left-far {
     animation: drive-left-far 18s linear infinite;
   }
+  
+  @keyframes icon-pulse {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1);
+    }
+  }
+
+  .animate-icon-pulse {
+    animation: icon-pulse 3s ease-in-out infinite;
+  }
+
+  .card-glow {
+    transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
+  }
+
+  .card-glow:hover {
+    transform: translateY(-0.5rem);
+    box-shadow: 0 0 30px 5px hsl(var(--primary) / 0.4);
+  }
 }
