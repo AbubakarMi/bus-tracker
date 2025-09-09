@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,7 +19,7 @@ import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { UserCheck, Briefcase, Loader2, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { app } from '@/lib/firebase';
+import { auth } from '@/lib/firebase';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const registerFormSchema = z.object({
@@ -38,8 +38,7 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = React.useState(false);
   const { toast } = useToast();
   const router = useRouter();
-
-  const auth = app ? getAuth(app) : null;
+  const isFirebaseConfigured = !!process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
 
   const form = useForm<z.infer<typeof registerFormSchema>>({
     resolver: zodResolver(registerFormSchema),
@@ -73,7 +72,7 @@ export default function RegisterPage() {
   }, [idNumber]);
 
   async function onSubmit(values: z.infer<typeof registerFormSchema>) {
-     if (!auth) {
+     if (!isFirebaseConfigured) {
        toast({
         variant: 'destructive',
         title: 'Configuration Error',
@@ -89,7 +88,8 @@ export default function RegisterPage() {
         description: "You've successfully signed up. Please log in.",
       });
       router.push('/login');
-    } catch (error: any) {
+    } catch (error: any)
+{
       console.error('Registration Error:', error);
       toast({
         variant: 'destructive',
@@ -114,12 +114,12 @@ export default function RegisterPage() {
               Enter your ID to begin the registration process.
             </p>
           </div>
-          {!auth && (
+          {!isFirebaseConfigured && (
             <Alert variant="destructive">
               <AlertTriangle className="h-4 w-4" />
               <AlertTitle>Configuration Error</AlertTitle>
               <AlertDescription>
-                Firebase is not configured. Please add your credentials to a <code>.env</code> file to enable registration.
+                Firebase is not configured. Please add your credentials to a <code>.env.local</code> file to enable registration.
               </AlertDescription>
             </Alert>
           )}
@@ -132,7 +132,7 @@ export default function RegisterPage() {
                   <FormItem>
                     <FormLabel>Registration / Staff ID Number</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g., UG24/CSC/1002 or S1234" {...field} disabled={!auth} />
+                      <Input placeholder="e.g., UG24/CSC/1002 or S1234" {...field} disabled={!isFirebaseConfigured} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -142,7 +142,7 @@ export default function RegisterPage() {
               <div
                 className={cn(
                   'grid gap-4 transition-all duration-500 ease-in-out',
-                  isIdEntered && auth
+                  isIdEntered && isFirebaseConfigured
                     ? 'max-h-[500px] opacity-100'
                     : 'max-h-0 opacity-0 overflow-hidden'
                 )}
@@ -220,7 +220,7 @@ export default function RegisterPage() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="w-full" disabled={!isIdEntered || isLoading || !auth}>
+                <Button type="submit" className="w-full" disabled={!isIdEntered || isLoading || !isFirebaseConfigured}>
                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Create an account
                 </Button>

@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,7 +16,7 @@ import { Label } from '@/components/ui/label';
 import { Logo } from '@/components/logo';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { app } from '@/lib/firebase';
+import { auth } from '@/lib/firebase';
 import { Loader2, AlertTriangle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
@@ -29,8 +29,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = React.useState(false);
   const { toast } = useToast();
   const router = useRouter();
-
-  const auth = app ? getAuth(app) : null;
+  const isFirebaseConfigured = !!process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
 
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
@@ -41,7 +40,7 @@ export default function LoginPage() {
   });
 
   async function onSubmit(values: z.infer<typeof loginFormSchema>) {
-    if (!auth) {
+    if (!isFirebaseConfigured) {
        toast({
         variant: 'destructive',
         title: 'Configuration Error',
@@ -82,12 +81,12 @@ export default function LoginPage() {
               Enter your email below to login to your account
             </p>
           </div>
-          {!auth && (
+          {!isFirebaseConfigured && (
             <Alert variant="destructive">
               <AlertTriangle className="h-4 w-4" />
               <AlertTitle>Configuration Error</AlertTitle>
               <AlertDescription>
-                Firebase is not configured. Please add your credentials to a <code>.env</code> file to enable login.
+                Firebase is not configured. Please add your credentials to a <code>.env.local</code> file to enable login.
               </AlertDescription>
             </Alert>
           )}
@@ -105,7 +104,7 @@ export default function LoginPage() {
                         type="email"
                         placeholder="m@example.com"
                         required
-                        disabled={!auth}
+                        disabled={!isFirebaseConfigured}
                         {...field}
                       />
                     </FormControl>
@@ -128,13 +127,13 @@ export default function LoginPage() {
                       </Link>
                     </div>
                     <FormControl>
-                      <Input id="password" type="password" required disabled={!auth} {...field} />
+                      <Input id="password" type="password" required disabled={!isFirebaseConfigured} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full" disabled={isLoading || !auth}>
+              <Button type="submit" className="w-full" disabled={isLoading || !isFirebaseConfigured}>
                  {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Login
               </Button>

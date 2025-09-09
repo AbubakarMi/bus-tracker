@@ -1,6 +1,7 @@
 
 // Import the functions you need from the SDKs you need
 import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
+import { getAuth, type Auth } from "firebase/auth";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -15,16 +16,22 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-let app: FirebaseApp | null = null;
-if (firebaseConfig.apiKey) {
+let app: FirebaseApp;
+let auth: Auth;
+
+if (process.env.NEXT_PUBLIC_FIREBASE_API_KEY) {
     if (!getApps().length) {
         app = initializeApp(firebaseConfig);
     } else {
         app = getApps()[0];
     }
+    auth = getAuth(app);
 } else {
-    console.log("Firebase config is missing. Please set up your .env file.");
+    console.warn("Firebase config is missing. Please set up your .env.local file.");
+    // Provide a dummy app and auth object to prevent crashing
+    app = {} as FirebaseApp;
+    auth = {} as Auth;
 }
 
 
-export { app };
+export { app, auth };
