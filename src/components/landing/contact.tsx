@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 
 export function Contact() {
   return (
-    <section id="contact" className="bg-muted py-16 sm:py-24">
+    <section id="contact" className="py-16 sm:py-24">
       <div className="container mx-auto max-w-7xl px-4">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl">
@@ -15,7 +15,7 @@ export function Contact() {
             Have questions or feedback? We&apos;d love to hear from you.
           </p>
         </div>
-        <Card className="mx-auto mt-12 max-w-lg">
+        <Card className="mx-auto mt-12 max-w-lg border-2 shadow-2xl">
           <CardHeader>
             <CardTitle>Contact Us</CardTitle>
             <CardDescription>Fill out the form below and we will get back to you as soon as possible.</CardDescription>
@@ -31,7 +31,7 @@ export function Contact() {
               <div className="space-y-2">
                 <Textarea id="message" placeholder="Your Message" required className="min-h-[120px]" />
               </div>
-              <Button type="submit" className="w-full">
+              <Button type="submit" className="w-full" size="lg">
                 Send Message
               </Button>
             </form>
