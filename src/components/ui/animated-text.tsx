@@ -55,15 +55,6 @@ export const AnimatedText = ({ text, el: Wrapper = 'p', className, stagger = 0, 
     },
   };
 
-  const Cursor = () => (
-    <motion.span
-      className="ml-1 inline-block h-[1em] w-[3px] -mb-1 bg-primary"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: [0, 1, 0] }}
-      transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
-    />
-  );
-
   return (
     <Wrapper className={cn(className)} {...props} ref={ref}>
       <motion.span
@@ -83,7 +74,6 @@ export const AnimatedText = ({ text, el: Wrapper = 'p', className, stagger = 0, 
             {word}
           </motion.span>
         ))}
-        <Cursor />
       </motion.span>
     </Wrapper>
   );

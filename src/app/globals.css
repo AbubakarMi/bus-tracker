@@ -245,9 +245,4 @@
   .animate-fade-in-up {
     animation: fade-in-up 0.8s ease-in-out forwards;
   }
-
-  @keyframes blink-caret {
-    from, to { border-color: transparent }
-    50% { border-color: hsl(var(--primary)) }
-  }
 }
