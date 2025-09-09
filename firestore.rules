@@ -1,0 +1,53 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function getUserRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+    
+    // Admins have full read/write access to everything.
+    match /{document=**} {
+      allow read, write: if isSignedIn() && getUserRole() == 'admin';
+    }
+
+    // All signed-in users can read route and bus information.
+    match /routes/{routeId} {
+      allow read: if isSignedIn();
+    }
+    
+    match /buses/{busId} {
+      allow read: if isSignedIn();
+    }
+
+    // Students can create bookings for themselves and read/update their own bookings.
+    match /bookings/{bookingId} {
+      allow read, update: if isSignedIn() && resource.data.studentId == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.studentId == request.auth.uid;
+    }
+
+    // Drivers can only update their own location and the status of their assigned trips.
+    match /drivers/{driverId} {
+      allow write: if isSignedIn() && driverId == request.auth.uid;
+    }
+    match /trips/{tripId} {
+        allow update: if isSignedIn() && getUserRole() == 'driver' && resource.data.driverId == request.auth.uid;
+    }
+
+    // Unions can manage their own fleet (buses, drivers).
+    match /unions/{unionId}/buses/{busId} {
+      allow read, write: if isSignedIn() && getUserRole() == 'union' && get(/databases/$(database)/documents/unions/$(unionId)).data.ownerId == request.auth.uid;
+    }
+
+    // Users can read their own user document.
+    match /users/{userId} {
+      allow read: if isSignedIn() && request.auth.uid == userId;
+    }
+  }
+}
