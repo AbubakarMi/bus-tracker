@@ -15,7 +15,7 @@ import { RoadAnimation } from '@/components/auth/road-animation';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
-import { UserCheck, Briefcase } from 'lucide-react';
+import { UserCheck, Briefcase, User } from 'lucide-react';
 
 const registerFormSchema = z.object({
   idNumber: z.string().min(1, 'Please enter your ID number'),
@@ -25,10 +25,11 @@ const registerFormSchema = z.object({
   password: z.string().min(8, 'Password must be at least 8 characters'),
 });
 
-type UserRole = 'student' | 'staff' | null;
+type UserRole = 'student' | 'staff' | 'general' | null;
 
 export default function RegisterPage() {
   const [userRole, setUserRole] = React.useState<UserRole>(null);
+  const [isIdEntered, setIsIdEntered] = React.useState(false);
 
   const form = useForm<z.infer<typeof registerFormSchema>>({
     resolver: zodResolver(registerFormSchema),
@@ -44,11 +45,17 @@ export default function RegisterPage() {
   const idNumber = form.watch('idNumber');
 
   React.useEffect(() => {
-    if (/^UG-\d{4}\/\w+\/\d+$/i.test(idNumber)) {
-      setUserRole('student');
-    } else if (/^S\d+/i.test(idNumber)) {
-      setUserRole('staff');
+    if (idNumber) {
+      setIsIdEntered(true);
+      if (/^UG\d{2}\/\w+\/\d+$/i.test(idNumber)) {
+        setUserRole('student');
+      } else if (/^S\d+/i.test(idNumber)) {
+        setUserRole('staff');
+      } else {
+        setUserRole('general');
+      }
     } else {
+      setIsIdEntered(false);
       setUserRole(null);
     }
   }, [idNumber]);
@@ -79,7 +86,7 @@ export default function RegisterPage() {
                   <FormItem>
                     <FormLabel>Registration / Staff ID Number</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g., UG-2024/CSC/1012 or S1234" {...field} />
+                      <Input placeholder="e.g., UG24/CSC/1002 or S1234" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -89,7 +96,7 @@ export default function RegisterPage() {
               <div
                 className={cn(
                   'grid gap-4 transition-all duration-500 ease-in-out',
-                  userRole
+                  isIdEntered
                     ? 'max-h-[500px] opacity-100'
                     : 'max-h-0 opacity-0 overflow-hidden'
                 )}
@@ -109,6 +116,15 @@ export default function RegisterPage() {
                     <Badge variant="secondary" className="w-fit py-2 px-3">
                       <Briefcase className="mr-2 h-4 w-4 text-blue-500"/>
                       <span>Staff Account Detected</span>
+                    </Badge>
+                  </div>
+                )}
+                {userRole === 'general' && (
+                   <div className="grid gap-2">
+                    <Label>Account Type</Label>
+                    <Badge variant="outline" className="w-fit py-2 px-3">
+                      <User className="mr-2 h-4 w-4"/>
+                      <span>General User</span>
                     </Badge>
                   </div>
                 )}
