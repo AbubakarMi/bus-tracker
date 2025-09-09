@@ -39,9 +39,9 @@ const socialLinks = [
 
 export function Footer() {
   return (
-    <footer className="border-t bg-muted/40">
-      <div className="container mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
+    <footer className="border-t bg-background">
+      <div className="container mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-4 lg:col-span-1">
             <Logo />
             <p className="text-sm text-muted-foreground">
@@ -52,7 +52,7 @@ export function Footer() {
                 <Link
                   key={social.label}
                   href={social.href}
-                  className="text-muted-foreground hover:text-primary"
+                  className="text-muted-foreground transition-colors hover:text-primary"
                   aria-label={social.label}
                 >
                   {social.icon}
@@ -61,18 +61,18 @@ export function Footer() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-8 lg:col-span-2 lg:grid-cols-3">
+          <div className="grid grid-cols-2 gap-8 lg:col-span-2">
             {footerSections.map((section) => (
               <div key={section.title}>
-                <h3 className="font-headline text-sm font-semibold uppercase tracking-wider text-foreground">
+                <h3 className="font-headline text-base font-semibold text-foreground">
                   {section.title}
                 </h3>
-                <ul className="mt-4 space-y-2">
+                <ul className="mt-4 space-y-3">
                   {section.links.map((link) => (
                     <li key={link.label}>
                       <Link
                         href={link.href}
-                        className="text-sm text-muted-foreground hover:text-primary hover:underline"
+                        className="text-sm text-muted-foreground transition-colors hover:text-primary hover:underline"
                       >
                         {link.label}
                       </Link>
@@ -84,11 +84,11 @@ export function Footer() {
           </div>
 
           <div className="space-y-4">
-             <h3 className="font-headline text-sm font-semibold uppercase tracking-wider text-foreground">
+             <h3 className="font-headline text-base font-semibold text-foreground">
               Stay Updated
             </h3>
             <p className="text-sm text-muted-foreground">
-              Subscribe to our newsletter for the latest updates and news.
+              Subscribe for the latest updates.
             </p>
             <form className="flex gap-2">
               <Input
@@ -104,7 +104,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 border-t pt-8 text-center text-sm text-muted-foreground">
+        <div className="mt-16 border-t pt-8 text-center text-sm text-muted-foreground">
           <p>&copy; {new Date().getFullYear()} ADUSTECH Transport. All Rights Reserved.</p>
         </div>
       </div>
