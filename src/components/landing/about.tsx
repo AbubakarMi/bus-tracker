@@ -15,23 +15,27 @@ export function About() {
     <section id="about" className="bg-muted py-16 sm:py-24">
       <div className="container mx-auto max-w-7xl px-4">
         <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-16">
-          <div className="relative order-last lg:order-first">
+          <div className="relative order-last lg:order-first animate-fade-in-up">
              <div className="absolute -left-4 -top-4 -bottom-4 w-2/3 rounded-lg bg-primary/10 lg:-bottom-8 lg:-left-8" />
             <div className="relative z-10 space-y-6 rounded-lg bg-card p-8 shadow-2xl lg:p-12">
               <AnimatedText
                 text={title}
                 el="h2"
                 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl"
+                once={false}
               />
-              {paragraphs.map((p, i) => (
-                  <AnimatedText
-                    key={i}
-                    text={p}
-                    el="p"
-                    className="text-lg text-muted-foreground"
-                    stagger={title.split(" ").length}
-                  />
-              ))}
+              <div className="space-y-6">
+                {paragraphs.map((p, i) => (
+                    <AnimatedText
+                      key={i}
+                      text={p}
+                      el="p"
+                      className="text-lg text-foreground/90"
+                      stagger={(title.split(" ").length || 0) + (paragraphs[i-1]?.split(" ").length || 0) * (i)}
+                      once={false}
+                    />
+                ))}
+              </div>
             </div>
           </div>
           <div className="relative h-80 w-full lg:h-[500px]">
