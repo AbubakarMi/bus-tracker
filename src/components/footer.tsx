@@ -12,7 +12,6 @@ const footerSections = [
       { href: '#features', label: 'Features' },
       { href: '/register', label: 'Register' },
       { href: '/login', label: 'Login' },
-      { href: '/dashboard', label: 'Dashboard' },
     ],
   },
   {
