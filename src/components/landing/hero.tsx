@@ -6,14 +6,16 @@ import { ArrowRight } from 'lucide-react';
 export function Hero() {
   return (
     <section className="relative h-[calc(100vh-4rem)] w-full overflow-hidden">
-      <Image
-        src="https://picsum.photos/seed/modern-campus/1920/1080"
-        alt="A modern university campus with students"
-        data-ai-hint="modern campus students"
-        fill
-        className="object-cover"
-        priority
-      />
+      <div className="absolute inset-0 transition-transform duration-[2000ms] ease-in-out hover:scale-110">
+        <Image
+          src="https://picsum.photos/seed/modern-campus/1920/1080"
+          alt="A modern university campus with students"
+          data-ai-hint="modern campus students"
+          fill
+          className="object-cover animate-zoom-in"
+          priority
+        />
+      </div>
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
       <div className="relative z-10 flex h-full items-center justify-center text-center">
         <div className="container max-w-4xl px-4 text-white">
