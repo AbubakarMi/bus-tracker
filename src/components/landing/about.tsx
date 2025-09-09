@@ -18,9 +18,9 @@ export function About() {
           </div>
           <div className="overflow-hidden rounded-lg shadow-lg">
             <Image
-              src="https://picsum.photos/600/400"
-              alt="Aliko Dangote University of Science and Technology, Wudil"
-              data-ai-hint="university building"
+              src="https://picsum.photos/seed/uni-library/600/400"
+              alt="University library or study hall"
+              data-ai-hint="university library"
               width={600}
               height={400}
               className="h-full w-full object-cover transition-transform hover:scale-105"

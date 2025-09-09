@@ -55,11 +55,11 @@ export default function LoginPage() {
       </div>
       <div className="hidden bg-muted lg:block">
         <Image
-          src="https://picsum.photos/1200/1800"
-          alt="University students walking"
+          src="https://picsum.photos/seed/student-group/1200/1800"
+          alt="Group of university students"
           width="1200"
           height="1800"
-          data-ai-hint="university students"
+          data-ai-hint="student group"
           className="h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
         />
       </div>

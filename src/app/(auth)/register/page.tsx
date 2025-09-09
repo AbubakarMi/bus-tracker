@@ -62,11 +62,11 @@ export default function RegisterPage() {
       </div>
        <div className="hidden bg-muted lg:block">
         <Image
-          src="https://picsum.photos/1200/1801"
-          alt="Modern campus building"
+          src="https://picsum.photos/seed/campus-scenery/1200/1801"
+          alt="Scenic view of a university campus"
           width="1200"
           height="1801"
-          data-ai-hint="modern campus"
+          data-ai-hint="campus scenery"
           className="h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
         />
       </div>

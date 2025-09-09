@@ -7,9 +7,9 @@ export function Hero() {
   return (
     <section className="relative h-[calc(100vh-4rem)] w-full overflow-hidden">
       <Image
-        src="https://picsum.photos/1920/1081"
-        alt="University campus with a bus"
-        data-ai-hint="modern architecture"
+        src="https://picsum.photos/seed/campus-bus/1920/1080"
+        alt="A modern bus on a university campus"
+        data-ai-hint="campus bus"
         fill
         className="object-cover"
         priority
