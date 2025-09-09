@@ -33,9 +33,6 @@ const itemVariants = {
 export function Hero() {
   return (
     <section className="relative h-screen w-full overflow-hidden bg-background dark:bg-black">
-       <div className="absolute bottom-[20%] left-0 w-full h-20 bus-animation animation-delay-3s">
-          <Bus className="h-full w-auto text-primary/30" />
-        </div>
        <div className="relative z-10 flex h-full items-center justify-center">
         <motion.div
             initial="hidden"
@@ -62,7 +59,7 @@ export function Hero() {
                         className="mx-auto mt-6 max-w-lg text-lg text-muted-foreground md:mx-0"
                     >
                         Reliable, real-time bus tracking and seamless seat booking for the Aliko Dangote University of Science and Technology, Wudil.
-                    </p>
+                    </motion.p>
                      <motion.div
                         variants={itemVariants}
                         className="mt-8 flex flex-col items-center gap-4 sm:flex-row md:justify-start"
