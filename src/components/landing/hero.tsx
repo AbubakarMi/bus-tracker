@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Bus } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { HeroAnimation } from './hero-animation';
 
@@ -35,6 +35,9 @@ export function Hero() {
   return (
     <section className="relative h-screen w-full overflow-hidden bg-background dark:bg-black">
        <HeroAnimation />
+       <div className="absolute bottom-[20%] left-0 w-full h-20 bus-animation animation-delay-3s">
+          <Bus className="h-full w-auto text-primary/30" />
+        </div>
        <div className="relative z-10 flex h-full items-center justify-center">
         <motion.div
             initial="hidden"
