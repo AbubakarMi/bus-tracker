@@ -1,7 +1,9 @@
+
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Mail, Phone, MapPin } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const contactInfo = [
     { icon: <Mail className="h-6 w-6 text-primary-foreground" />, title: 'Email Us', value: 'contact@adustech.edu.ng' },
@@ -23,9 +25,9 @@ export function Contact() {
           </p>
         </div>
 
-        <div className="mt-16 grid grid-cols-1 gap-8 overflow-hidden rounded-2xl bg-card shadow-2xl lg:grid-cols-2 lg:gap-0">
+        <div className="mt-16 grid grid-cols-1 gap-8 overflow-hidden rounded-2xl bg-card shadow-2xl lg:grid-cols-2 lg:gap-0 animate-fade-in-up">
           <div className="relative flex flex-col justify-center bg-primary p-8 text-primary-foreground lg:p-12">
-             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20"></div>
              <div className="relative z-10">
                 <h3 className="font-headline text-2xl font-bold">Contact Information</h3>
                 <p className="mt-4 text-lg text-primary-foreground/80">
@@ -33,8 +35,8 @@ export function Contact() {
                 </p>
                 <div className="mt-8 space-y-6">
                     {contactInfo.map((info) => (
-                        <div key={info.title} className="flex items-start gap-4">
-                            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-primary-foreground/10">
+                        <div key={info.title} className="flex items-start gap-4 transition-transform duration-300 hover:scale-105">
+                            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-primary-foreground/10 transition-all duration-300 group-hover:bg-primary-foreground/20 group-hover:scale-110">
                                 {info.icon}
                             </div>
                             <div>
