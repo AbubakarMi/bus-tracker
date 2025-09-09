@@ -3,20 +3,39 @@
 
 import * as React from 'react';
 import { cn } from '@/lib/utils';
+import { useInView } from 'react-intersection-observer';
 
 interface TypewriterProps extends React.HTMLAttributes<HTMLDivElement> {
-  text: string;
+  text: string | string[];
   speed?: number;
   delay?: number;
   loop?: boolean;
 }
 
-export function Typewriter({ text, speed = 50, delay = 0, loop = true, className, ...props }: TypewriterProps) {
+export function Typewriter({
+  text,
+  speed = 100,
+  delay = 0,
+  loop = false,
+  className,
+  ...props
+}: TypewriterProps) {
+  const [currentTextIndex, setCurrentTextIndex] = React.useState(0);
   const [displayedText, setDisplayedText] = React.useState('');
-  const [isTyping, setIsTyping] = React.useState(true);
+  const [isTyping, setIsTyping] = React.useState(false);
   const [isDeleting, setIsDeleting] = React.useState(false);
 
+  const { ref, inView } = useInView({
+    triggerOnce: !loop,
+    threshold: 0.6,
+  });
+
+  const textArray = Array.isArray(text) ? text : [text];
+  const currentText = textArray[currentTextIndex];
+
   React.useEffect(() => {
+    if (!inView) return;
+
     let timeoutId: NodeJS.Timeout;
 
     const handleTyping = () => {
@@ -28,54 +47,97 @@ export function Typewriter({ text, speed = 50, delay = 0, loop = true, className
           timeoutId = setTimeout(handleTyping, speed / 2);
         } else {
           setIsDeleting(false);
-          if (loop) {
-            timeoutId = setTimeout(handleTyping, 500); // Pause before re-typing
-          } else {
-             setIsTyping(false);
-          }
+          setCurrentTextIndex((prev) => (prev + 1) % textArray.length);
         }
       } else {
-        if (i < text.length) {
-          setDisplayedText((prev) => prev + text.charAt(i));
+        if (i < currentText.length) {
+          setDisplayedText((prev) => prev + currentText.charAt(i));
           timeoutId = setTimeout(handleTyping, speed);
         } else {
-          if (loop) {
-            timeoutId = setTimeout(() => setIsDeleting(true), 2000); // Pause before deleting
+          // Finished typing current string
+          if (currentTextIndex < textArray.length - 1) {
+            // If there are more strings, move to the next one
+            timeoutId = setTimeout(() => {
+              setCurrentTextIndex((prev) => prev + 1);
+              setDisplayedText(''); // Clear for next text
+            }, 1000); // Pause before typing next string
+          } else if (loop) {
+            timeoutId = setTimeout(() => setIsDeleting(true), 2000); // Pause before deleting if looping
           } else {
-            setIsTyping(false);
+            setIsTyping(false); // End of all texts and not looping
           }
         }
       }
     };
     
-    const start = () => {
-      setIsTyping(true);
-      timeoutId = setTimeout(handleTyping, speed);
+    if (!isTyping && inView) {
+       const startTimeout = setTimeout(() => {
+         setIsTyping(true);
+         handleTyping();
+       }, delay);
+       return () => clearTimeout(startTimeout);
     }
     
-    const startTimeout = setTimeout(start, delay);
+    if(isTyping) {
+        handleTyping();
+    }
+
 
     return () => {
       clearTimeout(timeoutId);
-      clearTimeout(startTimeout);
     };
-  }, [text, speed, delay, loop, isDeleting, displayedText]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inView, isDeleting, currentText]);
+
+  // Reset state when it goes out of view if looping
+  React.useEffect(() => {
+    if (!inView && loop) {
+      setDisplayedText('');
+      setCurrentTextIndex(0);
+      setIsTyping(false);
+      setIsDeleting(false);
+    }
+  }, [inView, loop]);
+
 
   return (
-    <div className={cn('inline', className)} {...props}>
-      <span className="break-words">
-        {displayedText}
-      </span>
-      <span
+    <div ref={ref} className={cn('block min-h-[280px]', className)} {...props}>
+      <h2
         className={cn(
-          'inline-block h-full w-[2px] animate-pulse bg-primary align-text-bottom',
-          isTyping ? 'opacity-100' : 'opacity-0'
+          'font-headline text-3xl font-bold tracking-tighter sm:text-4xl transition-opacity duration-300',
+          currentTextIndex === 0 ? 'opacity-100' : 'opacity-0 max-h-0'
         )}
-        style={{ animation: 'blink-caret 1s step-end infinite' }}
-      ></span>
+      >
+        {currentTextIndex === 0 && (
+          <>
+            <span className="break-words">{displayedText}</span>
+            <span
+              className={cn(
+                'inline-block h-[2.2rem] w-[3px] ml-1 bg-primary align-bottom',
+                 isTyping ? 'animate-pulse' : 'opacity-0'
+              )}
+              style={{ animation: 'blink-caret 1s step-end infinite' }}
+            ></span>
+          </>
+        )}
+      </h2>
+      <div
+        className={cn(
+          'text-lg text-muted-foreground space-y-4 transition-opacity duration-300',
+          currentTextIndex > 0 ? 'opacity-100' : 'opacity-0 max-h-0'
+        )}
+      >
+        {currentTextIndex > 0 && (
+           <>
+            <p className="break-words">{textArray[1]}</p>
+            <p className="break-words">{textArray[2]}</p>
+          </>
+        )}
+      </div>
     </div>
   );
 }
+
 
 // Keyframes for the blinking cursor, to be added to globals.css
 /*
