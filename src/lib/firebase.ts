@@ -5,19 +5,23 @@ import { initializeApp, getApps } from "firebase/app";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  "projectId": "swiftroute-2v48m",
-  "appId": "1:944756104886:web:a44ea90b20183fa8955017",
-  "storageBucket": "swiftroute-2v48m.firebasestorage.app",
-  "apiKey": "AIzaSyDk_bJyCgWdYAH-v50oMzIEZR-YTQO_5mc",
-  "authDomain": "swiftroute-2v48m.firebaseapp.com",
-  "measurementId": "",
-  "messagingSenderId": "944756104886"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
 // Initialize Firebase
 let app;
 if (!getApps().length) {
-  app = initializeApp(firebaseConfig);
+  if (firebaseConfig.apiKey) {
+    app = initializeApp(firebaseConfig);
+  } else {
+    console.error("Firebase config is missing. Please set up your .env.local file.");
+  }
 } else {
   app = getApps()[0];
 }
