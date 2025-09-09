@@ -1,52 +1,178 @@
-import Link from 'next/link';
 
-import {Button} from '@/components/ui/button';
-import {Input} from '@/components/ui/input';
-import {Label} from '@/components/ui/label';
-import {Logo} from '@/components/logo';
-import {RoadAnimation} from '@/components/auth/road-animation';
+'use client';
+
+import * as React from 'react';
+import Link from 'next/link';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Logo } from '@/components/logo';
+import { RoadAnimation } from '@/components/auth/road-animation';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
+import { UserCheck, Briefcase } from 'lucide-react';
+
+const registerFormSchema = z.object({
+  idNumber: z.string().min(1, 'Please enter your ID number'),
+  firstName: z.string().min(1, 'First name is required'),
+  lastName: z.string().min(1, 'Last name is required'),
+  email: z.string().email('Please enter a valid email'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+});
+
+type UserRole = 'student' | 'staff' | null;
 
 export default function RegisterPage() {
+  const [userRole, setUserRole] = React.useState<UserRole>(null);
+
+  const form = useForm<z.infer<typeof registerFormSchema>>({
+    resolver: zodResolver(registerFormSchema),
+    defaultValues: {
+      idNumber: '',
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+    },
+  });
+
+  const idNumber = form.watch('idNumber');
+
+  React.useEffect(() => {
+    if (/^U\d+/i.test(idNumber)) {
+      setUserRole('student');
+    } else if (/^S\d+/i.test(idNumber)) {
+      setUserRole('staff');
+    } else {
+      setUserRole(null);
+    }
+  }, [idNumber]);
+
+  function onSubmit(values: z.infer<typeof registerFormSchema>) {
+    console.log(values);
+  }
+
   return (
     <div className="w-full lg:grid lg:min-h-screen lg:grid-cols-2">
       <div className="flex items-center justify-center py-12">
-        <div className="mx-auto grid w-[350px] gap-6">
+        <div className="mx-auto grid w-[400px] gap-6">
           <div className="grid gap-2 text-center">
             <div className="mb-4 flex justify-center">
               <Logo />
             </div>
             <h1 className="font-headline text-3xl font-bold">Create an account</h1>
             <p className="text-balance text-muted-foreground">
-              Enter your information to create an account
+              Enter your ID to begin the registration process.
             </p>
           </div>
-          <div className="grid gap-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="first-name">First name</Label>
-                <Input id="first-name" placeholder="Max" required />
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
+              <FormField
+                control={form.control}
+                name="idNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Registration / Staff ID Number</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g., U2024001 or S1234" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div
+                className={cn(
+                  'grid gap-4 transition-all duration-500 ease-in-out',
+                  userRole
+                    ? 'max-h-[500px] opacity-100'
+                    : 'max-h-0 opacity-0 overflow-hidden'
+                )}
+              >
+                {userRole === 'student' && (
+                  <div className="grid gap-2">
+                    <Label>Account Type</Label>
+                    <Badge variant="secondary" className="w-fit py-2 px-3">
+                       <UserCheck className="mr-2 h-4 w-4 text-green-500" />
+                       <span>Student Account Detected</span>
+                    </Badge>
+                  </div>
+                )}
+                {userRole === 'staff' && (
+                  <div className="grid gap-2">
+                    <Label>Account Type</Label>
+                    <Badge variant="secondary" className="w-fit py-2 px-3">
+                      <Briefcase className="mr-2 h-4 w-4 text-blue-500"/>
+                      <span>Staff Account Detected</span>
+                    </Badge>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="firstName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>First Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Max" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="lastName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Last Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Robinson" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input placeholder="m@example.com" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input type="password" placeholder="********" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button type="submit" className="w-full">
+                  Create an account
+                </Button>
               </div>
-              <div className="grid gap-2">
-                <Label htmlFor="last-name">Last name</Label>
-                <Input id="last-name" placeholder="Robinson" required />
-              </div>
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="reg-number">Registration Number</Label>
-              <Input id="reg-number" placeholder="U2024..." required />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" placeholder="m@example.com" required />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" />
-            </div>
-            <Button type="submit" className="w-full">
-              Create an account
-            </Button>
-          </div>
+            </form>
+          </Form>
           <div className="mt-4 text-center text-sm">
             Already have an account?{' '}
             <Link href="/login" className="underline">
@@ -61,3 +187,4 @@ export default function RegisterPage() {
     </div>
   );
 }
+
