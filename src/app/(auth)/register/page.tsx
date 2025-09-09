@@ -17,11 +17,12 @@ import { RoadAnimation } from '@/components/auth/road-animation';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
-import { UserCheck, Briefcase, Loader2 } from 'lucide-react';
+import { UserCheck, Briefcase, Loader2, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { app } from '@/lib/firebase';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
-const auth = getAuth(app);
+const auth = app ? getAuth(app) : null;
 
 const registerFormSchema = z.object({
   idNumber: z.string().min(1, 'Please enter your ID number'),
@@ -72,6 +73,14 @@ export default function RegisterPage() {
   }, [idNumber]);
 
   async function onSubmit(values: z.infer<typeof registerFormSchema>) {
+     if (!auth) {
+       toast({
+        variant: 'destructive',
+        title: 'Configuration Error',
+        description: 'Firebase is not configured. Please check your environment variables.',
+      });
+      return;
+    }
     setIsLoading(true);
     try {
       await createUserWithEmailAndPassword(auth, values.email, values.password);
@@ -105,6 +114,15 @@ export default function RegisterPage() {
               Enter your ID to begin the registration process.
             </p>
           </div>
+          {!auth && (
+            <Alert variant="destructive">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertTitle>Configuration Error</AlertTitle>
+              <AlertDescription>
+                Firebase is not configured. Please add your credentials to a <code>.env.local</code> file to enable registration.
+              </AlertDescription>
+            </Alert>
+          )}
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
               <FormField
@@ -114,7 +132,7 @@ export default function RegisterPage() {
                   <FormItem>
                     <FormLabel>Registration / Staff ID Number</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g., UG24/CSC/1002 or S1234" {...field} />
+                      <Input placeholder="e.g., UG24/CSC/1002 or S1234" {...field} disabled={!auth} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -124,7 +142,7 @@ export default function RegisterPage() {
               <div
                 className={cn(
                   'grid gap-4 transition-all duration-500 ease-in-out',
-                  isIdEntered
+                  isIdEntered && auth
                     ? 'max-h-[500px] opacity-100'
                     : 'max-h-0 opacity-0 overflow-hidden'
                 )}
@@ -202,7 +220,7 @@ export default function RegisterPage() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="w-full" disabled={!isIdEntered || isLoading}>
+                <Button type="submit" className="w-full" disabled={!isIdEntered || isLoading || !auth}>
                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Create an account
                 </Button>

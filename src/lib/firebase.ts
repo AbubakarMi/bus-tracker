@@ -1,6 +1,6 @@
 
 // Import the functions you need from the SDKs you need
-import { initializeApp, getApps } from "firebase/app";
+import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -15,15 +15,15 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-let app;
-if (!getApps().length) {
-  if (firebaseConfig.apiKey) {
-    app = initializeApp(firebaseConfig);
-  } else {
-    console.error("Firebase config is missing. Please set up your .env.local file.");
-  }
+let app: FirebaseApp | null = null;
+if (firebaseConfig.apiKey) {
+    if (!getApps().length) {
+        app = initializeApp(firebaseConfig);
+    } else {
+        app = getApps()[0];
+    }
 } else {
-  app = getApps()[0];
+    console.log("Firebase config is missing. Please set up your .env.local file.");
 }
 
 

@@ -17,9 +17,10 @@ import { Logo } from '@/components/logo';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import { app } from '@/lib/firebase';
-import { Loader2 } from 'lucide-react';
+import { Loader2, AlertTriangle } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
-const auth = getAuth(app);
+const auth = app ? getAuth(app) : null;
 
 const loginFormSchema = z.object({
   email: z.string().email('Please enter a valid email'),
@@ -40,6 +41,14 @@ export default function LoginPage() {
   });
 
   async function onSubmit(values: z.infer<typeof loginFormSchema>) {
+    if (!auth) {
+       toast({
+        variant: 'destructive',
+        title: 'Configuration Error',
+        description: 'Firebase is not configured. Please check your environment variables.',
+      });
+      return;
+    }
     setIsLoading(true);
     try {
       await signInWithEmailAndPassword(auth, values.email, values.password);
@@ -73,6 +82,15 @@ export default function LoginPage() {
               Enter your email below to login to your account
             </p>
           </div>
+          {!auth && (
+            <Alert variant="destructive">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertTitle>Configuration Error</AlertTitle>
+              <AlertDescription>
+                Firebase is not configured. Please add your credentials to a <code>.env.local</code> file to enable login.
+              </AlertDescription>
+            </Alert>
+          )}
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
               <FormField
@@ -87,6 +105,7 @@ export default function LoginPage() {
                         type="email"
                         placeholder="m@example.com"
                         required
+                        disabled={!auth}
                         {...field}
                       />
                     </FormControl>
@@ -109,13 +128,13 @@ export default function LoginPage() {
                       </Link>
                     </div>
                     <FormControl>
-                      <Input id="password" type="password" required {...field} />
+                      <Input id="password" type="password" required disabled={!auth} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button type="submit" className="w-full" disabled={isLoading || !auth}>
                  {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Login
               </Button>
