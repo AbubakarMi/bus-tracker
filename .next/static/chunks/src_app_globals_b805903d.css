@@ -1819,6 +1819,12 @@ body {
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
 
+.from-white\/10 {
+  --tw-gradient-from: #ffffff1a var(--tw-gradient-from-position);
+  --tw-gradient-to: #fff0 var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
 .via-accent {
   --tw-gradient-to: hsl(var(--accent) / 0) var(--tw-gradient-to-position);
   --tw-gradient-stops: var(--tw-gradient-from), hsl(var(--accent)) var(--tw-gradient-via-position), var(--tw-gradient-to);
@@ -1842,6 +1848,26 @@ body {
 .via-accent\/10 {
   --tw-gradient-to: hsl(var(--accent) / 0) var(--tw-gradient-to-position);
   --tw-gradient-stops: var(--tw-gradient-from), hsl(var(--accent) / .1) var(--tw-gradient-via-position), var(--tw-gradient-to);
+}
+
+.via-white {
+  --tw-gradient-to: #fff0 var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), #fff var(--tw-gradient-via-position), var(--tw-gradient-to);
+}
+
+.via-white\/20 {
+  --tw-gradient-to: #fff0 var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), #fff3 var(--tw-gradient-via-position), var(--tw-gradient-to);
+}
+
+.via-primary\/10 {
+  --tw-gradient-to: hsl(var(--primary) / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), hsl(var(--primary) / .1) var(--tw-gradient-via-position), var(--tw-gradient-to);
+}
+
+.via-primary {
+  --tw-gradient-to: hsl(var(--primary) / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), hsl(var(--primary)) var(--tw-gradient-via-position), var(--tw-gradient-to);
 }
 
 .to-accent {
@@ -2083,6 +2109,10 @@ body {
 
 .pt-8 {
   padding-top: 2rem;
+}
+
+.pt-12 {
+  padding-top: 3rem;
 }
 
 .text-left {
@@ -2330,6 +2360,10 @@ body {
 .text-yellow-400 {
   --tw-text-opacity: 1;
   color: rgb(250 204 21 / var(--tw-text-opacity, 1));
+}
+
+.text-muted-foreground\/70 {
+  color: hsl(var(--muted-foreground) / .7);
 }
 
 .underline {
@@ -3061,6 +3095,11 @@ body {
   }
 }
 
+.shimmer {
+  background: linear-gradient(90deg, #0000 25%, #ffffff80 50%, #0000 75%) 0 0 / 200% 100%;
+  animation: 2s infinite shimmer;
+}
+
 @keyframes breathe {
   0%, 100% {
     transform: scale(1);
@@ -3443,6 +3482,10 @@ body {
   background-color: #0000000d;
 }
 
+.group:hover .group-hover\:bg-white\/20 {
+  background-color: #fff3;
+}
+
 .group:hover .group-hover\:from-primary\/20 {
   --tw-gradient-from: hsl(var(--primary) / .2) var(--tw-gradient-from-position);
   --tw-gradient-to: hsl(var(--primary) / 0) var(--tw-gradient-to-position);
@@ -3455,6 +3498,10 @@ body {
 
 .group:hover .group-hover\:text-primary {
   color: hsl(var(--primary));
+}
+
+.group:hover .group-hover\:text-white\/90 {
+  color: #ffffffe6;
 }
 
 .group\/menu-item:hover .group-hover\/menu-item\:opacity-100, .group:hover .group-hover\:opacity-100 {
@@ -3483,6 +3530,10 @@ body {
 
 .group:hover .group-hover\:opacity-40 {
   opacity: .4;
+}
+
+.group:hover .group-hover\:opacity-15 {
+  opacity: .15;
 }
 
 .group:hover .group-hover\:shadow-2xl {
