@@ -4339,7 +4339,7 @@ function Contact() {
                 className: "container relative mx-auto max-w-7xl px-4",
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].div, {
-                        className: "mx-auto max-w-3xl text-center mb-20",
+                        className: "mx-auto max-w-4xl text-center mb-20 relative",
                         initial: {
                             opacity: 0,
                             y: 20
@@ -4355,6 +4355,104 @@ function Contact() {
                             duration: 0.6
                         },
                         children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "absolute inset-0 pointer-events-none",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].div, {
+                                        className: "absolute top-8 left-1/4 w-4 h-4 bg-gradient-to-r from-primary to-accent rounded-full opacity-20",
+                                        animate: {
+                                            y: [
+                                                0,
+                                                -20,
+                                                0
+                                            ],
+                                            scale: [
+                                                1,
+                                                1.3,
+                                                1
+                                            ],
+                                            opacity: [
+                                                0.2,
+                                                0.7,
+                                                0.2
+                                            ]
+                                        },
+                                        transition: {
+                                            duration: 4,
+                                            repeat: Infinity,
+                                            ease: "easeInOut"
+                                        }
+                                    }, void 0, false, {
+                                        fileName: "[project]/src/components/landing/contact.tsx",
+                                        lineNumber: 99,
+                                        columnNumber: 13
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].div, {
+                                        className: "absolute top-16 right-1/3 w-3 h-3 bg-gradient-to-r from-accent to-primary rounded-full opacity-30",
+                                        animate: {
+                                            y: [
+                                                0,
+                                                15,
+                                                0
+                                            ],
+                                            x: [
+                                                0,
+                                                10,
+                                                0
+                                            ],
+                                            opacity: [
+                                                0.3,
+                                                0.8,
+                                                0.3
+                                            ]
+                                        },
+                                        transition: {
+                                            duration: 3,
+                                            repeat: Infinity,
+                                            ease: "easeInOut",
+                                            delay: 1
+                                        }
+                                    }, void 0, false, {
+                                        fileName: "[project]/src/components/landing/contact.tsx",
+                                        lineNumber: 108,
+                                        columnNumber: 13
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].div, {
+                                        className: "absolute top-4 right-1/4 w-2 h-2 bg-gradient-to-r from-primary to-accent rounded-full opacity-40",
+                                        animate: {
+                                            y: [
+                                                0,
+                                                -15,
+                                                0
+                                            ],
+                                            rotate: [
+                                                0,
+                                                180,
+                                                360
+                                            ],
+                                            opacity: [
+                                                0.4,
+                                                0.9,
+                                                0.4
+                                            ]
+                                        },
+                                        transition: {
+                                            duration: 5,
+                                            repeat: Infinity,
+                                            ease: "easeInOut",
+                                            delay: 2
+                                        }
+                                    }, void 0, false, {
+                                        fileName: "[project]/src/components/landing/contact.tsx",
+                                        lineNumber: 117,
+                                        columnNumber: 13
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/src/components/landing/contact.tsx",
+                                lineNumber: 98,
+                                columnNumber: 11
+                            }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].div, {
                                 initial: {
                                     opacity: 0,
@@ -4371,44 +4469,238 @@ function Contact() {
                                     duration: 0.6,
                                     delay: 0.1
                                 },
-                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                    className: "inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-primary/10 text-primary mb-6",
-                                    children: "💬 Get in Touch"
-                                }, void 0, false, {
+                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].span, {
+                                    className: "inline-flex items-center px-6 py-3 rounded-full text-sm font-semibold bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 text-primary mb-8 relative overflow-hidden",
+                                    whileHover: {
+                                        scale: 1.05
+                                    },
+                                    transition: {
+                                        type: "spring",
+                                        stiffness: 400,
+                                        damping: 10
+                                    },
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].div, {
+                                            className: "absolute inset-0 bg-gradient-to-r from-primary/20 to-accent/20",
+                                            initial: {
+                                                x: "-100%"
+                                            },
+                                            whileHover: {
+                                                x: "100%"
+                                            },
+                                            transition: {
+                                                duration: 0.6
+                                            }
+                                        }, void 0, false, {
+                                            fileName: "[project]/src/components/landing/contact.tsx",
+                                            lineNumber: 139,
+                                            columnNumber: 15
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                            className: "relative z-10 flex items-center gap-2",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].div, {
+                                                    animate: {
+                                                        rotate: [
+                                                            0,
+                                                            10,
+                                                            -10,
+                                                            0
+                                                        ]
+                                                    },
+                                                    transition: {
+                                                        duration: 2,
+                                                        repeat: Infinity,
+                                                        ease: "easeInOut"
+                                                    },
+                                                    children: "💬"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/components/landing/contact.tsx",
+                                                    lineNumber: 146,
+                                                    columnNumber: 17
+                                                }, this),
+                                                "Get in Touch",
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].div, {
+                                                    animate: {
+                                                        scale: [
+                                                            1,
+                                                            1.2,
+                                                            1
+                                                        ]
+                                                    },
+                                                    transition: {
+                                                        duration: 1.5,
+                                                        repeat: Infinity,
+                                                        ease: "easeInOut"
+                                                    },
+                                                    children: "✨"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/components/landing/contact.tsx",
+                                                    lineNumber: 153,
+                                                    columnNumber: 17
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/src/components/landing/contact.tsx",
+                                            lineNumber: 145,
+                                            columnNumber: 15
+                                        }, this)
+                                    ]
+                                }, void 0, true, {
                                     fileName: "[project]/src/components/landing/contact.tsx",
-                                    lineNumber: 103,
+                                    lineNumber: 134,
                                     columnNumber: 13
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/src/components/landing/contact.tsx",
-                                lineNumber: 97,
+                                lineNumber: 128,
                                 columnNumber: 11
                             }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
-                                className: "font-headline text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter mb-6",
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].h2, {
+                                className: "font-headline text-4xl md:text-5xl lg:text-7xl font-bold tracking-tighter mb-8 relative",
+                                initial: {
+                                    opacity: 0,
+                                    y: 30
+                                },
+                                whileInView: {
+                                    opacity: 1,
+                                    y: 0
+                                },
+                                viewport: {
+                                    once: true
+                                },
+                                transition: {
+                                    duration: 0.8,
+                                    delay: 0.2
+                                },
                                 children: [
-                                    "We're Here to",
-                                    ' ',
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                        className: "gradient-text",
-                                        children: "Help You"
+                                        className: "block",
+                                        children: "We're Here to"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/landing/contact.tsx",
-                                        lineNumber: 110,
+                                        lineNumber: 170,
+                                        columnNumber: 13
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                        className: "block",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                className: "animate-gradient-text",
+                                                children: "Help You"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/components/landing/contact.tsx",
+                                                lineNumber: 172,
+                                                columnNumber: 15
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].span, {
+                                                className: "inline-block ml-4 text-6xl",
+                                                animate: {
+                                                    rotate: [
+                                                        0,
+                                                        15,
+                                                        -15,
+                                                        0
+                                                    ],
+                                                    scale: [
+                                                        1,
+                                                        1.1,
+                                                        1
+                                                    ]
+                                                },
+                                                transition: {
+                                                    duration: 2.5,
+                                                    repeat: Infinity,
+                                                    ease: "easeInOut"
+                                                },
+                                                children: "🤝"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/components/landing/contact.tsx",
+                                                lineNumber: 173,
+                                                columnNumber: 15
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/src/components/landing/contact.tsx",
+                                        lineNumber: 171,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/landing/contact.tsx",
-                                lineNumber: 108,
+                                lineNumber: 163,
                                 columnNumber: 11
                             }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                className: "text-lg md:text-xl text-muted-foreground leading-relaxed",
-                                children: "Have questions or feedback? Our dedicated support team is ready to assist you with any inquiries about our transport services."
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].p, {
+                                className: "text-lg md:text-xl text-muted-foreground leading-relaxed relative z-10",
+                                initial: {
+                                    opacity: 0,
+                                    y: 20
+                                },
+                                whileInView: {
+                                    opacity: 1,
+                                    y: 0
+                                },
+                                viewport: {
+                                    once: true
+                                },
+                                transition: {
+                                    duration: 0.6,
+                                    delay: 0.4
+                                },
+                                children: [
+                                    "Have questions or feedback? Our dedicated support team is ready to assist you with any inquiries about our transport services. We're committed to providing",
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                        className: "font-semibold text-primary",
+                                        children: " exceptional support"
+                                    }, void 0, false, {
+                                        fileName: "[project]/src/components/landing/contact.tsx",
+                                        lineNumber: 199,
+                                        columnNumber: 13
+                                    }, this),
+                                    " and",
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                        className: "font-semibold text-accent",
+                                        children: " quick responses"
+                                    }, void 0, false, {
+                                        fileName: "[project]/src/components/landing/contact.tsx",
+                                        lineNumber: 200,
+                                        columnNumber: 13
+                                    }, this),
+                                    "."
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/src/components/landing/contact.tsx",
+                                lineNumber: 190,
+                                columnNumber: 11
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].div, {
+                                className: "mt-8 flex justify-center",
+                                initial: {
+                                    opacity: 0,
+                                    scaleX: 0
+                                },
+                                whileInView: {
+                                    opacity: 1,
+                                    scaleX: 1
+                                },
+                                viewport: {
+                                    once: true
+                                },
+                                transition: {
+                                    duration: 0.8,
+                                    delay: 0.6
+                                },
+                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "h-1 w-32 bg-gradient-to-r from-primary via-accent to-primary rounded-full"
+                                }, void 0, false, {
+                                    fileName: "[project]/src/components/landing/contact.tsx",
+                                    lineNumber: 211,
+                                    columnNumber: 13
+                                }, this)
                             }, void 0, false, {
                                 fileName: "[project]/src/components/landing/contact.tsx",
-                                lineNumber: 113,
+                                lineNumber: 204,
                                 columnNumber: 11
                             }, this)
                         ]
@@ -4418,7 +4710,7 @@ function Contact() {
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].div, {
-                        className: "grid grid-cols-2 md:grid-cols-4 gap-6 mb-16 max-w-4xl mx-auto",
+                        className: "grid grid-cols-2 md:grid-cols-4 gap-6 mb-20 max-w-5xl mx-auto",
                         initial: {
                             opacity: 0,
                             y: 20
@@ -4434,42 +4726,165 @@ function Contact() {
                             duration: 0.6,
                             delay: 0.3
                         },
-                        children: stats.map((stat, index)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "text-center glass-card p-4 rounded-xl",
+                        children: stats.map((stat, index)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].div, {
+                                className: "text-center feature-card p-6 rounded-2xl group hover:scale-105 transition-all duration-300 relative overflow-hidden",
+                                initial: {
+                                    opacity: 0,
+                                    y: 20
+                                },
+                                whileInView: {
+                                    opacity: 1,
+                                    y: 0
+                                },
+                                viewport: {
+                                    once: true
+                                },
+                                transition: {
+                                    duration: 0.6,
+                                    delay: 0.1 * index
+                                },
+                                whileHover: {
+                                    y: -5
+                                },
                                 children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "flex items-center justify-center mb-2 text-primary",
-                                        children: stat.icon
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].div, {
+                                        className: "absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100",
+                                        transition: {
+                                            duration: 0.3
+                                        }
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/landing/contact.tsx",
-                                        lineNumber: 129,
+                                        lineNumber: 234,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "text-2xl md:text-3xl font-bold gradient-text mb-1",
-                                        children: stat.number
+                                        className: "absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500",
+                                        children: [
+                                            ...Array(3)
+                                        ].map((_, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].div, {
+                                                className: "absolute w-1 h-1 bg-gradient-to-r from-primary to-accent rounded-full",
+                                                style: {
+                                                    top: `${30 + i * 20}%`,
+                                                    right: `${20 + i * 15}%`
+                                                },
+                                                animate: {
+                                                    y: [
+                                                        0,
+                                                        -20,
+                                                        -40
+                                                    ],
+                                                    opacity: [
+                                                        0,
+                                                        1,
+                                                        0
+                                                    ],
+                                                    scale: [
+                                                        0,
+                                                        1,
+                                                        0
+                                                    ]
+                                                },
+                                                transition: {
+                                                    duration: 2,
+                                                    delay: i * 0.3,
+                                                    repeat: Infinity
+                                                }
+                                            }, i, false, {
+                                                fileName: "[project]/src/components/landing/contact.tsx",
+                                                lineNumber: 242,
+                                                columnNumber: 19
+                                            }, this))
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/landing/contact.tsx",
-                                        lineNumber: 132,
+                                        lineNumber: 240,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "text-sm text-muted-foreground",
-                                        children: stat.label
+                                        className: "relative z-10",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].div, {
+                                                className: "flex items-center justify-center mb-4 text-primary",
+                                                whileHover: {
+                                                    scale: 1.2,
+                                                    rotate: [
+                                                        0,
+                                                        -10,
+                                                        10,
+                                                        0
+                                                    ]
+                                                },
+                                                transition: {
+                                                    scale: {
+                                                        type: "spring",
+                                                        stiffness: 400,
+                                                        damping: 10
+                                                    },
+                                                    rotate: {
+                                                        duration: 0.6
+                                                    }
+                                                },
+                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    className: "p-3 rounded-xl bg-gradient-to-br from-primary/10 to-accent/10 group-hover:from-primary/20 group-hover:to-accent/20 transition-all duration-300",
+                                                    children: stat.icon
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/components/landing/contact.tsx",
+                                                    lineNumber: 275,
+                                                    columnNumber: 19
+                                                }, this)
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/components/landing/contact.tsx",
+                                                lineNumber: 264,
+                                                columnNumber: 17
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].div, {
+                                                className: "text-3xl md:text-4xl font-bold gradient-text mb-2",
+                                                whileHover: {
+                                                    scale: 1.1
+                                                },
+                                                transition: {
+                                                    type: "spring",
+                                                    stiffness: 400,
+                                                    damping: 10
+                                                },
+                                                children: stat.number
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/components/landing/contact.tsx",
+                                                lineNumber: 279,
+                                                columnNumber: 17
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "text-sm text-muted-foreground group-hover:text-primary transition-colors duration-300",
+                                                children: stat.label
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/components/landing/contact.tsx",
+                                                lineNumber: 286,
+                                                columnNumber: 17
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/src/components/landing/contact.tsx",
+                                        lineNumber: 263,
+                                        columnNumber: 15
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].div, {
+                                        className: "absolute bottom-0 inset-x-0 h-12 bg-gradient-to-t from-primary/20 to-transparent opacity-0 group-hover:opacity-100 blur-xl",
+                                        transition: {
+                                            duration: 0.5
+                                        }
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/landing/contact.tsx",
-                                        lineNumber: 135,
+                                        lineNumber: 292,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, index, true, {
                                 fileName: "[project]/src/components/landing/contact.tsx",
-                                lineNumber: 128,
+                                lineNumber: 224,
                                 columnNumber: 13
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/src/components/landing/contact.tsx",
-                        lineNumber: 120,
+                        lineNumber: 216,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].div, {
@@ -4520,14 +4935,14 @@ function Contact() {
                                                 }
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/landing/contact.tsx",
-                                                lineNumber: 161,
+                                                lineNumber: 321,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                 className: `absolute inset-0 bg-gradient-to-br ${info.color} opacity-0 group-hover:opacity-5 transition-opacity duration-700`
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/landing/contact.tsx",
-                                                lineNumber: 167,
+                                                lineNumber: 327,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4536,12 +4951,12 @@ function Contact() {
                                                     className: `w-3 h-3 bg-gradient-to-r ${info.color} rounded-full animate-pulse`
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/landing/contact.tsx",
-                                                    lineNumber: 171,
+                                                    lineNumber: 331,
                                                     columnNumber: 19
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/landing/contact.tsx",
-                                                lineNumber: 170,
+                                                lineNumber: 330,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4563,12 +4978,12 @@ function Contact() {
                                                             children: info.icon
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/landing/contact.tsx",
-                                                            lineNumber: 181,
+                                                            lineNumber: 341,
                                                             columnNumber: 21
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/landing/contact.tsx",
-                                                        lineNumber: 176,
+                                                        lineNumber: 336,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4579,7 +4994,7 @@ function Contact() {
                                                                 children: info.title
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/landing/contact.tsx",
-                                                                lineNumber: 188,
+                                                                lineNumber: 348,
                                                                 columnNumber: 21
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4587,7 +5002,7 @@ function Contact() {
                                                                 children: info.description
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/landing/contact.tsx",
-                                                                lineNumber: 191,
+                                                                lineNumber: 351,
                                                                 columnNumber: 21
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4595,13 +5010,13 @@ function Contact() {
                                                                 children: info.value
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/landing/contact.tsx",
-                                                                lineNumber: 192,
+                                                                lineNumber: 352,
                                                                 columnNumber: 21
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/landing/contact.tsx",
-                                                        lineNumber: 187,
+                                                        lineNumber: 347,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].div, {
@@ -4622,41 +5037,41 @@ function Contact() {
                                                                     className: "ml-2 h-4 w-4 transition-transform duration-200 group-hover/btn:translate-x-1"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/landing/contact.tsx",
-                                                                    lineNumber: 203,
+                                                                    lineNumber: 363,
                                                                     columnNumber: 23
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/components/landing/contact.tsx",
-                                                            lineNumber: 201,
+                                                            lineNumber: 361,
                                                             columnNumber: 21
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/landing/contact.tsx",
-                                                        lineNumber: 196,
+                                                        lineNumber: 356,
                                                         columnNumber: 19
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/landing/contact.tsx",
-                                                lineNumber: 174,
+                                                lineNumber: 334,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, info.title, true, {
                                         fileName: "[project]/src/components/landing/contact.tsx",
-                                        lineNumber: 151,
+                                        lineNumber: 311,
                                         columnNumber: 15
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/src/components/landing/contact.tsx",
-                                lineNumber: 149,
+                                lineNumber: 309,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "lg:col-span-2",
                                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].div, {
-                                    className: "relative overflow-hidden rounded-2xl bg-card border border-border/50 shadow-xl",
+                                    className: "relative overflow-hidden rounded-3xl bg-card border border-border/50 shadow-2xl group",
                                     initial: {
                                         opacity: 0,
                                         x: 20
@@ -4672,51 +5087,183 @@ function Contact() {
                                         duration: 0.8,
                                         delay: 0.3
                                     },
+                                    whileHover: {
+                                        y: -5
+                                    },
                                     children: [
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "absolute inset-0 opacity-5",
+                                            className: "absolute inset-0 opacity-5 group-hover:opacity-10 transition-opacity duration-700",
                                             children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                 className: "absolute inset-0",
                                                 style: {
                                                     backgroundImage: `radial-gradient(circle at 20% 30%, hsl(var(--primary)) 0%, transparent 50%), 
-                                   radial-gradient(circle at 80% 70%, hsl(var(--accent)) 0%, transparent 50%)`
+                                   radial-gradient(circle at 80% 70%, hsl(var(--accent)) 0%, transparent 50%),
+                                   radial-gradient(circle at 50% 50%, hsl(var(--primary)) 0%, transparent 80%)`
                                                 }
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/landing/contact.tsx",
-                                                lineNumber: 222,
+                                                lineNumber: 383,
                                                 columnNumber: 17
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/landing/contact.tsx",
-                                            lineNumber: 221,
+                                            lineNumber: 382,
+                                            columnNumber: 15
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].div, {
+                                            className: "absolute inset-0 bg-gradient-to-r from-primary via-accent to-primary opacity-20 group-hover:opacity-40 rounded-3xl blur-xl",
+                                            animate: {
+                                                scale: [
+                                                    1,
+                                                    1.02,
+                                                    1
+                                                ],
+                                                opacity: [
+                                                    0.2,
+                                                    0.3,
+                                                    0.2
+                                                ]
+                                            },
+                                            transition: {
+                                                duration: 4,
+                                                repeat: Infinity,
+                                                ease: "easeInOut"
+                                            }
+                                        }, void 0, false, {
+                                            fileName: "[project]/src/components/landing/contact.tsx",
+                                            lineNumber: 391,
+                                            columnNumber: 15
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500",
+                                            children: [
+                                                ...Array(4)
+                                            ].map((_, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].div, {
+                                                    className: "absolute w-2 h-2 bg-gradient-to-r from-primary to-accent rounded-full",
+                                                    style: {
+                                                        top: `${20 + i * 20}%`,
+                                                        right: `${10 + i * 10}%`
+                                                    },
+                                                    animate: {
+                                                        y: [
+                                                            0,
+                                                            -30,
+                                                            0
+                                                        ],
+                                                        opacity: [
+                                                            0,
+                                                            1,
+                                                            0
+                                                        ],
+                                                        scale: [
+                                                            0,
+                                                            1.5,
+                                                            0
+                                                        ]
+                                                    },
+                                                    transition: {
+                                                        duration: 3,
+                                                        delay: i * 0.5,
+                                                        repeat: Infinity
+                                                    }
+                                                }, i, false, {
+                                                    fileName: "[project]/src/components/landing/contact.tsx",
+                                                    lineNumber: 403,
+                                                    columnNumber: 19
+                                                }, this))
+                                        }, void 0, false, {
+                                            fileName: "[project]/src/components/landing/contact.tsx",
+                                            lineNumber: 401,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                             className: "relative z-10 p-8 lg:p-12",
                                             children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "mb-8",
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].div, {
+                                                    className: "mb-10",
+                                                    initial: {
+                                                        opacity: 0,
+                                                        y: 20
+                                                    },
+                                                    whileInView: {
+                                                        opacity: 1,
+                                                        y: 0
+                                                    },
+                                                    viewport: {
+                                                        once: true
+                                                    },
+                                                    transition: {
+                                                        duration: 0.6,
+                                                        delay: 0.4
+                                                    },
                                                     children: [
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                                            className: "font-headline text-2xl md:text-3xl font-bold text-card-foreground mb-3",
-                                                            children: "Send us a Message"
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].h3, {
+                                                            className: "font-headline text-3xl md:text-4xl font-bold text-card-foreground mb-4 relative",
+                                                            whileHover: {
+                                                                scale: 1.02
+                                                            },
+                                                            transition: {
+                                                                type: "spring",
+                                                                stiffness: 400,
+                                                                damping: 10
+                                                            },
+                                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                className: "relative",
+                                                                children: [
+                                                                    "Send us a Message",
+                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].div, {
+                                                                        className: "absolute -bottom-2 left-0 h-1 bg-gradient-to-r from-primary to-accent rounded-full",
+                                                                        initial: {
+                                                                            width: 0
+                                                                        },
+                                                                        whileInView: {
+                                                                            width: "60%"
+                                                                        },
+                                                                        viewport: {
+                                                                            once: true
+                                                                        },
+                                                                        transition: {
+                                                                            duration: 0.8,
+                                                                            delay: 0.6
+                                                                        }
+                                                                    }, void 0, false, {
+                                                                        fileName: "[project]/src/components/landing/contact.tsx",
+                                                                        lineNumber: 439,
+                                                                        columnNumber: 23
+                                                                    }, this)
+                                                                ]
+                                                            }, void 0, true, {
+                                                                fileName: "[project]/src/components/landing/contact.tsx",
+                                                                lineNumber: 437,
+                                                                columnNumber: 21
+                                                            }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/landing/contact.tsx",
-                                                            lineNumber: 230,
+                                                            lineNumber: 432,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                            className: "text-muted-foreground",
-                                                            children: "Fill out the form below and we'll get back to you as soon as possible."
-                                                        }, void 0, false, {
+                                                            className: "text-muted-foreground text-lg",
+                                                            children: [
+                                                                "Fill out the form below and we'll get back to you as soon as possible.",
+                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                    className: "font-semibold text-primary",
+                                                                    children: " Our response time is typically under 1 hour!"
+                                                                }, void 0, false, {
+                                                                    fileName: "[project]/src/components/landing/contact.tsx",
+                                                                    lineNumber: 450,
+                                                                    columnNumber: 21
+                                                                }, this)
+                                                            ]
+                                                        }, void 0, true, {
                                                             fileName: "[project]/src/components/landing/contact.tsx",
-                                                            lineNumber: 233,
+                                                            lineNumber: 448,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/components/landing/contact.tsx",
-                                                    lineNumber: 229,
+                                                    lineNumber: 425,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("form", {
@@ -4738,12 +5285,12 @@ function Contact() {
                                                                         className: "h-12 bg-muted/30 border-border/50 focus:bg-background focus:border-primary transition-all duration-300"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/components/landing/contact.tsx",
-                                                                        lineNumber: 241,
+                                                                        lineNumber: 457,
                                                                         columnNumber: 23
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/landing/contact.tsx",
-                                                                    lineNumber: 240,
+                                                                    lineNumber: 456,
                                                                     columnNumber: 21
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4759,18 +5306,18 @@ function Contact() {
                                                                         className: "h-12 bg-muted/30 border-border/50 focus:bg-background focus:border-primary transition-all duration-300"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/components/landing/contact.tsx",
-                                                                        lineNumber: 252,
+                                                                        lineNumber: 468,
                                                                         columnNumber: 23
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/landing/contact.tsx",
-                                                                    lineNumber: 251,
+                                                                    lineNumber: 467,
                                                                     columnNumber: 21
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/components/landing/contact.tsx",
-                                                            lineNumber: 239,
+                                                            lineNumber: 455,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4785,12 +5332,12 @@ function Contact() {
                                                                 className: "h-12 bg-muted/30 border-border/50 focus:bg-background focus:border-primary transition-all duration-300"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/landing/contact.tsx",
-                                                                lineNumber: 266,
+                                                                lineNumber: 482,
                                                                 columnNumber: 21
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/landing/contact.tsx",
-                                                            lineNumber: 265,
+                                                            lineNumber: 481,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4806,12 +5353,12 @@ function Contact() {
                                                                 className: "bg-muted/30 border-border/50 focus:bg-background focus:border-primary transition-all duration-300 resize-none"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/landing/contact.tsx",
-                                                                lineNumber: 278,
+                                                                lineNumber: 494,
                                                                 columnNumber: 21
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/landing/contact.tsx",
-                                                            lineNumber: 277,
+                                                            lineNumber: 493,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -4825,14 +5372,14 @@ function Contact() {
                                                                         className: "animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/components/landing/contact.tsx",
-                                                                        lineNumber: 302,
+                                                                        lineNumber: 518,
                                                                         columnNumber: 25
                                                                     }, this),
                                                                     "Sending..."
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/components/landing/contact.tsx",
-                                                                lineNumber: 301,
+                                                                lineNumber: 517,
                                                                 columnNumber: 23
                                                             }, this) : isSubmitted ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                 className: "flex items-center",
@@ -4841,14 +5388,14 @@ function Contact() {
                                                                         className: "h-5 w-5 mr-2"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/components/landing/contact.tsx",
-                                                                        lineNumber: 307,
+                                                                        lineNumber: 523,
                                                                         columnNumber: 25
                                                                     }, this),
                                                                     "Message Sent!"
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/components/landing/contact.tsx",
-                                                                lineNumber: 306,
+                                                                lineNumber: 522,
                                                                 columnNumber: 23
                                                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                 className: "flex items-center",
@@ -4857,52 +5404,52 @@ function Contact() {
                                                                         className: "h-5 w-5 mr-2"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/components/landing/contact.tsx",
-                                                                        lineNumber: 312,
+                                                                        lineNumber: 528,
                                                                         columnNumber: 25
                                                                     }, this),
                                                                     "Send Message"
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/components/landing/contact.tsx",
-                                                                lineNumber: 311,
+                                                                lineNumber: 527,
                                                                 columnNumber: 23
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/landing/contact.tsx",
-                                                            lineNumber: 290,
+                                                            lineNumber: 506,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/components/landing/contact.tsx",
-                                                    lineNumber: 238,
+                                                    lineNumber: 454,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/landing/contact.tsx",
-                                            lineNumber: 228,
+                                            lineNumber: 424,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/landing/contact.tsx",
-                                    lineNumber: 213,
+                                    lineNumber: 373,
                                     columnNumber: 13
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/src/components/landing/contact.tsx",
-                                lineNumber: 212,
+                                lineNumber: 372,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/landing/contact.tsx",
-                        lineNumber: 141,
+                        lineNumber: 301,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].div, {
-                        className: "mt-20 text-center",
+                        className: "mt-24 text-center relative",
                         initial: {
                             opacity: 0,
                             y: 20
@@ -4919,35 +5466,397 @@ function Contact() {
                             delay: 0.6
                         },
                         children: [
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                className: "font-headline text-2xl font-bold mb-4",
-                                children: "Frequently Asked Questions"
-                            }, void 0, false, {
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "absolute inset-0 pointer-events-none",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].div, {
+                                        className: "absolute top-0 left-1/3 w-3 h-3 bg-gradient-to-r from-primary to-accent rounded-full opacity-30",
+                                        animate: {
+                                            y: [
+                                                0,
+                                                -20,
+                                                0
+                                            ],
+                                            scale: [
+                                                1,
+                                                1.3,
+                                                1
+                                            ],
+                                            opacity: [
+                                                0.3,
+                                                0.7,
+                                                0.3
+                                            ]
+                                        },
+                                        transition: {
+                                            duration: 4,
+                                            repeat: Infinity,
+                                            ease: "easeInOut"
+                                        }
+                                    }, void 0, false, {
+                                        fileName: "[project]/src/components/landing/contact.tsx",
+                                        lineNumber: 549,
+                                        columnNumber: 13
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].div, {
+                                        className: "absolute top-8 right-1/4 w-2 h-2 bg-gradient-to-r from-accent to-primary rounded-full opacity-40",
+                                        animate: {
+                                            y: [
+                                                0,
+                                                15,
+                                                0
+                                            ],
+                                            rotate: [
+                                                0,
+                                                180,
+                                                360
+                                            ],
+                                            opacity: [
+                                                0.4,
+                                                0.8,
+                                                0.4
+                                            ]
+                                        },
+                                        transition: {
+                                            duration: 5,
+                                            repeat: Infinity,
+                                            ease: "easeInOut",
+                                            delay: 1
+                                        }
+                                    }, void 0, false, {
+                                        fileName: "[project]/src/components/landing/contact.tsx",
+                                        lineNumber: 558,
+                                        columnNumber: 13
+                                    }, this)
+                                ]
+                            }, void 0, true, {
                                 fileName: "[project]/src/components/landing/contact.tsx",
-                                lineNumber: 331,
+                                lineNumber: 548,
                                 columnNumber: 11
                             }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                className: "text-muted-foreground mb-6",
-                                children: "Check out our comprehensive FAQ section for quick answers to common questions."
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].div, {
+                                initial: {
+                                    opacity: 0,
+                                    scale: 0.9
+                                },
+                                whileInView: {
+                                    opacity: 1,
+                                    scale: 1
+                                },
+                                viewport: {
+                                    once: true
+                                },
+                                transition: {
+                                    duration: 0.6,
+                                    delay: 0.7
+                                },
+                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].span, {
+                                    className: "inline-flex items-center px-6 py-3 rounded-full text-sm font-semibold bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 text-primary mb-6 relative overflow-hidden",
+                                    whileHover: {
+                                        scale: 1.05
+                                    },
+                                    transition: {
+                                        type: "spring",
+                                        stiffness: 400,
+                                        damping: 10
+                                    },
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].div, {
+                                            className: "absolute inset-0 bg-gradient-to-r from-primary/20 to-accent/20",
+                                            initial: {
+                                                x: "-100%"
+                                            },
+                                            whileHover: {
+                                                x: "100%"
+                                            },
+                                            transition: {
+                                                duration: 0.6
+                                            }
+                                        }, void 0, false, {
+                                            fileName: "[project]/src/components/landing/contact.tsx",
+                                            lineNumber: 580,
+                                            columnNumber: 15
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                            className: "relative z-10 flex items-center gap-2",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].div, {
+                                                    animate: {
+                                                        rotate: [
+                                                            0,
+                                                            15,
+                                                            -15,
+                                                            0
+                                                        ]
+                                                    },
+                                                    transition: {
+                                                        duration: 2,
+                                                        repeat: Infinity,
+                                                        ease: "easeInOut"
+                                                    },
+                                                    children: "❓"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/components/landing/contact.tsx",
+                                                    lineNumber: 587,
+                                                    columnNumber: 17
+                                                }, this),
+                                                "Quick Help",
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].div, {
+                                                    animate: {
+                                                        scale: [
+                                                            1,
+                                                            1.2,
+                                                            1
+                                                        ]
+                                                    },
+                                                    transition: {
+                                                        duration: 1.5,
+                                                        repeat: Infinity,
+                                                        ease: "easeInOut"
+                                                    },
+                                                    children: "⚡"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/components/landing/contact.tsx",
+                                                    lineNumber: 594,
+                                                    columnNumber: 17
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/src/components/landing/contact.tsx",
+                                            lineNumber: 586,
+                                            columnNumber: 15
+                                        }, this)
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/src/components/landing/contact.tsx",
+                                    lineNumber: 575,
+                                    columnNumber: 13
+                                }, this)
                             }, void 0, false, {
                                 fileName: "[project]/src/components/landing/contact.tsx",
-                                lineNumber: 332,
+                                lineNumber: 569,
                                 columnNumber: 11
                             }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
-                                variant: "outline",
-                                className: "hover:scale-105 transition-all duration-300",
-                                children: "View FAQ"
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].h3, {
+                                className: "font-headline text-3xl md:text-4xl font-bold mb-6 relative",
+                                initial: {
+                                    opacity: 0,
+                                    y: 20
+                                },
+                                whileInView: {
+                                    opacity: 1,
+                                    y: 0
+                                },
+                                viewport: {
+                                    once: true
+                                },
+                                transition: {
+                                    duration: 0.6,
+                                    delay: 0.8
+                                },
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                        className: "block",
+                                        children: "Frequently Asked"
+                                    }, void 0, false, {
+                                        fileName: "[project]/src/components/landing/contact.tsx",
+                                        lineNumber: 611,
+                                        columnNumber: 13
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                        className: "animate-gradient-text",
+                                        children: "Questions"
+                                    }, void 0, false, {
+                                        fileName: "[project]/src/components/landing/contact.tsx",
+                                        lineNumber: 612,
+                                        columnNumber: 13
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/src/components/landing/contact.tsx",
+                                lineNumber: 604,
+                                columnNumber: 11
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].p, {
+                                className: "text-muted-foreground mb-8 max-w-2xl mx-auto text-lg",
+                                initial: {
+                                    opacity: 0,
+                                    y: 20
+                                },
+                                whileInView: {
+                                    opacity: 1,
+                                    y: 0
+                                },
+                                viewport: {
+                                    once: true
+                                },
+                                transition: {
+                                    duration: 0.6,
+                                    delay: 0.9
+                                },
+                                children: [
+                                    "Check out our comprehensive FAQ section for quick answers to common questions.",
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                        className: "font-semibold text-primary",
+                                        children: " Most answers are found instantly!"
+                                    }, void 0, false, {
+                                        fileName: "[project]/src/components/landing/contact.tsx",
+                                        lineNumber: 623,
+                                        columnNumber: 13
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/src/components/landing/contact.tsx",
+                                lineNumber: 615,
+                                columnNumber: 11
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].div, {
+                                className: "flex flex-col sm:flex-row gap-4 justify-center items-center",
+                                initial: {
+                                    opacity: 0,
+                                    y: 20
+                                },
+                                whileInView: {
+                                    opacity: 1,
+                                    y: 0
+                                },
+                                viewport: {
+                                    once: true
+                                },
+                                transition: {
+                                    duration: 0.6,
+                                    delay: 1
+                                },
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].button, {
+                                        className: "inline-flex items-center px-8 py-4 rounded-full font-semibold text-lg gradient-bg-primary text-white hover:scale-105 transition-all duration-300 glow-primary shadow-xl group",
+                                        whileHover: {
+                                            y: -2
+                                        },
+                                        whileTap: {
+                                            scale: 0.98
+                                        },
+                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                            className: "flex items-center gap-3",
+                                            children: [
+                                                "View FAQ",
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].div, {
+                                                    animate: {
+                                                        x: [
+                                                            0,
+                                                            3,
+                                                            0
+                                                        ]
+                                                    },
+                                                    transition: {
+                                                        duration: 1.5,
+                                                        repeat: Infinity,
+                                                        ease: "easeInOut"
+                                                    },
+                                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$arrow$2d$right$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__ArrowRight$3e$__["ArrowRight"], {
+                                                        className: "h-5 w-5"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/src/components/landing/contact.tsx",
+                                                        lineNumber: 644,
+                                                        columnNumber: 19
+                                                    }, this)
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/components/landing/contact.tsx",
+                                                    lineNumber: 640,
+                                                    columnNumber: 17
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/src/components/landing/contact.tsx",
+                                            lineNumber: 638,
+                                            columnNumber: 15
+                                        }, this)
+                                    }, void 0, false, {
+                                        fileName: "[project]/src/components/landing/contact.tsx",
+                                        lineNumber: 633,
+                                        columnNumber: 13
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].button, {
+                                        className: "inline-flex items-center px-8 py-4 rounded-full font-semibold text-lg border border-border bg-card hover:bg-muted transition-all duration-300 hover:scale-105 shadow-lg",
+                                        whileHover: {
+                                            y: -2
+                                        },
+                                        whileTap: {
+                                            scale: 0.98
+                                        },
+                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                            className: "flex items-center gap-3",
+                                            children: [
+                                                "Live Chat",
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].div, {
+                                                    animate: {
+                                                        scale: [
+                                                            1,
+                                                            1.2,
+                                                            1
+                                                        ]
+                                                    },
+                                                    transition: {
+                                                        duration: 2,
+                                                        repeat: Infinity,
+                                                        ease: "easeInOut"
+                                                    },
+                                                    children: "💬"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/components/landing/contact.tsx",
+                                                    lineNumber: 656,
+                                                    columnNumber: 17
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/src/components/landing/contact.tsx",
+                                            lineNumber: 654,
+                                            columnNumber: 15
+                                        }, this)
+                                    }, void 0, false, {
+                                        fileName: "[project]/src/components/landing/contact.tsx",
+                                        lineNumber: 649,
+                                        columnNumber: 13
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/src/components/landing/contact.tsx",
+                                lineNumber: 626,
+                                columnNumber: 11
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].div, {
+                                className: "mt-12 flex justify-center",
+                                initial: {
+                                    opacity: 0,
+                                    scaleX: 0
+                                },
+                                whileInView: {
+                                    opacity: 1,
+                                    scaleX: 1
+                                },
+                                viewport: {
+                                    once: true
+                                },
+                                transition: {
+                                    duration: 0.8,
+                                    delay: 1.2
+                                },
+                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "h-1 w-40 bg-gradient-to-r from-primary via-accent to-primary rounded-full"
+                                }, void 0, false, {
+                                    fileName: "[project]/src/components/landing/contact.tsx",
+                                    lineNumber: 674,
+                                    columnNumber: 13
+                                }, this)
                             }, void 0, false, {
                                 fileName: "[project]/src/components/landing/contact.tsx",
-                                lineNumber: 335,
+                                lineNumber: 667,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/landing/contact.tsx",
-                        lineNumber: 324,
+                        lineNumber: 540,
                         columnNumber: 9
                     }, this)
                 ]

@@ -86,54 +86,214 @@ export function Contact() {
       <div className="absolute inset-0 gradient-bg-secondary opacity-30" />
       
       <div className="container relative mx-auto max-w-7xl px-4">
-        {/* Header */}
+        {/* Enhanced Header */}
         <motion.div
-          className="mx-auto max-w-3xl text-center mb-20"
+          className="mx-auto max-w-4xl text-center mb-20 relative"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
+          {/* Background decorative elements */}
+          <div className="absolute inset-0 pointer-events-none">
+            <motion.div
+              className="absolute top-8 left-1/4 w-4 h-4 bg-gradient-to-r from-primary to-accent rounded-full opacity-20"
+              animate={{
+                y: [0, -20, 0],
+                scale: [1, 1.3, 1],
+                opacity: [0.2, 0.7, 0.2]
+              }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            />
+            <motion.div
+              className="absolute top-16 right-1/3 w-3 h-3 bg-gradient-to-r from-accent to-primary rounded-full opacity-30"
+              animate={{
+                y: [0, 15, 0],
+                x: [0, 10, 0],
+                opacity: [0.3, 0.8, 0.3]
+              }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+            />
+            <motion.div
+              className="absolute top-4 right-1/4 w-2 h-2 bg-gradient-to-r from-primary to-accent rounded-full opacity-40"
+              animate={{
+                y: [0, -15, 0],
+                rotate: [0, 180, 360],
+                opacity: [0.4, 0.9, 0.4]
+              }}
+              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+            />
+          </div>
+
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.1 }}
           >
-            <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-primary/10 text-primary mb-6">
-              💬 Get in Touch
-            </span>
+            <motion.span 
+              className="inline-flex items-center px-6 py-3 rounded-full text-sm font-semibold bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 text-primary mb-8 relative overflow-hidden"
+              whileHover={{ scale: 1.05 }}
+              transition={{ type: "spring", stiffness: 400, damping: 10 }}
+            >
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-primary/20 to-accent/20"
+                initial={{ x: "-100%" }}
+                whileHover={{ x: "100%" }}
+                transition={{ duration: 0.6 }}
+              />
+              <span className="relative z-10 flex items-center gap-2">
+                <motion.div
+                  animate={{ rotate: [0, 10, -10, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  💬
+                </motion.div>
+                Get in Touch
+                <motion.div
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  ✨
+                </motion.div>
+              </span>
+            </motion.span>
           </motion.div>
 
-          <h2 className="font-headline text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter mb-6">
-            We&apos;re Here to{' '}
-            <span className="gradient-text">Help You</span>
-          </h2>
+          <motion.h2 
+            className="font-headline text-4xl md:text-5xl lg:text-7xl font-bold tracking-tighter mb-8 relative"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            <span className="block">We&apos;re Here to</span>
+            <span className="block">
+              <span className="animate-gradient-text">Help You</span>
+              <motion.span
+                className="inline-block ml-4 text-6xl"
+                animate={{ 
+                  rotate: [0, 15, -15, 0],
+                  scale: [1, 1.1, 1]
+                }}
+                transition={{ 
+                  duration: 2.5, 
+                  repeat: Infinity, 
+                  ease: "easeInOut" 
+                }}
+              >
+                🤝
+              </motion.span>
+            </span>
+          </motion.h2>
           
-          <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
+          <motion.p
+            className="text-lg md:text-xl text-muted-foreground leading-relaxed relative z-10"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
             Have questions or feedback? Our dedicated support team is ready to assist you 
-            with any inquiries about our transport services.
-          </p>
+            with any inquiries about our transport services. We&apos;re committed to providing 
+            <span className="font-semibold text-primary"> exceptional support</span> and 
+            <span className="font-semibold text-accent"> quick responses</span>.
+          </motion.p>
+
+          {/* Animated divider */}
+          <motion.div
+            className="mt-8 flex justify-center"
+            initial={{ opacity: 0, scaleX: 0 }}
+            whileInView={{ opacity: 1, scaleX: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+          >
+            <div className="h-1 w-32 bg-gradient-to-r from-primary via-accent to-primary rounded-full" />
+          </motion.div>
         </motion.div>
 
-        {/* Stats */}
+        {/* Enhanced Stats */}
         <motion.div
-          className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16 max-w-4xl mx-auto"
+          className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-20 max-w-5xl mx-auto"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.3 }}
         >
           {stats.map((stat, index) => (
-            <div key={index} className="text-center glass-card p-4 rounded-xl">
-              <div className="flex items-center justify-center mb-2 text-primary">
-                {stat.icon}
+            <motion.div
+              key={index}
+              className="text-center feature-card p-6 rounded-2xl group hover:scale-105 transition-all duration-300 relative overflow-hidden"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.1 * index }}
+              whileHover={{ y: -5 }}
+            >
+              {/* Animated background gradient */}
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100"
+                transition={{ duration: 0.3 }}
+              />
+              
+              {/* Floating particles */}
+              <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                {[...Array(3)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute w-1 h-1 bg-gradient-to-r from-primary to-accent rounded-full"
+                    style={{
+                      top: `${30 + i * 20}%`,
+                      right: `${20 + i * 15}%`,
+                    }}
+                    animate={{
+                      y: [0, -20, -40],
+                      opacity: [0, 1, 0],
+                      scale: [0, 1, 0],
+                    }}
+                    transition={{
+                      duration: 2,
+                      delay: i * 0.3,
+                      repeat: Infinity,
+                    }}
+                  />
+                ))}
               </div>
-              <div className="text-2xl md:text-3xl font-bold gradient-text mb-1">
-                {stat.number}
+
+              <div className="relative z-10">
+                <motion.div 
+                  className="flex items-center justify-center mb-4 text-primary"
+                  whileHover={{ 
+                    scale: 1.2,
+                    rotate: [0, -10, 10, 0]
+                  }}
+                  transition={{ 
+                    scale: { type: "spring", stiffness: 400, damping: 10 },
+                    rotate: { duration: 0.6 }
+                  }}
+                >
+                  <div className="p-3 rounded-xl bg-gradient-to-br from-primary/10 to-accent/10 group-hover:from-primary/20 group-hover:to-accent/20 transition-all duration-300">
+                    {stat.icon}
+                  </div>
+                </motion.div>
+                <motion.div 
+                  className="text-3xl md:text-4xl font-bold gradient-text mb-2"
+                  whileHover={{ scale: 1.1 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                >
+                  {stat.number}
+                </motion.div>
+                <div className="text-sm text-muted-foreground group-hover:text-primary transition-colors duration-300">
+                  {stat.label}
+                </div>
               </div>
-              <div className="text-sm text-muted-foreground">{stat.label}</div>
-            </div>
+
+              {/* Bottom glow effect */}
+              <motion.div
+                className="absolute bottom-0 inset-x-0 h-12 bg-gradient-to-t from-primary/20 to-transparent opacity-0 group-hover:opacity-100 blur-xl"
+                transition={{ duration: 0.5 }}
+              />
+            </motion.div>
           ))}
         </motion.div>
 
@@ -208,32 +368,88 @@ export function Contact() {
             ))}
           </div>
 
-          {/* Contact Form */}
+          {/* Enhanced Contact Form */}
           <div className="lg:col-span-2">
             <motion.div
-              className="relative overflow-hidden rounded-2xl bg-card border border-border/50 shadow-xl"
+              className="relative overflow-hidden rounded-3xl bg-card border border-border/50 shadow-2xl group"
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.3 }}
+              whileHover={{ y: -5 }}
             >
-              {/* Background Pattern */}
-              <div className="absolute inset-0 opacity-5">
+              {/* Enhanced Background Pattern */}
+              <div className="absolute inset-0 opacity-5 group-hover:opacity-10 transition-opacity duration-700">
                 <div className="absolute inset-0" style={{
                   backgroundImage: `radial-gradient(circle at 20% 30%, hsl(var(--primary)) 0%, transparent 50%), 
-                                   radial-gradient(circle at 80% 70%, hsl(var(--accent)) 0%, transparent 50%)`
+                                   radial-gradient(circle at 80% 70%, hsl(var(--accent)) 0%, transparent 50%),
+                                   radial-gradient(circle at 50% 50%, hsl(var(--primary)) 0%, transparent 80%)`
                 }} />
               </div>
 
+              {/* Animated border glow */}
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-primary via-accent to-primary opacity-20 group-hover:opacity-40 rounded-3xl blur-xl"
+                animate={{
+                  scale: [1, 1.02, 1],
+                  opacity: [0.2, 0.3, 0.2]
+                }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              />
+
+              {/* Floating decorative elements */}
+              <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                {[...Array(4)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute w-2 h-2 bg-gradient-to-r from-primary to-accent rounded-full"
+                    style={{
+                      top: `${20 + i * 20}%`,
+                      right: `${10 + i * 10}%`,
+                    }}
+                    animate={{
+                      y: [0, -30, 0],
+                      opacity: [0, 1, 0],
+                      scale: [0, 1.5, 0],
+                    }}
+                    transition={{
+                      duration: 3,
+                      delay: i * 0.5,
+                      repeat: Infinity,
+                    }}
+                  />
+                ))}
+              </div>
+
               <div className="relative z-10 p-8 lg:p-12">
-                <div className="mb-8">
-                  <h3 className="font-headline text-2xl md:text-3xl font-bold text-card-foreground mb-3">
-                    Send us a Message
-                  </h3>
-                  <p className="text-muted-foreground">
-                    Fill out the form below and we&apos;ll get back to you as soon as possible.
+                <motion.div 
+                  className="mb-10"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: 0.4 }}
+                >
+                  <motion.h3 
+                    className="font-headline text-3xl md:text-4xl font-bold text-card-foreground mb-4 relative"
+                    whileHover={{ scale: 1.02 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                  >
+                    <span className="relative">
+                      Send us a Message
+                      <motion.div
+                        className="absolute -bottom-2 left-0 h-1 bg-gradient-to-r from-primary to-accent rounded-full"
+                        initial={{ width: 0 }}
+                        whileInView={{ width: "60%" }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.8, delay: 0.6 }}
+                      />
+                    </span>
+                  </motion.h3>
+                  <p className="text-muted-foreground text-lg">
+                    Fill out the form below and we&apos;ll get back to you as soon as possible. 
+                    <span className="font-semibold text-primary"> Our response time is typically under 1 hour!</span>
                   </p>
-                </div>
+                </motion.div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -320,21 +536,143 @@ export function Contact() {
           </div>
         </motion.div>
 
-        {/* FAQ Section */}
+        {/* Enhanced FAQ Section */}
         <motion.div
-          className="mt-20 text-center"
+          className="mt-24 text-center relative"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.6 }}
         >
-          <h3 className="font-headline text-2xl font-bold mb-4">Frequently Asked Questions</h3>
-          <p className="text-muted-foreground mb-6">
-            Check out our comprehensive FAQ section for quick answers to common questions.
-          </p>
-          <Button variant="outline" className="hover:scale-105 transition-all duration-300">
-            View FAQ
-          </Button>
+          {/* Background decorative elements */}
+          <div className="absolute inset-0 pointer-events-none">
+            <motion.div
+              className="absolute top-0 left-1/3 w-3 h-3 bg-gradient-to-r from-primary to-accent rounded-full opacity-30"
+              animate={{
+                y: [0, -20, 0],
+                scale: [1, 1.3, 1],
+                opacity: [0.3, 0.7, 0.3]
+              }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            />
+            <motion.div
+              className="absolute top-8 right-1/4 w-2 h-2 bg-gradient-to-r from-accent to-primary rounded-full opacity-40"
+              animate={{
+                y: [0, 15, 0],
+                rotate: [0, 180, 360],
+                opacity: [0.4, 0.8, 0.4]
+              }}
+              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+            />
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.7 }}
+          >
+            <motion.span 
+              className="inline-flex items-center px-6 py-3 rounded-full text-sm font-semibold bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 text-primary mb-6 relative overflow-hidden"
+              whileHover={{ scale: 1.05 }}
+              transition={{ type: "spring", stiffness: 400, damping: 10 }}
+            >
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-primary/20 to-accent/20"
+                initial={{ x: "-100%" }}
+                whileHover={{ x: "100%" }}
+                transition={{ duration: 0.6 }}
+              />
+              <span className="relative z-10 flex items-center gap-2">
+                <motion.div
+                  animate={{ rotate: [0, 15, -15, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  ❓
+                </motion.div>
+                Quick Help
+                <motion.div
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  ⚡
+                </motion.div>
+              </span>
+            </motion.span>
+          </motion.div>
+
+          <motion.h3 
+            className="font-headline text-3xl md:text-4xl font-bold mb-6 relative"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.8 }}
+          >
+            <span className="block">Frequently Asked</span>
+            <span className="animate-gradient-text">Questions</span>
+          </motion.h3>
+
+          <motion.p
+            className="text-muted-foreground mb-8 max-w-2xl mx-auto text-lg"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.9 }}
+          >
+            Check out our comprehensive FAQ section for quick answers to common questions. 
+            <span className="font-semibold text-primary"> Most answers are found instantly!</span>
+          </motion.p>
+
+          <motion.div
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 1 }}
+          >
+            <motion.button 
+              className="inline-flex items-center px-8 py-4 rounded-full font-semibold text-lg gradient-bg-primary text-white hover:scale-105 transition-all duration-300 glow-primary shadow-xl group"
+              whileHover={{ y: -2 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <span className="flex items-center gap-3">
+                View FAQ
+                <motion.div
+                  animate={{ x: [0, 3, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  <ArrowRight className="h-5 w-5" />
+                </motion.div>
+              </span>
+            </motion.button>
+            
+            <motion.button 
+              className="inline-flex items-center px-8 py-4 rounded-full font-semibold text-lg border border-border bg-card hover:bg-muted transition-all duration-300 hover:scale-105 shadow-lg"
+              whileHover={{ y: -2 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <span className="flex items-center gap-3">
+                Live Chat
+                <motion.div
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  💬
+                </motion.div>
+              </span>
+            </motion.button>
+          </motion.div>
+
+          {/* Animated divider */}
+          <motion.div
+            className="mt-12 flex justify-center"
+            initial={{ opacity: 0, scaleX: 0 }}
+            whileInView={{ opacity: 1, scaleX: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 1.2 }}
+          >
+            <div className="h-1 w-40 bg-gradient-to-r from-primary via-accent to-primary rounded-full" />
+          </motion.div>
         </motion.div>
       </div>
     </section>
