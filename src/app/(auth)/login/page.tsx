@@ -48,28 +48,35 @@ export default function LoginPage() {
   });
 
   async function onSubmit(values: z.infer<typeof loginFormSchema>) {
-    if (!isFirebaseConfigured || !auth) {
-       toast({
-        variant: 'destructive',
-        title: 'Configuration Error',
-        description: 'Firebase is not configured. Please check your environment variables.',
-      });
-      return;
-    }
     setIsLoading(true);
+    
+    // Simple mock authentication - replace with real auth later
     try {
-      await signInWithEmailAndPassword(auth, values.email, values.password);
-      toast({
-        title: 'Login Successful!',
-        description: "Welcome back.",
-      });
-      router.push('/dashboard');
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Simple validation - accept any email/password combo for now
+      if (values.email && values.password) {
+        // Store simple auth state in localStorage
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('userEmail', values.email);
+        
+        toast({
+          title: 'Login Successful!',
+          description: `Welcome back, ${values.email.split('@')[0]}!`,
+        });
+        
+        // Redirect to dashboard
+        router.push('/dashboard');
+      } else {
+        throw new Error('Please fill in all fields');
+      }
     } catch (error: any) {
       console.error('Login Error:', error);
       toast({
         variant: 'destructive',
         title: 'Login Failed',
-        description: error.code === 'auth/invalid-credential' ? 'Invalid email or password. Please try again.' : 'An unknown error occurred. Please check your configuration.',
+        description: error.message || 'Please check your credentials and try again.',
       });
     } finally {
       setIsLoading(false);
@@ -226,25 +233,24 @@ export default function LoginPage() {
             </motion.div>
           </motion.div>
 
-          {/* Enhanced Configuration Alert */}
-          <AnimatePresence>
-            {!isFirebaseConfigured && (
-              <motion.div
-                initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                transition={{ duration: 0.3 }}
-              >
-                <Alert variant="destructive" className="border-red-200 bg-red-50 dark:bg-red-950/20">
-                  <AlertTriangle className="h-4 w-4" />
-                  <AlertTitle>Configuration Error</AlertTitle>
-                  <AlertDescription>
-                    Firebase is not configured. Please add your credentials to the <code>.env</code> file to enable login.
-                  </AlertDescription>
-                </Alert>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {/* Simple Login Instructions */}
+          <motion.div
+            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.6, delay: 1.2 }}
+            className="mb-6"
+          >
+            <div className="glass-card border border-primary/20 bg-primary/5 p-4 rounded-xl">
+              <div className="flex items-center gap-2 mb-2">
+                <Sparkles className="h-4 w-4 text-primary" />
+                <span className="text-sm font-semibold text-primary">Demo Login</span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Enter any email and password to try the login system. 
+                <span className="font-medium text-primary"> No account needed!</span>
+              </p>
+            </div>
+          </motion.div>
 
           {/* Enhanced Form */}
           <motion.div
@@ -273,9 +279,8 @@ export default function LoginPage() {
                           <div className="relative">
                             <Input 
                               type="email"
-                              placeholder="ahmed.hassan@adustech.edu.ng" 
+                              placeholder="your.email@example.com" 
                               {...field} 
-                              disabled={!isFirebaseConfigured}
                               className="h-12 text-lg border-2 focus:border-primary transition-all duration-300 bg-background/50 backdrop-blur-sm pl-4 pr-12"
                             />
                             <AnimatePresence>
@@ -338,7 +343,6 @@ export default function LoginPage() {
                               type={showPassword ? "text" : "password"} 
                               placeholder="Enter your password" 
                               {...field} 
-                              disabled={!isFirebaseConfigured}
                               className="h-12 text-lg border-2 focus:border-primary transition-all duration-300 bg-background/50 backdrop-blur-sm pr-12"
                             />
                             <motion.button
@@ -372,7 +376,7 @@ export default function LoginPage() {
                     <Button 
                       type="submit" 
                       className="w-full h-14 text-lg font-semibold gradient-bg-primary text-white hover:scale-105 transition-all duration-300 glow-primary shadow-xl disabled:hover:scale-100 disabled:opacity-50" 
-                      disabled={isLoading || !isFirebaseConfigured}
+                      disabled={isLoading}
                     >
                       {isLoading ? (
                         <span className="flex items-center justify-center">
