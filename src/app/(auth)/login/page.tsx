@@ -18,58 +18,67 @@ import { RoadAnimation } from '@/components/auth/road-animation';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import { auth as staticAuth, isFirebaseConfigured } from '@/lib/firebase';
-import { Loader2, AlertTriangle, Mail, Shield, Eye, EyeOff, ArrowRight, CheckCircle, Sparkles, Lock } from 'lucide-react';
+import { Loader2, AlertTriangle, Mail, Shield, Eye, EyeOff, ArrowRight, CheckCircle, Sparkles, Lock, GraduationCap, Users, Crown } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { cn } from '@/lib/utils';
+import { authenticateUser, detectUserRole, getDashboardPath, formatDisplayName, type UserRole } from '@/lib/auth-utils';
 
 const loginFormSchema = z.object({
-  email: z.string().email('Please enter a valid email'),
+  identifier: z.string().min(1, 'Please enter your credentials'),
   password: z.string().min(1, 'Password is required'),
 });
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = React.useState(false);
-  const [auth, setAuth] = React.useState<Auth | null>(null);
   const [showPassword, setShowPassword] = React.useState(false);
-  const [currentStep, setCurrentStep] = React.useState(0);
+  const [detectedRole, setDetectedRole] = React.useState<UserRole | null>(null);
   const { toast } = useToast();
   const router = useRouter();
-
-  React.useEffect(() => {
-    setAuth(staticAuth);
-  }, []);
 
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
-      email: '',
+      identifier: '',
       password: '',
     },
   });
 
+  const identifier = form.watch('identifier');
+
+  React.useEffect(() => {
+    if (identifier) {
+      const role = detectUserRole(identifier);
+      setDetectedRole(role);
+    } else {
+      setDetectedRole(null);
+    }
+  }, [identifier]);
+
   async function onSubmit(values: z.infer<typeof loginFormSchema>) {
     setIsLoading(true);
     
-    // Simple mock authentication - replace with real auth later
     try {
       // Simulate network delay
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Simple validation - accept any email/password combo for now
-      if (values.email && values.password) {
-        // Store simple auth state in localStorage
+      // Authenticate user using the new system
+      const user = authenticateUser(values.identifier, values.password);
+      
+      if (user) {
+        // Store auth state in localStorage
         localStorage.setItem('isLoggedIn', 'true');
-        localStorage.setItem('userEmail', values.email);
+        localStorage.setItem('userData', JSON.stringify(user));
         
         toast({
           title: 'Login Successful!',
-          description: `Welcome back, ${values.email.split('@')[0]}!`,
+          description: `Welcome back, ${formatDisplayName(user)}!`,
         });
         
-        // Redirect to dashboard
-        router.push('/dashboard');
+        // Redirect to appropriate dashboard
+        const dashboardPath = getDashboardPath(user.role);
+        router.push(dashboardPath);
       } else {
-        throw new Error('Please fill in all fields');
+        throw new Error('Invalid credentials. Please check your ID/email and password.');
       }
     } catch (error: any) {
       console.error('Login Error:', error);
@@ -83,15 +92,39 @@ export default function LoginPage() {
     }
   }
 
-  const email = form.watch('email');
-
-  React.useEffect(() => {
-    if (email && email.includes('@')) {
-      setCurrentStep(1);
-    } else {
-      setCurrentStep(0);
+  function getRoleIcon(role: UserRole | null) {
+    switch (role) {
+      case 'student':
+        return <GraduationCap className="h-4 w-4 text-blue-500" />;
+      case 'staff':
+        return <Users className="h-4 w-4 text-green-500" />;
+      case 'admin':
+        return <Crown className="h-4 w-4 text-purple-500" />;
+      case 'union':
+        return <Shield className="h-4 w-4 text-orange-500" />;
+      case 'driver':
+        return <Users className="h-4 w-4 text-teal-500" />;
+      default:
+        return null;
     }
-  }, [email]);
+  }
+
+  function getRoleLabel(role: UserRole | null) {
+    switch (role) {
+      case 'student':
+        return 'Student';
+      case 'staff':
+        return 'Staff';
+      case 'admin':
+        return 'Administrator';
+      case 'union':
+        return 'Union';
+      case 'driver':
+        return 'Driver';
+      default:
+        return null;
+    }
+  }
 
   return (
     <div className="container relative min-h-screen w-full lg:grid lg:grid-cols-2 xl:min-h-[800px]">
@@ -171,33 +204,25 @@ export default function LoginPage() {
               </motion.p>
             </motion.div>
 
-            {/* Progress indicator */}
-            <motion.div
-              className="flex justify-center mt-6"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: 1 }}
-            >
-              <div className="flex items-center gap-2">
-                {[0, 1].map((step) => (
-                  <motion.div
-                    key={step}
-                    className={cn(
-                      "w-3 h-3 rounded-full transition-all duration-300",
-                      currentStep >= step 
-                        ? "bg-gradient-to-r from-primary to-accent" 
-                        : "bg-muted"
-                    )}
-                    whileHover={{ scale: 1.2 }}
-                    animate={currentStep === step ? {
-                      scale: [1, 1.2, 1],
-                      opacity: [0.7, 1, 0.7]
-                    } : {}}
-                    transition={{ duration: 1, repeat: currentStep === step ? Infinity : 0 }}
-                  />
-                ))}
-              </div>
-            </motion.div>
+            {/* Role Detection Indicator */}
+            <AnimatePresence>
+              {detectedRole && (
+                <motion.div
+                  className="flex justify-center mt-6"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={{ duration: 0.6 }}
+                >
+                  <div className="flex items-center gap-2 bg-gradient-to-r from-primary/10 to-accent/10 px-4 py-2 rounded-full border border-primary/20">
+                    {getRoleIcon(detectedRole)}
+                    <span className="text-sm font-medium text-primary">
+                      {getRoleLabel(detectedRole)} Detected
+                    </span>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Login Stats */}
             <motion.div
@@ -233,7 +258,7 @@ export default function LoginPage() {
             </motion.div>
           </motion.div>
 
-          {/* Simple Login Instructions */}
+          {/* Enhanced Login Instructions */}
           <motion.div
             initial={{ opacity: 0, y: -10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -241,14 +266,24 @@ export default function LoginPage() {
             className="mb-6"
           >
             <div className="glass-card border border-primary/20 bg-primary/5 p-4 rounded-xl">
-              <div className="flex items-center gap-2 mb-2">
+              <div className="flex items-center gap-2 mb-3">
                 <Sparkles className="h-4 w-4 text-primary" />
-                <span className="text-sm font-semibold text-primary">Demo Login</span>
+                <span className="text-sm font-semibold text-primary">Role-Based Login</span>
               </div>
-              <p className="text-xs text-muted-foreground">
-                Enter any email and password to try the login system. 
-                <span className="font-medium text-primary"> No account needed!</span>
-              </p>
+              <div className="space-y-2 text-xs">
+                <div className="flex items-center gap-2">
+                  <GraduationCap className="h-3 w-3 text-blue-500" />
+                  <span className="text-muted-foreground">Students: Use reg no (UG20/COMS/1284)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Users className="h-3 w-3 text-green-500" />
+                  <span className="text-muted-foreground">Staff: Use staff ID (Staff/Adustech/1022)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Crown className="h-3 w-3 text-purple-500" />
+                  <span className="text-muted-foreground">Admin: admin@adustech.edu.ng</span>
+                </div>
+              </div>
             </div>
           </motion.div>
 
@@ -260,7 +295,7 @@ export default function LoginPage() {
           >
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-6">
-                {/* Enhanced Email Field */}
+                {/* Enhanced Identifier Field */}
                 <motion.div
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -268,30 +303,33 @@ export default function LoginPage() {
                 >
                   <FormField
                     control={form.control}
-                    name="email"
+                    name="identifier"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-base font-semibold flex items-center gap-2">
                           <Mail className="h-4 w-4 text-primary" />
-                          Email Address
+                          Student Reg No / Staff ID / Email
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
                             <Input 
-                              type="email"
-                              placeholder="your.email@example.com" 
+                              type="text"
+                              placeholder="UG20/COMS/1284 or Staff/Adustech/1022 or admin@adustech.edu.ng" 
                               {...field} 
-                              className="h-12 text-lg border-2 focus:border-primary transition-all duration-300 bg-background/50 backdrop-blur-sm pl-4 pr-12"
+                              className="h-12 text-lg border-2 focus:border-primary transition-all duration-300 bg-background/50 backdrop-blur-sm pl-4 pr-16"
                             />
                             <AnimatePresence>
-                              {field.value && field.value.includes('@') && (
+                              {detectedRole && (
                                 <motion.div
                                   initial={{ opacity: 0, scale: 0.8, x: 10 }}
                                   animate={{ opacity: 1, scale: 1, x: 0 }}
                                   exit={{ opacity: 0, scale: 0.8, x: 10 }}
                                   className="absolute right-3 top-1/2 -translate-y-1/2"
                                 >
-                                  <CheckCircle className="h-5 w-5 text-green-500" />
+                                  <div className="flex items-center gap-2 bg-background/80 rounded-full px-2 py-1 border">
+                                    {getRoleIcon(detectedRole)}
+                                    <span className="text-xs font-medium">{getRoleLabel(detectedRole)}</span>
+                                  </div>
                                 </motion.div>
                               )}
                             </AnimatePresence>
