@@ -9,17 +9,18 @@ import { Label } from '@/components/ui/label';
 import { Calendar } from '@/components/ui/calendar';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
-import { 
-  Calendar as CalendarIcon, 
-  Clock, 
-  MapPin, 
+import {
+  Calendar as CalendarIcon,
+  Clock,
+  MapPin,
   Bus,
   ArrowRight,
   CheckCircle2,
   User,
   Mail,
   Phone,
-  ArrowLeft
+  ArrowLeft,
+  Users
 } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -46,11 +47,29 @@ const routes = [
   }
 ];
 
+// Bus seat layout (40 seats)
+const generateSeats = () => {
+  const seats = [];
+  for (let i = 1; i <= 40; i++) {
+    const row = Math.ceil(i / 4);
+    const position = ((i - 1) % 4) + 1;
+    const seatNumber = `${String.fromCharCode(65 + Math.floor((i - 1) / 4))}${position}`;
+    seats.push({
+      number: seatNumber,
+      isAvailable: Math.random() > 0.3, // 70% availability
+      price: Math.random() > 0.8 ? 'premium' : 'regular'
+    });
+  }
+  return seats;
+};
+
 export default function StudentBooking() {
   const [step, setStep] = useState(1);
   const [selectedRoute, setSelectedRoute] = useState<typeof routes[0] | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [selectedTime, setSelectedTime] = useState<string>('');
+  const [selectedSeat, setSelectedSeat] = useState<string>('');
+  const [seats, setSeats] = useState(generateSeats());
   const [passengerInfo, setPassengerInfo] = useState({
     name: '',
     email: '',
@@ -65,14 +84,14 @@ export default function StudentBooking() {
     
     toast({
       title: "Booking Confirmed! 🎉",
-      description: `Your seat has been reserved for ${selectedDate && format(selectedDate, 'MMM dd, yyyy')} at ${selectedTime}.`
+      description: `Your seat ${selectedSeat} has been reserved for ${selectedDate && format(selectedDate, 'MMM dd, yyyy')} at ${selectedTime}.`
     });
-    
+
     setIsBooking(false);
-    setStep(4);
+    setStep(5);
   };
 
-  if (step === 4) {
+  if (step === 5) {
     return (
       <div className="h-screen bg-white flex items-center justify-center">
         <div className="max-w-md w-full mx-auto text-center space-y-6 p-6">
@@ -101,6 +120,10 @@ export default function StudentBooking() {
                 <span className="font-semibold">{selectedTime}</span>
               </div>
               <div className="flex justify-between">
+                <span className="text-gray-600">Seat:</span>
+                <span className="font-semibold">{selectedSeat}</span>
+              </div>
+              <div className="flex justify-between">
                 <span className="text-gray-600">Price:</span>
                 <span className="font-semibold text-green-600">₦{selectedRoute?.price.toLocaleString()}</span>
               </div>
@@ -121,14 +144,14 @@ export default function StudentBooking() {
   }
 
   return (
-    <div className="h-screen bg-white flex flex-col">
-      
+    <div className="h-full bg-white flex flex-col">
+
       {/* Fixed Header */}
-      <div className="bg-blue-600 text-white p-4 shadow-lg">
+      <div className="bg-blue-600 text-white p-3 shadow-lg">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold">Book Your Trip</h1>
-            <p className="text-blue-200 text-sm">Step {step} of 3</p>
+            <p className="text-blue-200 text-sm">Step {step} of 4</p>
           </div>
           <Button asChild variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600">
             <Link href="/student/dashboard">
@@ -140,27 +163,35 @@ export default function StudentBooking() {
       </div>
 
       {/* Progress Bar */}
-      <div className="bg-gray-100 p-4">
+      <div className="bg-gray-100 p-3">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-center space-x-4">
-            {[1, 2, 3].map((stepNumber) => (
+            {[1, 2, 3, 4].map((stepNumber) => (
               <div key={stepNumber} className="flex items-center">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
                   step >= stepNumber ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600'
                 }`}>
                   {stepNumber}
                 </div>
-                {stepNumber < 3 && (
+                {stepNumber < 4 && (
                   <div className={`w-16 h-1 mx-2 ${step > stepNumber ? 'bg-blue-600' : 'bg-gray-300'}`} />
                 )}
               </div>
             ))}
           </div>
+          <div className="flex justify-center mt-2 text-sm text-gray-600">
+            <div className="grid grid-cols-4 gap-16 text-center">
+              <span className={step >= 1 ? 'text-blue-600 font-medium' : ''}>Choose Route</span>
+              <span className={step >= 2 ? 'text-blue-600 font-medium' : ''}>Date & Time</span>
+              <span className={step >= 3 ? 'text-blue-600 font-medium' : ''}>Select Seat</span>
+              <span className={step >= 4 ? 'text-blue-600 font-medium' : ''}>Details</span>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-6 overflow-auto">
+      <div className="flex-1 p-3 overflow-auto">
         <div className="max-w-7xl mx-auto h-full">
           
           {/* Step 1: Choose Route */}
@@ -263,8 +294,132 @@ export default function StudentBooking() {
             </div>
           )}
 
-          {/* Step 3: Passenger Details */}
-          {step === 3 && (
+          {/* Step 3: Seat Selection */}
+          {step === 3 && selectedRoute && selectedDate && selectedTime && (
+            <div className="space-y-6">
+              <div className="text-center">
+                <h2 className="text-2xl font-bold mb-2">Choose Your Seat</h2>
+                <p className="text-gray-600">Select your preferred seat for the journey</p>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Bus Layout */}
+                <Card className="lg:col-span-2">
+                  <CardHeader className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
+                    <CardTitle className="flex items-center gap-2">
+                      <Bus className="h-5 w-5" />
+                      Bus Layout - {selectedRoute.name}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-6">
+                    <div className="bg-gray-100 rounded-lg p-4 mb-4">
+                      <div className="flex items-center justify-between text-sm mb-4">
+                        <span className="font-medium">Front of Bus</span>
+                        <span className="text-gray-600">Driver</span>
+                      </div>
+
+                      {/* Seat Grid */}
+                      <div className="grid grid-cols-4 gap-2 max-w-md mx-auto">
+                        {seats.map((seat, index) => (
+                          <button
+                            key={seat.number}
+                            onClick={() => seat.isAvailable && setSelectedSeat(seat.number)}
+                            disabled={!seat.isAvailable}
+                            className={`
+                              h-12 w-12 rounded-lg border-2 text-xs font-medium transition-all
+                              ${!seat.isAvailable
+                                ? 'bg-gray-300 text-gray-500 cursor-not-allowed border-gray-300'
+                                : selectedSeat === seat.number
+                                  ? 'bg-blue-500 text-white border-blue-600 shadow-lg'
+                                  : seat.price === 'premium'
+                                    ? 'bg-yellow-50 text-yellow-700 border-yellow-300 hover:bg-yellow-100'
+                                    : 'bg-green-50 text-green-700 border-green-300 hover:bg-green-100'
+                              }
+                            `}
+                          >
+                            {seat.isAvailable ? seat.number : 'X'}
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Legend */}
+                      <div className="flex justify-center gap-6 mt-4 text-xs">
+                        <div className="flex items-center gap-2">
+                          <div className="w-4 h-4 bg-green-100 border border-green-300 rounded"></div>
+                          <span>Available</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-4 h-4 bg-yellow-100 border border-yellow-300 rounded"></div>
+                          <span>Premium</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-4 h-4 bg-blue-500 rounded"></div>
+                          <span>Selected</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-4 h-4 bg-gray-300 rounded"></div>
+                          <span>Occupied</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {selectedSeat && (
+                      <Button onClick={() => setStep(4)} className="w-full" size="lg">
+                        Continue with Seat {selectedSeat}
+                        <ArrowRight className="h-4 w-4 ml-2" />
+                      </Button>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {/* Seat Info */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Trip Summary</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <Label className="text-sm text-gray-600">Route</Label>
+                      <p className="font-semibold">{selectedRoute.name}</p>
+                      <p className="text-sm text-gray-600">{selectedRoute.from} → {selectedRoute.to}</p>
+                    </div>
+
+                    <div>
+                      <Label className="text-sm text-gray-600">Date & Time</Label>
+                      <p className="font-semibold">
+                        {selectedDate && format(selectedDate, 'MMM dd, yyyy')}
+                      </p>
+                      <p className="text-sm text-gray-600">{selectedTime}</p>
+                    </div>
+
+                    {selectedSeat && (
+                      <>
+                        <div>
+                          <Label className="text-sm text-gray-600">Selected Seat</Label>
+                          <p className="font-semibold text-blue-600">{selectedSeat}</p>
+                          <Badge variant={seats.find(s => s.number === selectedSeat)?.price === 'premium' ? 'secondary' : 'default'} className="text-xs">
+                            {seats.find(s => s.number === selectedSeat)?.price === 'premium' ? 'Premium Seat' : 'Regular Seat'}
+                          </Badge>
+                        </div>
+
+                        <div className="pt-4 border-t">
+                          <div className="flex justify-between items-center">
+                            <Label>Total Price</Label>
+                            <p className="text-xl font-bold text-green-600">
+                              ₦{selectedRoute.price.toLocaleString()}
+                            </p>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          )}
+
+          {/* Step 4: Passenger Details */}
+          {step === 4 && (
             <div className="grid grid-cols-3 gap-8">
               
               <Card className="col-span-2">
@@ -318,7 +473,7 @@ export default function StudentBooking() {
                     onClick={handleBooking} 
                     className="w-full mt-6" 
                     size="lg"
-                    disabled={isBooking || !passengerInfo.name || !passengerInfo.email}
+                    disabled={isBooking || !passengerInfo.name || !passengerInfo.email || !selectedSeat}
                   >
                     {isBooking ? "Processing..." : `Complete Booking - ₦${selectedRoute?.price.toLocaleString()}`}
                   </Button>
@@ -342,7 +497,15 @@ export default function StudentBooking() {
                     </p>
                     <p className="text-sm text-gray-600">{selectedTime}</p>
                   </div>
-                  
+
+                  <div>
+                    <Label className="text-sm text-gray-600">Selected Seat</Label>
+                    <p className="font-semibold text-blue-600">{selectedSeat}</p>
+                    <Badge variant={seats.find(s => s.number === selectedSeat)?.price === 'premium' ? 'secondary' : 'default'} className="text-xs mt-1">
+                      {seats.find(s => s.number === selectedSeat)?.price === 'premium' ? 'Premium Seat' : 'Regular Seat'}
+                    </Badge>
+                  </div>
+
                   <div className="pt-4 border-t">
                     <div className="flex justify-between items-center">
                       <Label>Total Price</Label>

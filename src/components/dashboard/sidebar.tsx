@@ -11,14 +11,15 @@ import {
   SidebarContent,
   SidebarFooter,
 } from '@/components/ui/sidebar';
-import { Home, Users, Bus, Route, Ticket, Settings, LifeBuoy, LogOut, MapPin } from 'lucide-react';
+import { Home, Users, Bus, Route, Ticket, Settings, LifeBuoy, LogOut, MapPin, User } from 'lucide-react';
 import { Logo } from '../logo';
 import { Separator } from '../ui/separator';
 
 const studentLinks = [
-  { href: '/dashboard/student', icon: <Home />, label: 'Overview' },
-  { href: '/dashboard/student/book', icon: <Ticket />, label: 'Book a Seat' },
-  { href: '/dashboard/student/track', icon: <MapPin />, label: 'Track Bus' },
+  { href: '/student/dashboard', icon: <Home />, label: 'Overview' },
+  { href: '/student/book', icon: <Ticket />, label: 'Book Bus' },
+  { href: '/student/profile', icon: <User />, label: 'Profile' },
+  { href: '/student/settings', icon: <Settings />, label: 'Settings' },
 ];
 
 const staffLinks = [
@@ -40,8 +41,8 @@ const adminLinks = [
 export function DashboardSidebar() {
   const pathname = usePathname();
   
-  const isStudent = pathname?.startsWith('/dashboard/student');
-  const isStaff = pathname?.startsWith('/dashboard/staff');
+  const isStudent = pathname?.startsWith('/student');
+  const isStaff = pathname?.startsWith('/staff');
   
   const currentLinks = isStudent ? studentLinks : isStaff ? staffLinks : studentLinks;
 
