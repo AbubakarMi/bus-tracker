@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 7, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/lenovo/Documents/DevFlux/bus-tracker/src/app/dashboard/student/page.tsx"],"sourcesContent":["'use client';\r\n\r\nimport { useEffect } from 'react';\r\n\r\nexport default function DashboardStudentRedirect() {\r\n  useEffect(() => {\r\n    // Redirect to the correct student dashboard route\r\n    window.location.href = '/student/dashboard';\r\n  }, []);\r\n\r\n  return (\r\n    <div className=\"flex items-center justify-center min-h-screen\">\r\n      <div className=\"text-center\">\r\n        <div className=\"animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4\"></div>\r\n        <p>Redirecting to Student Dashboard...</p>\r\n      </div>\r\n    </div>\r\n  );\r\n}"],"names":[],"mappings":";;;;AAEA;;;AAFA;;AAIe,SAAS;;IACtB,CAAA,GAAA,6JAAA,CAAA,YAAS,AAAD;8CAAE;YACR,kDAAkD;YAClD,OAAO,QAAQ,CAAC,IAAI,GAAG;QACzB;6CAAG,EAAE;IAEL,qBACE,6LAAC;QAAI,WAAU;kBACb,cAAA,6LAAC;YAAI,WAAU;;8BACb,6LAAC;oBAAI,WAAU;;;;;;8BACf,6LAAC;8BAAE;;;;;;;;;;;;;;;;;AAIX;GAdwB;KAAA","debugId":null}}]
+}

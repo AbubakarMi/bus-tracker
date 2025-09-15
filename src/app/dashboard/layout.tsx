@@ -6,11 +6,11 @@ import { DashboardHeader } from '@/components/dashboard/header';
 export default function DashboardLayout({ children }: PropsWithChildren) {
   return (
     <SidebarProvider>
-      <div className="min-h-screen w-full bg-muted/40">
+      <div className="h-screen w-full bg-muted/40 flex">
         <DashboardSidebar />
-        <SidebarInset>
-            <DashboardHeader />
-            <main className="p-4 sm:p-6">{children}</main>
+        <SidebarInset className="flex-1 overflow-hidden flex flex-col">
+          <DashboardHeader />
+          <main className="flex-1 overflow-auto p-3">{children}</main>
         </SidebarInset>
       </div>
     </SidebarProvider>
