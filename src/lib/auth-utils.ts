@@ -80,9 +80,9 @@ export function formatDisplayName(userData: UserData): string {
 export function getDashboardPath(role: UserRole): string {
   switch (role) {
     case 'student':
-      return '/dashboard/student';
+      return '/student/dashboard';
     case 'staff':
-      return '/dashboard/driver';
+      return '/staff/dashboard';
     case 'admin':
       return '/dashboard/admin';
     case 'driver':

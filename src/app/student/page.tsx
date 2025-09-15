@@ -18,13 +18,24 @@ export default function StudentLogin() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     // Simulate login
     await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    // Redirect to dashboard
-    window.location.href = '/student/dashboard';
-    
+
+    // Detect user type based on input format and redirect accordingly
+    const { email } = formData;
+
+    if (email.toLowerCase().startsWith('staff/')) {
+      // Staff ID format: Staff/Institution/ID
+      window.location.href = '/staff/dashboard';
+    } else if (email.includes('@')) {
+      // Email format - redirect to student dashboard
+      window.location.href = '/student/dashboard';
+    } else {
+      // Default to student if unclear
+      window.location.href = '/student/dashboard';
+    }
+
     setIsLoading(false);
   };
 
@@ -49,21 +60,22 @@ export default function StudentLogin() {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               
-              {/* Email Field */}
+              {/* Email / Staff ID Field */}
               <div className="space-y-2">
-                <Label htmlFor="email">Email Address</Label>
+                <Label htmlFor="email">Email or Staff ID</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                   <Input
                     id="email"
-                    type="email"
-                    placeholder="student@university.edu"
+                    type="text"
+                    placeholder="student@university.edu or Staff/Adustech/5335"
                     value={formData.email}
                     onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                     className="pl-10 h-11"
                     required
                   />
                 </div>
+                <p className="text-xs text-gray-500">Student: email@domain.com • Staff: Staff/Institution/ID</p>
               </div>
 
               {/* Password Field */}

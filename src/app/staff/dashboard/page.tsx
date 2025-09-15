@@ -5,528 +5,608 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Bus, 
-  BarChart3, 
-  Wrench, 
-  Bell,
-  CheckCircle,
-  AlertTriangle,
-  Clock,
-  Users,
-  DollarSign,
-  Activity,
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import Link from 'next/link';
+import {
   MapPin,
-  Fuel,
+  Clock,
+  Bus,
+  Calendar,
+  Navigation,
+  Users,
+  CheckCircle,
+  Star,
+  Activity,
+  ArrowRight,
+  Bell,
   Settings,
   TrendingUp,
-  Navigation,
-  Shield,
+  Award,
   Zap,
-  MessageSquare,
-  UserCheck,
-  Timer
+  Globe,
+  Shield,
+  Heart,
+  Smartphone,
+  Wifi,
+  Battery,
+  Signal,
+  Route,
+  Timer,
+  DollarSign,
+  AlertCircle
 } from 'lucide-react';
 
 export default function StaffDashboard() {
   const [currentTime, setCurrentTime] = useState(new Date());
-  
+  const [liveBuses, setLiveBuses] = useState([]);
+  const [todayStats, setTodayStats] = useState({
+    totalTrips: 0,
+    activeRoutes: 0,
+    onTimePerformance: 0,
+    availableSeats: 0
+  });
+  const [weather, setWeather] = useState({ temp: 28, condition: 'Sunny', humidity: 65 });
+
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
-  const fleetStats = [
-    { icon: Bus, value: "18", label: "Active Buses", color: "bg-blue-500", change: "+2", trend: "up" },
-    { icon: DollarSign, value: "₦2.8M", label: "Today's Revenue", color: "bg-green-500", change: "+12%", trend: "up" },
-    { icon: Activity, value: "156", label: "Daily Trips", color: "bg-purple-500", change: "+8", trend: "up" },
-    { icon: Wrench, value: "4", label: "In Maintenance", color: "bg-orange-500", change: "-1", trend: "down" }
+  // Simulate real-time bus updates
+  useEffect(() => {
+    const updateLiveBuses = () => {
+      const buses = [
+        {
+          id: 'BUS-001',
+          route: 'Lagos Express',
+          currentLocation: 'Mile 2 Bridge',
+          nextStop: 'CMS Terminal',
+          eta: '8 mins',
+          distanceLeft: '12.5 km',
+          occupancy: 78,
+          maxCapacity: 45,
+          availableSeats: 10,
+          status: 'on-time',
+          delay: 0,
+          speed: 45,
+          driver: 'Emeka Johnson',
+          amenities: ['wifi', 'ac', 'charging']
+        },
+        {
+          id: 'BUS-003',
+          route: 'Campus Shuttle',
+          currentLocation: 'Main Gate',
+          nextStop: 'Library Complex',
+          eta: '3 mins',
+          distanceLeft: '2.1 km',
+          occupancy: 45,
+          maxCapacity: 30,
+          availableSeats: 17,
+          status: 'on-time',
+          delay: 0,
+          speed: 25,
+          driver: 'Fatima Adebayo',
+          amenities: ['ac']
+        },
+        {
+          id: 'BUS-007',
+          route: 'Airport Link',
+          currentLocation: 'Ikeja Along',
+          nextStop: 'MM Airport T2',
+          eta: '25 mins',
+          distanceLeft: '18.7 km',
+          occupancy: 92,
+          maxCapacity: 50,
+          availableSeats: 4,
+          status: 'delayed',
+          delay: 5,
+          speed: 38,
+          driver: 'Ibrahim Musa',
+          amenities: ['wifi', 'ac', 'charging', 'luggage']
+        }
+      ];
+      setLiveBuses(buses);
+
+      // Update today's stats
+      setTodayStats({
+        totalTrips: 156,
+        activeRoutes: 12,
+        onTimePerformance: 94.2,
+        availableSeats: buses.reduce((total, bus) => total + bus.availableSeats, 0)
+      });
+    };
+
+    updateLiveBuses();
+    const interval = setInterval(updateLiveBuses, 10000); // Update every 10 seconds
+    return () => clearInterval(interval);
+  }, []);
+
+  const stats = [
+    {
+      icon: Bus,
+      value: todayStats.totalTrips.toString(),
+      label: "Today's Trips",
+      color: "bg-primary",
+      textColor: "text-primary",
+      growth: "+12%",
+      realTime: true
+    },
+    {
+      icon: Route,
+      value: todayStats.activeRoutes.toString(),
+      label: "Active Routes",
+      color: "bg-accent",
+      textColor: "text-accent",
+      growth: "+3",
+      realTime: true
+    },
+    {
+      icon: CheckCircle,
+      value: `${todayStats.onTimePerformance}%`,
+      label: "On-Time Rate",
+      color: "bg-chart-2",
+      textColor: "text-chart-2",
+      growth: "+2.1%",
+      realTime: true
+    },
+    {
+      icon: Users,
+      value: todayStats.availableSeats.toString(),
+      label: "Available Seats",
+      color: "bg-chart-4",
+      textColor: "text-chart-4",
+      growth: "Live",
+      realTime: true
+    }
   ];
 
-  const activeBuses = [
+  const upcomingTrips = [
     {
-      id: 'BUS-001',
+      id: 1,
       route: "Lagos Express",
-      driver: { name: "Emeka Johnson", rating: 4.9 },
-      capacity: 45,
-      occupied: 38,
-      status: "on-time",
-      location: "Mile 12, Lagos",
-      fuelLevel: 85,
-      revenue: 197000,
-      alerts: []
+      departureTime: "8:30 AM",
+      date: "Today",
+      status: "confirmed",
+      seat: "A12",
+      price: "₦5,500",
+      gate: "Gate 3",
+      boarding: "8:15 AM",
+      availableSeats: 12,
+      busId: "BUS-001"
     },
     {
-      id: 'BUS-002', 
+      id: 2,
       route: "Campus Shuttle",
-      driver: { name: "Fatima Adebayo", rating: 4.8 },
-      capacity: 30,
-      occupied: 22,
-      status: "arriving",
-      location: "UI Main Gate",
-      fuelLevel: 62,
-      revenue: 78900,
-      alerts: ["Low fuel warning"]
-    },
-    {
-      id: 'BUS-003',
-      route: "Abuja Metro",
-      driver: { name: "Ibrahim Musa", rating: 4.6 },
-      capacity: 50,
-      occupied: 12,
-      status: "delayed",
-      location: "Central Business District",
-      fuelLevel: 45,
-      revenue: 234500,
-      alerts: ["Running 10 mins late", "Low occupancy"]
+      departureTime: "2:15 PM",
+      date: "Today",
+      status: "confirmed",
+      seat: "B8",
+      price: "₦300",
+      gate: "Gate 1",
+      boarding: "2:00 PM",
+      availableSeats: 25,
+      busId: "BUS-003"
     }
   ];
 
-  const maintenanceQueue = [
-    {
-      id: 'BUS-012',
-      issue: 'Engine Service Due',
-      priority: 'high',
-      estimatedTime: '4 hours',
-      technician: 'Abdul Rasheed',
-      status: 'in-progress',
-      progress: 65
-    },
-    {
-      id: 'BUS-007',
-      issue: 'Brake Pad Replacement',
-      priority: 'medium',
-      estimatedTime: '2 hours',
-      technician: 'Kemi Okafor',
-      status: 'scheduled',
-      progress: 0
-    },
-    {
-      id: 'BUS-015',
-      issue: 'AC System Check',
-      priority: 'low',
-      estimatedTime: '1 hour',
-      technician: 'Ahmed Sule',
-      status: 'pending',
-      progress: 0
-    }
+  const recentActivity = [
+    { message: 'Trip completed: Lagos Express', time: '2 hours ago', icon: CheckCircle, color: 'text-green-600' },
+    { message: 'Seat confirmed for Campus Shuttle', time: '5 hours ago', icon: Calendar, color: 'text-blue-600' },
+    { message: 'Payment successful - ₦5,500', time: '6 hours ago', icon: DollarSign, color: 'text-green-600' },
+    { message: 'Earned 50 eco-points', time: '1 day ago', icon: Star, color: 'text-yellow-600' },
+    { message: 'Bus BUS-007 arrived 3 mins early', time: '2 days ago', icon: Timer, color: 'text-blue-600' }
   ];
 
-  const recentAlerts = [
-    { message: 'BUS-001 due for service in 2 days', type: 'maintenance', priority: 'medium', time: '1h ago', icon: Wrench },
-    { message: 'BUS-002 fuel level below 30%', type: 'fuel', priority: 'high', time: '2h ago', icon: Fuel },
-    { message: 'Lagos Express route experiencing delays', type: 'delay', priority: 'low', time: '3h ago', icon: Clock },
-    { message: 'New driver Ibrahim Musa completed training', type: 'driver', priority: 'info', time: '5h ago', icon: UserCheck }
+  const quickStats = [
+    { label: 'Weather', value: `${weather.temp}°C ${weather.condition}`, icon: Globe },
+    { label: 'Network', value: 'Strong', icon: Signal },
+    { label: 'Live Buses', value: liveBuses.length.toString(), icon: Activity }
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 to-gray-200">
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
-        
-        {/* Header Section */}
-        <div className="mb-8">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-            <div>
-              <h1 className="text-4xl font-bold text-gray-900 mb-2">
-                Fleet Command Center 🚌
-              </h1>
-              <p className="text-lg text-gray-600 flex items-center gap-2">
-                <Shield className="h-5 w-5 text-slate-600" />
-                {currentTime.toLocaleDateString('en-NG', { 
-                  weekday: 'long', 
-                  month: 'long', 
-                  day: 'numeric' 
-                })} • {currentTime.toLocaleTimeString('en-NG', { 
-                  hour: '2-digit', 
-                  minute: '2-digit' 
-                })}
-              </p>
+    <div className="h-full bg-gradient-to-br from-background via-muted/30 to-primary/5">
+      <div className="max-w-7xl mx-auto px-3 py-2 space-y-3">
+
+        {/* Enhanced Header Section */}
+        <div className="mb-2">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+            <div className="flex items-center gap-4">
+              <Avatar className="h-16 w-16 border-4 border-primary/20">
+                <AvatarImage src="/api/placeholder/100/100" alt="Staff" />
+                <AvatarFallback className="text-xl font-bold bg-primary text-white">SF</AvatarFallback>
+              </Avatar>
+              <div>
+                <h1 className="text-3xl font-bold text-foreground mb-1 animate-gradient-text">
+                  Welcome back, Staff Member! 👨‍💼
+                </h1>
+                <p className="text-base text-muted-foreground flex items-center gap-2">
+                  <Activity className="h-4 w-4 text-primary" />
+                  {currentTime.toLocaleDateString('en-NG', {
+                    weekday: 'long',
+                    month: 'long',
+                    day: 'numeric'
+                  })} • {currentTime.toLocaleTimeString('en-NG', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                </p>
+                <div className="flex items-center gap-4 mt-1">
+                  {quickStats.map((stat, index) => (
+                    <span key={index} className="text-sm flex items-center gap-1 text-muted-foreground">
+                      <stat.icon className="h-3 w-3" />
+                      <span className="font-medium">{stat.label}:</span>
+                      {stat.value}
+                    </span>
+                  ))}
+                </div>
+              </div>
             </div>
-            
+
             <div className="flex flex-wrap gap-3">
-              <Button className="bg-gradient-to-r from-slate-700 to-slate-800 hover:from-slate-800 hover:to-slate-900 shadow-lg hover:shadow-xl transition-all">
-                <Settings className="h-4 w-4 mr-2" />
-                Fleet Control
+              <Button className="gradient-bg-primary btn-interactive glow-primary hover-lift">
+                <Navigation className="h-4 w-4 mr-2" />
+                Track Live Bus
               </Button>
-              <Button variant="outline" className="border-2 border-slate-300 hover:border-slate-500 shadow-lg hover:shadow-xl transition-all">
-                <BarChart3 className="h-4 w-4 mr-2" />
-                Analytics
+              <Button asChild variant="outline" className="border-2 border-border hover:border-primary/50 feature-card">
+                <Link href="/staff/book">
+                  <Calendar className="h-4 w-4 mr-2" />
+                  Book with Live Seats
+                </Link>
               </Button>
             </div>
           </div>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {fleetStats.map((stat, index) => (
-            <Card key={index} className="relative overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className={`p-3 rounded-full ${stat.color}`}>
+        {/* Enhanced Live Stats Grid */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
+          {stats.map((stat, index) => (
+            <Card key={index} className="modern-card feature-card group animate-scale-in relative overflow-hidden" style={{ animationDelay: `${index * 0.1}s` }}>
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className={`p-3 rounded-full ${stat.color} group-hover:animate-pulse relative`}>
                     <stat.icon className="h-6 w-6 text-white" />
+                    {stat.realTime && (
+                      <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                    )}
                   </div>
                   <div className="text-right">
-                    <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-                    <p className="text-sm text-gray-600">{stat.label}</p>
+                    <div className="flex items-center gap-2 justify-end">
+                      <p className="text-2xl font-bold text-foreground">{stat.value}</p>
+                      <span className={`text-xs font-medium px-2 py-1 rounded-full animate-breathe ${
+                        stat.growth === 'Live' ? 'text-green-600 bg-green-100' : 'text-accent bg-accent/10'
+                      }`}>
+                        {stat.growth}
+                      </span>
+                    </div>
+                    <p className="text-sm text-muted-foreground">{stat.label}</p>
+                    {stat.realTime && (
+                      <span className="text-xs text-green-600 font-medium flex items-center gap-1">
+                        <div className="w-1 h-1 bg-green-500 rounded-full animate-pulse"></div>
+                        Live Data
+                      </span>
+                    )}
                   </div>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className={`text-sm font-medium flex items-center gap-1 ${
-                    stat.trend === 'up' ? 'text-green-600' : 'text-red-600'
-                  }`}>
-                    <TrendingUp className={`h-4 w-4 ${stat.trend === 'down' ? 'rotate-180' : ''}`} />
-                    {stat.change}
-                  </span>
-                  <span className="text-xs text-gray-500">vs yesterday</span>
-                </div>
-                <div className={`absolute bottom-0 left-0 w-full h-1 ${stat.color}`} />
+                <div className={`absolute bottom-0 left-0 w-full h-1 ${stat.color} group-hover:h-2 transition-all duration-300`} />
+                {stat.realTime && (
+                  <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-green-500/20 to-transparent rounded-bl-full"></div>
+                )}
               </CardContent>
             </Card>
           ))}
         </div>
 
-        {/* Main Dashboard Tabs */}
-        <Tabs defaultValue="fleet" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:grid-cols-4 h-12">
-            <TabsTrigger value="fleet" className="flex items-center gap-2 data-[state=active]:bg-slate-700 data-[state=active]:text-white">
-              <Bus className="h-4 w-4" />
-              Fleet Status
-            </TabsTrigger>
-            <TabsTrigger value="analytics" className="flex items-center gap-2 data-[state=active]:bg-slate-700 data-[state=active]:text-white">
-              <BarChart3 className="h-4 w-4" />
-              Analytics
-            </TabsTrigger>
-            <TabsTrigger value="maintenance" className="flex items-center gap-2 data-[state=active]:bg-slate-700 data-[state=active]:text-white">
-              <Wrench className="h-4 w-4" />
-              Maintenance
-            </TabsTrigger>
-            <TabsTrigger value="alerts" className="flex items-center gap-2 data-[state=active]:bg-slate-700 data-[state=active]:text-white">
-              <Bell className="h-4 w-4" />
-              Alerts
-            </TabsTrigger>
-          </TabsList>
+        {/* Enhanced Live Bus Tracking */}
+        <Card className="mb-3 modern-card animate-slide-in-up border-0 shadow-xl">
+          <CardHeader className="gradient-bg-primary text-white">
+            <CardTitle className="flex items-center justify-between text-xl">
+              <div className="flex items-center gap-2">
+                <Navigation className="h-6 w-6 animate-float" />
+                Live Bus Tracking
+                <Badge className="bg-white/20 text-white ml-2">
+                  {liveBuses.length} Active
+                </Badge>
+              </div>
+              <Button variant="secondary" size="sm" className="bg-white/20 hover:bg-white/30 text-white">
+                View Map
+              </Button>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {liveBuses.map((bus, index) => (
+                <div key={bus.id} className="p-4 modern-card hover-lift group border-l-4 border-primary animate-slide-in-up relative overflow-hidden" style={{ animationDelay: `${index * 0.1}s` }}>
 
-          <TabsContent value="fleet" className="space-y-6">
-            <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
-              
-              {/* Active Fleet */}
-              <Card className="xl:col-span-3 shadow-xl border-0 bg-white/80 backdrop-blur-sm">
-                <CardHeader className="bg-gradient-to-r from-slate-700 to-slate-800 text-white">
-                  <CardTitle className="flex items-center gap-2 text-xl">
-                    <Navigation className="h-6 w-6" />
-                    Active Fleet ({fleetStats[0].value} buses)
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-6 space-y-4">
-                  {activeBuses.map((bus) => (
-                    <div key={bus.id} className="p-4 bg-gradient-to-r from-slate-50 to-gray-50 rounded-xl border-l-4 border-slate-600 hover:shadow-lg transition-all">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-4">
-                          <div className="relative">
-                            <Bus className="h-8 w-8 text-slate-600" />
-                            <div className={`absolute -top-1 -right-1 w-3 h-3 rounded-full animate-pulse ${
-                              bus.status === 'on-time' ? 'bg-green-500' : 
-                              bus.status === 'arriving' ? 'bg-yellow-500' : 'bg-red-500'
-                            }`} />
-                          </div>
-                          <div>
-                            <div className="flex items-center gap-3 mb-1">
-                              <h4 className="text-lg font-bold text-gray-900">{bus.id}</h4>
-                              <Badge variant="outline" className="text-xs font-medium">
-                                {bus.route}
-                              </Badge>
-                            </div>
-                            <p className="text-sm text-gray-600 flex items-center gap-2">
-                              <UserCheck className="h-3 w-3" />
-                              {bus.driver.name} • ⭐ {bus.driver.rating}
-                            </p>
-                          </div>
-                        </div>
-                        <Badge variant={bus.status === 'on-time' ? 'default' : bus.status === 'arriving' ? 'secondary' : 'destructive'} className="text-sm">
-                          {bus.status === 'on-time' ? 'On Time' : bus.status === 'arriving' ? 'Arriving' : 'Delayed'}
+                  {/* Bus Header */}
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <div className={`p-2 rounded-full ${
+                        bus.status === 'on-time' ? 'bg-green-100' :
+                        bus.status === 'delayed' ? 'bg-red-100' : 'bg-yellow-100'
+                      }`}>
+                        <Bus className={`h-4 w-4 ${
+                          bus.status === 'on-time' ? 'text-green-600' :
+                          bus.status === 'delayed' ? 'text-red-600' : 'text-yellow-600'
+                        } group-hover:animate-bounce`} />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-sm text-foreground group-hover:text-primary transition-colors">{bus.id}</h4>
+                        <p className="text-xs text-muted-foreground">{bus.route}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <Badge variant={bus.status === 'on-time' ? 'default' : 'destructive'} className="text-xs mb-1">
+                        {bus.status === 'delayed' ? `+${bus.delay}m` : 'On Time'}
+                      </Badge>
+                      <div className="text-xs text-muted-foreground">{bus.speed} km/h</div>
+                    </div>
+                  </div>
+
+                  {/* Location & ETA */}
+                  <div className="space-y-2 text-xs mb-3">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground flex items-center gap-1">
+                        <MapPin className="h-3 w-3" />
+                        Current:
+                      </span>
+                      <span className="font-medium text-foreground">{bus.currentLocation}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground flex items-center gap-1">
+                        <Navigation className="h-3 w-3" />
+                        Next Stop:
+                      </span>
+                      <span className="font-medium text-foreground">{bus.nextStop}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        ETA:
+                      </span>
+                      <span className="font-bold text-accent">{bus.eta}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground flex items-center gap-1">
+                        <Route className="h-3 w-3" />
+                        Distance:
+                      </span>
+                      <span className="font-medium text-primary">{bus.distanceLeft}</span>
+                    </div>
+                  </div>
+
+                  {/* Occupancy */}
+                  <div className="mb-3">
+                    <div className="flex justify-between text-xs mb-1">
+                      <span className="text-muted-foreground">Occupancy ({bus.occupancy}%)</span>
+                      <span className={`font-medium ${
+                        bus.availableSeats > 10 ? 'text-green-600' :
+                        bus.availableSeats > 5 ? 'text-yellow-600' : 'text-red-600'
+                      }`}>
+                        {bus.availableSeats} seats left
+                      </span>
+                    </div>
+                    <Progress
+                      value={bus.occupancy}
+                      className={`h-2 ${
+                        bus.occupancy > 80 ? 'bg-red-100' :
+                        bus.occupancy > 60 ? 'bg-yellow-100' : 'bg-green-100'
+                      }`}
+                    />
+                  </div>
+
+                  {/* Driver & Amenities */}
+                  <div className="space-y-2 text-xs mb-3">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Driver:</span>
+                      <span className="font-medium text-foreground">{bus.driver}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <span className="text-muted-foreground">Features:</span>
+                      <div className="flex gap-1 ml-auto">
+                        {bus.amenities.includes('wifi') && <Wifi className="h-3 w-3 text-blue-500" />}
+                        {bus.amenities.includes('ac') && <Zap className="h-3 w-3 text-green-500" />}
+                        {bus.amenities.includes('charging') && <Battery className="h-3 w-3 text-yellow-500" />}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-2">
+                    <Button size="sm" variant="outline" className="flex-1 btn-interactive hover-lift text-xs">
+                      <MapPin className="h-3 w-3 mr-1" />
+                      Track
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant={bus.availableSeats > 0 ? "default" : "secondary"}
+                      disabled={bus.availableSeats === 0}
+                      className="flex-1 btn-interactive hover-lift text-xs"
+                    >
+                      <Calendar className="h-3 w-3 mr-1" />
+                      {bus.availableSeats > 0 ? 'Book' : 'Full'}
+                    </Button>
+                  </div>
+
+                  {/* Live indicator */}
+                  <div className="absolute top-2 right-2 flex items-center gap-1">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <span className="text-xs text-green-600 font-medium">LIVE</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-3 mb-3">
+
+          {/* Enhanced Upcoming Trips */}
+          <Card className="xl:col-span-2 modern-card animate-slide-in-left border-0 shadow-xl">
+            <CardHeader className="gradient-bg-primary text-white">
+              <CardTitle className="flex items-center justify-between text-xl">
+                <div className="flex items-center gap-2">
+                  <Bus className="h-6 w-6 animate-float" />
+                  Your Next Trips
+                </div>
+                <Badge className="bg-white/20 text-white">
+                  {upcomingTrips.length} Confirmed
+                </Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 space-y-3">
+              {upcomingTrips.map((trip, index) => (
+                <div key={trip.id} className="p-4 modern-card hover-lift group animate-slide-in-up border-l-4 border-primary relative overflow-hidden" style={{ animationDelay: `${index * 0.1}s` }}>
+
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <div className="flex items-center gap-3 mb-2">
+                        <h4 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors">{trip.route}</h4>
+                        <Badge variant="default" className="text-xs bg-green-100 text-green-700">
+                          {trip.status}
+                        </Badge>
+                        <Badge variant="outline" className="text-xs">
+                          {trip.availableSeats} seats left
                         </Badge>
                       </div>
-                      
-                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-                        <div className="flex items-center gap-2 text-sm">
-                          <MapPin className="h-4 w-4 text-slate-500" />
-                          <span className="truncate">{bus.location}</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm">
-                          <Users className="h-4 w-4 text-slate-500" />
-                          <span>{bus.occupied}/{bus.capacity} passengers</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm">
-                          <Fuel className="h-4 w-4 text-slate-500" />
-                          <span className={bus.fuelLevel < 30 ? 'text-red-600 font-semibold' : 'text-gray-600'}>
-                            {bus.fuelLevel}% fuel
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm">
-                          <DollarSign className="h-4 w-4 text-slate-500" />
-                          <span className="font-semibold text-green-600">₦{bus.revenue.toLocaleString()}</span>
-                        </div>
+                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <Calendar className="h-4 w-4" />
+                          {trip.date}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Clock className="h-4 w-4" />
+                          Departs: {trip.departureTime}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Users className="h-4 w-4" />
+                          Seat: {trip.seat}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <MapPin className="h-4 w-4" />
+                          {trip.gate}
+                        </span>
                       </div>
-                      
-                      <div className="flex items-center justify-between">
-                        <Progress value={(bus.occupied / bus.capacity) * 100} className="w-32 h-2" />
-                        <div className="flex gap-2">
-                          <Button variant="outline" size="sm">
-                            <MessageSquare className="h-4 w-4 mr-1" />
-                            Message
-                          </Button>
-                          <Button variant="outline" size="sm">
-                            <Navigation className="h-4 w-4 mr-1" />
-                            Track
-                          </Button>
-                        </div>
+                      <div className="mt-2 text-sm">
+                        <span className="text-muted-foreground">Boarding: </span>
+                        <span className="font-medium text-foreground">{trip.boarding}</span>
+                        <span className="text-muted-foreground ml-4">Bus ID: </span>
+                        <span className="font-medium text-primary">{trip.busId}</span>
                       </div>
-
-                      {bus.alerts.length > 0 && (
-                        <div className="mt-3 space-y-1">
-                          {bus.alerts.map((alert, index) => (
-                            <div key={index} className="flex items-center gap-2 text-xs text-amber-700 bg-amber-50 px-3 py-1 rounded-full">
-                              <AlertTriangle className="h-3 w-3" />
-                              {alert}
-                            </div>
-                          ))}
-                        </div>
-                      )}
                     </div>
-                  ))}
-                </CardContent>
-              </Card>
-
-              {/* Quick Controls */}
-              <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
-                <CardHeader className="bg-gradient-to-r from-purple-600 to-purple-700 text-white">
-                  <CardTitle className="flex items-center gap-2 text-xl">
-                    <Zap className="h-6 w-6" />
-                    Quick Actions
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-6 space-y-4">
-                  <Button className="w-full justify-start gap-3 h-12 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800" variant="default">
-                    <div className="p-2 bg-white/20 rounded">
-                      <Bus className="h-4 w-4" />
-                    </div>
-                    <div className="text-left">
-                      <div className="font-medium">Dispatch Bus</div>
-                      <div className="text-xs opacity-90">Send bus to route</div>
-                    </div>
-                  </Button>
-                  
-                  <Button className="w-full justify-start gap-3 h-12 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800" variant="default">
-                    <div className="p-2 bg-white/20 rounded">
-                      <MessageSquare className="h-4 w-4" />
-                    </div>
-                    <div className="text-left">
-                      <div className="font-medium">Driver Alert</div>
-                      <div className="text-xs opacity-90">Send notifications</div>
-                    </div>
-                  </Button>
-                  
-                  <Button className="w-full justify-start gap-3 h-12 bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800" variant="default">
-                    <div className="p-2 bg-white/20 rounded">
-                      <Wrench className="h-4 w-4" />
-                    </div>
-                    <div className="text-left">
-                      <div className="font-medium">Maintenance</div>
-                      <div className="text-xs opacity-90">Schedule service</div>
-                    </div>
-                  </Button>
-                  
-                  <div className="pt-4 border-t space-y-3">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">System Status</span>
-                      <Badge className="bg-green-100 text-green-700 text-xs">All Online</Badge>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Last Update</span>
-                      <span className="font-medium text-xs">Just now</span>
+                    <div className="text-right">
+                      <div className="text-2xl font-bold text-accent mb-2">{trip.price}</div>
+                      <div className="flex flex-col gap-1">
+                        <Button variant="outline" size="sm" className="btn-interactive hover-lift">
+                          <Navigation className="h-4 w-4 mr-2" />
+                          Track Live
+                        </Button>
+                        <Button variant="outline" size="sm" className="btn-interactive hover-lift">
+                          <Settings className="h-4 w-4 mr-2" />
+                          Manage
+                        </Button>
+                      </div>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
 
-          <TabsContent value="maintenance" className="space-y-6">
-            <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
-              <CardHeader className="bg-gradient-to-r from-orange-600 to-orange-700 text-white">
-                <CardTitle className="flex items-center gap-2 text-xl">
-                  <Wrench className="h-6 w-6" />
-                  Maintenance Queue ({maintenanceQueue.length} buses)
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-6">
-                <div className="space-y-4">
-                  {maintenanceQueue.map((item, index) => (
-                    <div key={index} className="p-4 border rounded-xl hover:shadow-md transition-all bg-gradient-to-r from-orange-50 to-red-50">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-3">
-                          <Badge variant="outline" className="font-mono">{item.id}</Badge>
-                          <div>
-                            <h4 className="font-bold text-gray-900">{item.issue}</h4>
-                            <p className="text-sm text-gray-600">Technician: {item.technician}</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Badge variant={
-                            item.priority === 'high' ? 'destructive' : 
-                            item.priority === 'medium' ? 'default' : 'secondary'
-                          } className="text-xs">
-                            {item.priority} priority
-                          </Badge>
-                          <Badge variant="outline" className="text-xs">
-                            {item.status === 'in-progress' ? (
-                              <><Activity className="h-3 w-3 mr-1" /> In Progress</>
-                            ) : item.status === 'scheduled' ? (
-                              <><Timer className="h-3 w-3 mr-1" /> Scheduled</>
-                            ) : (
-                              <><Clock className="h-3 w-3 mr-1" /> Pending</>
-                            )}
-                          </Badge>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4 text-sm text-gray-600">
-                          <span>Est. time: {item.estimatedTime}</span>
-                          {item.progress > 0 && (
-                            <span>Progress: {item.progress}%</span>
-                          )}
-                        </div>
-                        {item.progress > 0 && (
-                          <Progress value={item.progress} className="w-32 h-2" />
-                        )}
-                      </div>
+                  {/* Trip progress indicator */}
+                  <div className="mt-3 p-3 bg-muted/30 rounded-lg">
+                    <div className="flex items-center justify-between text-xs mb-2">
+                      <span className="text-muted-foreground">Trip Progress</span>
+                      <span className="font-medium">Ready to Board</span>
                     </div>
-                  ))}
+                    <Progress value={25} className="h-2" />
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+              ))}
 
-          <TabsContent value="alerts" className="space-y-6">
-            <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
-              <CardHeader className="bg-gradient-to-r from-red-600 to-red-700 text-white">
-                <CardTitle className="flex items-center gap-2 text-xl">
-                  <Bell className="h-6 w-6" />
-                  System Alerts ({recentAlerts.length})
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-6">
-                <div className="space-y-4">
-                  {recentAlerts.map((alert, index) => (
-                    <div key={index} className="flex items-start gap-4 p-4 border rounded-xl hover:shadow-md transition-all bg-gradient-to-r from-red-50 to-orange-50">
-                      <div className={`p-2 rounded-full ${
-                        alert.priority === 'high' ? 'bg-red-100' :
-                        alert.priority === 'medium' ? 'bg-yellow-100' :
-                        alert.priority === 'low' ? 'bg-blue-100' : 'bg-green-100'
-                      }`}>
-                        <alert.icon className={`h-5 w-5 ${
-                          alert.priority === 'high' ? 'text-red-600' :
-                          alert.priority === 'medium' ? 'text-yellow-600' :
-                          alert.priority === 'low' ? 'text-blue-600' : 'text-green-600'
-                        }`} />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between mb-2">
-                          <p className="font-semibold text-gray-900">{alert.message}</p>
-                          <Badge variant={
-                            alert.priority === 'high' ? 'destructive' : 
-                            alert.priority === 'medium' ? 'default' :
-                            alert.priority === 'low' ? 'secondary' : 'outline'
-                          } className="text-xs">
-                            {alert.priority}
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-gray-500">{alert.time}</p>
-                      </div>
-                    </div>
-                  ))}
+              <Button asChild className="w-full h-14 gradient-bg-primary btn-interactive glow-primary text-white">
+                <Link href="/staff/book">
+                  <Calendar className="h-6 w-6 mr-3" />
+                  <div className="text-left">
+                    <div className="font-bold text-lg">Book New Trip</div>
+                    <div className="text-sm opacity-90">Live seats • Real-time tracking</div>
+                  </div>
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Enhanced Activity Feed */}
+          <Card className="modern-card animate-slide-in-right border-0 shadow-xl">
+            <CardHeader className="bg-gradient-to-r from-chart-5 to-chart-1 text-white">
+              <CardTitle className="flex items-center gap-2 text-xl">
+                <Activity className="h-6 w-6 animate-float-delay-2" />
+                Recent Activity
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 space-y-3">
+              {recentActivity.map((activity, index) => (
+                <div key={index} className="flex items-start gap-4 p-3 rounded-lg hover:bg-muted/30 transition-all hover-lift group animate-slide-in-up" style={{ animationDelay: `${index * 0.1}s` }}>
+                  <div className="p-2 bg-muted rounded-full group-hover:bg-primary/20 transition-colors">
+                    <activity.icon className={`h-4 w-4 ${activity.color} group-hover:animate-pulse`} />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-foreground">{activity.message}</p>
+                    <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                      <Clock className="h-3 w-3" />
+                      {activity.time}
+                    </p>
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+              ))}
 
-          <TabsContent value="analytics" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              
-              <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
-                <CardHeader className="bg-gradient-to-r from-purple-600 to-purple-700 text-white">
-                  <CardTitle className="text-xl">Revenue Analytics</CardTitle>
-                </CardHeader>
-                <CardContent className="p-6">
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
-                      <span className="font-medium">Today</span>
-                      <span className="text-xl font-bold text-green-600">₦2.8M</span>
-                    </div>
-                    <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                      <span className="font-medium">Yesterday</span>
-                      <span className="text-lg font-semibold">₦2.5M</span>
-                    </div>
-                    <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                      <span className="font-medium">This Week</span>
-                      <span className="text-lg font-semibold">₦18.6M</span>
-                    </div>
-                    <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                      <span className="font-medium">This Month</span>
-                      <span className="text-lg font-semibold">₦78.2M</span>
-                    </div>
+              <Button variant="outline" className="w-full mt-4 btn-interactive hover-lift">
+                <Bell className="h-4 w-4 mr-2" />
+                View All Notifications
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Enhanced Quick Actions Bar */}
+        <Card className="modern-card gradient-bg-secondary text-white animate-glow-pulse overflow-hidden border-0 shadow-2xl">
+          <CardContent className="p-4 relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/30 to-accent/30 animate-morphing"></div>
+            <div className="relative z-10">
+              <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
+                <div className="text-center lg:text-left animate-slide-in-left">
+                  <h3 className="text-2xl font-bold mb-2 animate-gradient-text">Ready for Your Next Journey?</h3>
+                  <p className="text-primary-foreground/90 text-lg">Book now with real-time seat availability and live GPS tracking</p>
+                  <div className="flex items-center gap-6 mt-3">
+                    <span className="text-sm flex items-center gap-2">
+                      <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                      {todayStats.totalTrips} trips running today
+                    </span>
+                    <span className="text-sm flex items-center gap-2">
+                      <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                      {todayStats.availableSeats} seats available now
+                    </span>
+                    <span className="text-sm flex items-center gap-2">
+                      <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+                      {liveBuses.length} buses live tracked
+                    </span>
                   </div>
-                </CardContent>
-              </Card>
-
-              <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
-                <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
-                  <CardTitle className="text-xl">Performance Metrics</CardTitle>
-                </CardHeader>
-                <CardContent className="p-6">
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
-                      <span className="font-medium">Avg Occupancy</span>
-                      <span className="text-xl font-bold text-blue-600">78%</span>
-                    </div>
-                    <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                      <span className="font-medium">On-Time Performance</span>
-                      <span className="text-lg font-semibold">94.5%</span>
-                    </div>
-                    <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                      <span className="font-medium">Fuel Efficiency</span>
-                      <span className="text-lg font-semibold">12.8 km/l</span>
-                    </div>
-                    <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                      <span className="font-medium">Customer Rating</span>
-                      <span className="text-lg font-semibold">⭐ 4.7/5</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-        </Tabs>
-
-        {/* Action Bar */}
-        <Card className="shadow-xl border-0 bg-gradient-to-r from-slate-800 to-gray-900 text-white mt-8">
-          <CardContent className="p-6">
-            <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
-              <div className="text-center lg:text-left">
-                <h3 className="text-2xl font-bold mb-2">Fleet Performance Overview</h3>
-                <p className="text-slate-300 text-lg">All systems operational • 18 buses active • Revenue up 12%</p>
-              </div>
-              <div className="flex flex-wrap gap-4">
-                <Button size="lg" variant="secondary" className="bg-white text-slate-800 hover:bg-slate-100 shadow-lg">
-                  <BarChart3 className="h-5 w-5 mr-2" />
-                  Generate Report
-                </Button>
-                <Button size="lg" variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20 shadow-lg">
-                  <Settings className="h-5 w-5 mr-2" />
-                  System Settings
-                </Button>
+                </div>
+                <div className="flex flex-wrap gap-3 animate-slide-in-right">
+                  <Button asChild size="lg" variant="secondary" className="bg-white text-primary hover:bg-muted btn-interactive feature-card">
+                    <Link href="/staff/book">
+                      <Calendar className="h-6 w-6 mr-3" />
+                      <div className="text-left">
+                        <div className="font-bold">Book Live Seats</div>
+                        <div className="text-xs opacity-75">Real-time availability</div>
+                      </div>
+                    </Link>
+                  </Button>
+                  <Button size="lg" variant="outline" className="glass-card border-white/20 text-white hover:bg-white/20 btn-interactive">
+                    <MapPin className="h-5 w-5 mr-2" />
+                    Live Bus Map
+                  </Button>
+                  <Button size="lg" variant="outline" className="glass-card border-white/20 text-white hover:bg-white/20 btn-interactive">
+                    <Activity className="h-5 w-5 mr-2" />
+                    Trip History
+                  </Button>
+                </div>
               </div>
             </div>
           </CardContent>

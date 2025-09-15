@@ -23,9 +23,10 @@ const studentLinks = [
 ];
 
 const staffLinks = [
-  { href: '/dashboard/staff', icon: <Home />, label: 'Overview' },
-  { href: '/dashboard/staff/book', icon: <Ticket />, label: 'Book a Seat' },
-  { href: '/dashboard/staff/track', icon: <MapPin />, label: 'Track Bus' },
+  { href: '/staff/dashboard', icon: <Home />, label: 'Fleet Control' },
+  { href: '/staff/book', icon: <Ticket />, label: 'Book for Others' },
+  { href: '/staff/profile', icon: <User />, label: 'Profile' },
+  { href: '/staff/settings', icon: <Settings />, label: 'Settings' },
 ];
 
 const driverLinks = [

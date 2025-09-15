@@ -992,9 +992,9 @@ function formatDisplayName(userData) {
 function getDashboardPath(role) {
     switch(role){
         case 'student':
-            return '/dashboard/student';
+            return '/student/dashboard';
         case 'staff':
-            return '/dashboard/driver';
+            return '/staff/dashboard';
         case 'admin':
             return '/dashboard/admin';
         case 'driver':

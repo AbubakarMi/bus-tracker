@@ -6,11 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
-import { Bus, Mail, Lock, Shield, ArrowRight, BarChart3, Settings } from 'lucide-react';
+import { Bus, IdCard, Lock, Shield, ArrowRight, BarChart3, Settings } from 'lucide-react';
 
 export default function StaffLogin() {
   const [formData, setFormData] = useState({
-    email: '',
+    staffId: '',
     password: ''
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -18,13 +18,24 @@ export default function StaffLogin() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     // Simulate login
     await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    // Redirect to dashboard
-    window.location.href = '/staff/dashboard';
-    
+
+    // Detect user type based on input format and redirect accordingly
+    const { staffId } = formData;
+
+    if (staffId.toLowerCase().startsWith('staff/')) {
+      // Staff ID format: Staff/Institution/ID
+      window.location.href = '/staff/dashboard';
+    } else if (staffId.includes('@')) {
+      // Email format - redirect to student dashboard
+      window.location.href = '/student/dashboard';
+    } else {
+      // Default to staff if unclear
+      window.location.href = '/staff/dashboard';
+    }
+
     setIsLoading(false);
   };
 
@@ -37,33 +48,34 @@ export default function StaffLogin() {
           <div className="mx-auto w-16 h-16 bg-slate-700 rounded-full flex items-center justify-center mb-4">
             <Shield className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Staff Portal</h1>
-          <p className="text-gray-600 mt-2">Fleet management dashboard</p>
+          <h1 className="text-2xl font-bold text-gray-900">Bus Tracker Login</h1>
+          <p className="text-gray-600 mt-2">Staff & Student Access Portal</p>
         </div>
 
         {/* Login Form */}
         <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
           <CardHeader className="space-y-2 pb-4">
-            <CardTitle className="text-xl text-center">Staff Sign In</CardTitle>
+            <CardTitle className="text-xl text-center">Sign In</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               
-              {/* Email Field */}
+              {/* Staff ID / Email Field */}
               <div className="space-y-2">
-                <Label htmlFor="email">Staff Email</Label>
+                <Label htmlFor="staffId">Staff ID or Email</Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <IdCard className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                   <Input
-                    id="email"
-                    type="email"
-                    placeholder="staff@buscompany.com"
-                    value={formData.email}
-                    onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                    id="staffId"
+                    type="text"
+                    placeholder="Staff/Adustech/5335 or student@email.com"
+                    value={formData.staffId}
+                    onChange={(e) => setFormData(prev => ({ ...prev, staffId: e.target.value }))}
                     className="pl-10 h-11"
                     required
                   />
                 </div>
+                <p className="text-xs text-gray-500">Staff: Staff/Institution/ID • Student: email@domain.com</p>
               </div>
 
               {/* Password Field */}
