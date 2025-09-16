@@ -2,13 +2,12 @@
 'use client';
 
 import * as React from 'react';
-import { motion, useInView } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Mail, Phone, MapPin, Send, Check, Clock, MessageCircle, Users, ArrowRight, Star, Heart, Sparkles, Zap, Globe, HeadphonesIcon } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, Check, Clock, MessageCircle, Users, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useRef } from 'react';
 
 const contactInfo = [
   { 
@@ -41,43 +40,13 @@ const contactInfo = [
 ];
 
 const stats = [
-  { icon: <MessageCircle className="h-5 w-5" />, number: '24/7', label: 'Support', color: 'from-blue-500 to-cyan-500' },
-  { icon: <Clock className="h-5 w-5" />, number: '<1hr', label: 'Response Time', color: 'from-green-500 to-emerald-500' },
-  { icon: <Users className="h-5 w-5" />, number: '5000+', label: 'Students Helped', color: 'from-purple-500 to-pink-500' },
-  { icon: <Check className="h-5 w-5" />, number: '99%', label: 'Satisfaction', color: 'from-orange-500 to-red-500' },
-];
-
-const supportFeatures = [
-  { 
-    icon: <HeadphonesIcon className="h-5 w-5" />, 
-    title: 'Live Chat Support', 
-    description: 'Instant help via chat',
-    gradient: 'from-indigo-500 to-purple-500'
-  },
-  { 
-    icon: <Globe className="h-5 w-5" />, 
-    title: 'Multi-Language', 
-    description: 'English & Hausa support',
-    gradient: 'from-green-500 to-teal-500'
-  },
-  { 
-    icon: <Star className="h-5 w-5" />, 
-    title: 'Expert Team', 
-    description: 'Trained professionals',
-    gradient: 'from-yellow-500 to-orange-500'
-  },
-  { 
-    icon: <Heart className="h-5 w-5" />, 
-    title: 'Student-First', 
-    description: 'Built with care',
-    gradient: 'from-pink-500 to-rose-500'
-  },
+  { icon: <MessageCircle className="h-5 w-5" />, number: '24/7', label: 'Support' },
+  { icon: <Clock className="h-5 w-5" />, number: '<1hr', label: 'Response Time' },
+  { icon: <Users className="h-5 w-5" />, number: '5000+', label: 'Students Helped' },
+  { icon: <Check className="h-5 w-5" />, number: '99%', label: 'Satisfaction' },
 ];
 
 export function Contact() {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: false, amount: 0.1 });
-  
   const [formData, setFormData] = React.useState({
     name: '',
     email: '',
@@ -112,38 +81,11 @@ export function Contact() {
   };
 
   return (
-    <section id="contact" className="relative py-24 sm:py-32 overflow-hidden" ref={ref}>
-      {/* Enhanced Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-background via-muted/30 to-background" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_25%,theme(colors.primary/8),transparent_50%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_75%,theme(colors.accent/8),transparent_50%)]" />
+    <section id="contact" className="relative py-24 sm:py-32 overflow-hidden">
+      {/* Background */}
+      <div className="absolute inset-0 gradient-bg-secondary opacity-30" />
       
-      {/* Floating Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        {[...Array(15)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-2 h-2 bg-gradient-to-r from-primary/20 to-accent/20 rounded-full"
-            style={{
-              top: `${10 + (i * 7) % 80}%`,
-              left: `${5 + (i * 11) % 90}%`,
-            }}
-            animate={{
-              y: [0, -50, 0],
-              opacity: [0.2, 0.8, 0.2],
-              scale: [1, 1.8, 1],
-            }}
-            transition={{
-              duration: 8 + i * 0.4,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: i * 0.3,
-            }}
-          />
-        ))}
-      </div>
-      
-      <div className="container relative mx-auto max-w-7xl px-4 z-10">
+      <div className="container relative mx-auto max-w-7xl px-4">
         {/* Enhanced Header */}
         <motion.div
           className="mx-auto max-w-4xl text-center mb-20 relative"
@@ -335,18 +277,9 @@ export function Contact() {
                   </div>
                 </motion.div>
                 <motion.div 
-                  className={`text-3xl md:text-4xl font-bold mb-2 bg-gradient-to-r ${stat.color} bg-clip-text text-transparent`}
+                  className="text-3xl md:text-4xl font-bold gradient-text mb-2"
                   whileHover={{ scale: 1.1 }}
                   transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                  animate={{ 
-                    scale: [1, 1.02, 1] 
-                  }}
-                  transition={{ 
-                    duration: 3, 
-                    repeat: Infinity, 
-                    ease: "easeInOut",
-                    delay: index * 0.2
-                  }}
                 >
                   {stat.number}
                 </motion.div>
@@ -740,184 +673,6 @@ export function Contact() {
           >
             <div className="h-1 w-40 bg-gradient-to-r from-primary via-accent to-primary rounded-full" />
           </motion.div>
-        </motion.div>
-
-        {/* Enhanced Support Features Grid */}
-        <motion.div
-          className="mt-20"
-          initial={{ opacity: 0, y: 50 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
-          transition={{ duration: 0.8, delay: 1.4 }}
-        >
-          <div className="text-center mb-12">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.6, delay: 1.5 }}
-            >
-              <span className="inline-flex items-center px-6 py-3 rounded-full text-sm font-semibold bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 text-primary mb-6 relative overflow-hidden">
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-primary/20 to-accent/20"
-                  initial={{ x: "-100%" }}
-                  whileHover={{ x: "100%" }}
-                  transition={{ duration: 0.6 }}
-                />
-                <span className="relative z-10 flex items-center gap-2">
-                  <motion.div
-                    animate={{ rotate: [0, 10, -10, 0] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                  >
-                    ⚡
-                  </motion.div>
-                  Why Choose Us
-                  <motion.div
-                    animate={{ scale: [1, 1.2, 1] }}
-                    transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                  >
-                    🌟
-                  </motion.div>
-                </span>
-              </span>
-            </motion.div>
-
-            <motion.h3 
-              className="text-3xl font-bold mb-4"
-              initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-              transition={{ duration: 0.8, delay: 1.6 }}
-            >
-              <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
-                Exceptional Support Features
-              </span>
-            </motion.h3>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {supportFeatures.map((feature, index) => (
-              <motion.div
-                key={index}
-                className="glass-card p-6 rounded-2xl group relative overflow-hidden hover:shadow-2xl transition-all duration-300 text-center"
-                whileHover={{ y: -5, scale: 1.02 }}
-                initial={{ opacity: 0, y: 30 }}
-                animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-                transition={{ duration: 0.6, delay: 1.8 + index * 0.1 }}
-              >
-                <div className={`absolute inset-0 bg-gradient-to-r ${feature.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
-                
-                {/* Floating particles on hover */}
-                <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                  {[...Array(3)].map((_, i) => (
-                    <motion.div
-                      key={i}
-                      className={`absolute w-1 h-1 bg-gradient-to-r ${feature.gradient} rounded-full`}
-                      style={{
-                        top: `${20 + i * 25}%`,
-                        right: `${15 + i * 10}%`,
-                      }}
-                      animate={{
-                        y: [0, -30, 0],
-                        opacity: [0, 1, 0],
-                        scale: [0, 1.5, 0],
-                      }}
-                      transition={{
-                        duration: 2,
-                        delay: i * 0.3,
-                        repeat: Infinity,
-                      }}
-                    />
-                  ))}
-                </div>
-
-                <div className="relative z-10">
-                  <motion.div
-                    className={`w-12 h-12 rounded-xl bg-gradient-to-r ${feature.gradient} p-3 mb-4 mx-auto group-hover:scale-110 transition-transform duration-300`}
-                    animate={{ rotate: [0, 5, -5, 0] }}
-                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: index * 0.5 }}
-                  >
-                    <div className="w-full h-full text-white flex items-center justify-center">
-                      {feature.icon}
-                    </div>
-                  </motion.div>
-                  
-                  <h4 className="text-lg font-bold mb-2 group-hover:text-primary transition-colors duration-300">
-                    {feature.title}
-                  </h4>
-                  
-                  <p className="text-sm text-muted-foreground group-hover:text-foreground transition-colors duration-300">
-                    {feature.description}
-                  </p>
-                  
-                  <motion.div
-                    className={`mt-4 h-1 bg-gradient-to-r ${feature.gradient} rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
-                    initial={{ width: 0 }}
-                    whileHover={{ width: "100%" }}
-                    transition={{ duration: 0.5 }}
-                  />
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Final CTA Section */}
-        <motion.div
-          className="mt-20 text-center relative"
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-          transition={{ duration: 0.8, delay: 2.2 }}
-        >
-          {/* Background glow effect */}
-          <motion.div
-            className="absolute inset-0 bg-gradient-to-r from-primary/10 to-accent/10 rounded-3xl blur-3xl opacity-50"
-            animate={{ scale: [1, 1.05, 1] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-          />
-
-          <div className="relative z-10 glass-card p-8 rounded-3xl max-w-2xl mx-auto">
-            <motion.h4 
-              className="text-2xl md:text-3xl font-bold mb-4"
-              whileHover={{ scale: 1.02 }}
-            >
-              <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                Ready to Experience Excellence?
-              </span>
-            </motion.h4>
-            
-            <p className="text-muted-foreground mb-6 text-lg">
-              Join thousands of satisfied students who trust our transport service. 
-              <span className="font-semibold text-primary"> Get started today!</span>
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <motion.button 
-                className="inline-flex items-center px-8 py-4 rounded-full font-semibold text-lg gradient-bg-primary text-white hover:scale-105 transition-all duration-300 glow-primary shadow-xl group"
-                whileHover={{ y: -2 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <span className="flex items-center gap-3">
-                  <Sparkles className="h-5 w-5" />
-                  Get Started Now
-                  <motion.div
-                    animate={{ x: [0, 3, 0] }}
-                    transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                  >
-                    <ArrowRight className="h-5 w-5" />
-                  </motion.div>
-                </span>
-              </motion.button>
-              
-              <motion.button 
-                className="inline-flex items-center px-8 py-4 rounded-full font-semibold text-lg border border-border bg-card hover:bg-muted transition-all duration-300 hover:scale-105 shadow-lg"
-                whileHover={{ y: -2 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <span className="flex items-center gap-3">
-                  <Heart className="h-5 w-5 text-red-500" />
-                  Learn More
-                </span>
-              </motion.button>
-            </div>
-          </div>
         </motion.div>
       </div>
     </section>

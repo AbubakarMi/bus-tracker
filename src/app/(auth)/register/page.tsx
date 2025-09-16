@@ -21,19 +21,19 @@ import { UserCheck, Briefcase, Loader2, AlertTriangle, CheckCircle, ArrowRight, 
 import { useToast } from '@/hooks/use-toast';
 import { auth as staticAuth, isFirebaseConfigured } from '@/lib/firebase';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { detectUserRole, type UserRole, getDashboardPath, formatDisplayName, mockUsers } from '@/lib/auth-utils';
 
 const registerFormSchema = z.object({
-  identifier: z.string().min(1, 'Please enter your registration number, staff ID, or email'),
+  idNumber: z.string().min(1, 'Please enter your ID number'),
   firstName: z.string().min(1, 'First name is required'),
   lastName: z.string().min(1, 'Last name is required'),
   email: z.string().email('Please enter a valid email'),
   password: z.string().min(8, 'Password must be at least 8 characters'),
 });
 
+type UserRole = 'student' | 'staff' | null;
 
 export default function RegisterPage() {
-  const [detectedRole, setDetectedRole] = React.useState<UserRole | null>(null);
+  const [userRole, setUserRole] = React.useState<UserRole>(null);
   const [isIdEntered, setIsIdEntered] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const [auth, setAuth] = React.useState<Auth | null>(null);
@@ -49,7 +49,7 @@ export default function RegisterPage() {
   const form = useForm<z.infer<typeof registerFormSchema>>({
     resolver: zodResolver(registerFormSchema),
     defaultValues: {
-      identifier: '',
+      idNumber: '',
       firstName: '',
       lastName: '',
       email: '',
@@ -57,69 +57,49 @@ export default function RegisterPage() {
     },
   });
 
-  const identifier = form.watch('identifier');
+  const idNumber = form.watch('idNumber');
 
   React.useEffect(() => {
-    if (identifier) {
-      const role = detectUserRole(identifier);
-      setDetectedRole(role);
-      setIsIdEntered(role !== null);
+    if (idNumber) {
+      if (/^UG\d{2}\/[A-Z]+\/\d+$/i.test(idNumber)) {
+        setUserRole('student');
+        setIsIdEntered(true);
+      } else if (/^S\d+/i.test(idNumber)) {
+        setUserRole('staff');
+        setIsIdEntered(true);
+      } else {
+        setUserRole(null);
+        setIsIdEntered(false);
+      }
     } else {
-      setDetectedRole(null);
+      setUserRole(null);
       setIsIdEntered(false);
     }
-  }, [identifier]);
+  }, [idNumber]);
 
   async function onSubmit(values: z.infer<typeof registerFormSchema>) {
-    setIsLoading(true);
-    
-    try {
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Check if user already exists
-      if (mockUsers[values.identifier]) {
-        throw new Error('User with this ID already exists. Please try logging in instead.');
-      }
-      
-      // Validate role detection
-      if (!detectedRole) {
-        throw new Error('Invalid ID format. Please use the correct format for your role.');
-      }
-      
-      // Create user data object
-      const userData = {
-        id: values.identifier,
-        role: detectedRole,
-        email: values.email,
-        name: `${values.firstName} ${values.lastName}`,
-        ...(detectedRole === 'student' && { regNumber: values.identifier }),
-        ...(detectedRole === 'staff' && { staffId: values.identifier }),
-        ...(detectedRole === 'student' && { 
-          course: values.identifier.split('/')[1],
-          admissionYear: `20${values.identifier.split('/')[0].substring(2)}`
-        }),
-        ...(detectedRole === 'staff' && { department: 'Transport Department' })
-      };
-      
-      // Store in localStorage (in real app, this would be saved to database)
-      localStorage.setItem('registeredUsers', JSON.stringify({
-        ...JSON.parse(localStorage.getItem('registeredUsers') || '{}'),
-        [values.identifier]: userData
-      }));
-      
-      toast({
-        title: 'Account Created Successfully!',
-        description: `Welcome ${userData.name}! You can now log in with your ${detectedRole === 'student' ? 'registration number' : detectedRole === 'staff' ? 'staff ID' : 'credentials'}.`,
+     if (!isFirebaseConfigured || !auth) {
+       toast({
+        variant: 'destructive',
+        title: 'Configuration Error',
+        description: 'Firebase is not configured. Please check your environment variables.',
       });
-      
+      return;
+    }
+    setIsLoading(true);
+    try {
+      await createUserWithEmailAndPassword(auth, values.email, values.password);
+      toast({
+        title: 'Account Created!',
+        description: "You've successfully signed up. Please log in.",
+      });
       router.push('/login');
     } catch (error: any) {
       console.error('Registration Error:', error);
       toast({
         variant: 'destructive',
-        title: 'Registration Failed',
-        description: error.message || 'An error occurred during registration. Please try again.',
+        title: 'Uh oh! Something went wrong.',
+        description: 'An unknown error occurred. Please check your configuration and try again.',
       });
     } finally {
       setIsLoading(false);
@@ -228,34 +208,25 @@ export default function RegisterPage() {
             </motion.div>
           </motion.div>
 
-          {/* Registration Instructions */}
-          <motion.div
-            initial={{ opacity: 0, y: -10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.6, delay: 1.2 }}
-            className="mb-6"
-          >
-            <div className="glass-card border border-primary/20 bg-primary/5 p-4 rounded-xl">
-              <div className="flex items-center gap-2 mb-3">
-                <Shield className="h-4 w-4 text-primary" />
-                <span className="text-sm font-semibold text-primary">Registration Guidelines</span>
-              </div>
-              <div className="space-y-2 text-xs">
-                <div className="flex items-center gap-2">
-                  <UserCheck className="h-3 w-3 text-green-500" />
-                  <span className="text-muted-foreground">Students: Use reg no (UG20/COMS/1284)</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Briefcase className="h-3 w-3 text-blue-500" />
-                  <span className="text-muted-foreground">Staff: Use staff ID (Staff/Adustech/1022)</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Shield className="h-3 w-3 text-purple-500" />
-                  <span className="text-muted-foreground">Admin registration restricted</span>
-                </div>
-              </div>
-            </div>
-          </motion.div>
+          {/* Enhanced Configuration Alert */}
+          <AnimatePresence>
+            {!isFirebaseConfigured && (
+              <motion.div
+                initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Alert variant="destructive" className="border-red-200 bg-red-50 dark:bg-red-950/20">
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertTitle>Configuration Error</AlertTitle>
+                  <AlertDescription>
+                    Firebase is not configured. Please add your credentials to the <code>.env</code> file to enable registration.
+                  </AlertDescription>
+                </Alert>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Enhanced Form */}
           <motion.div
@@ -273,18 +244,19 @@ export default function RegisterPage() {
                 >
                   <FormField
                     control={form.control}
-                    name="identifier"
+                    name="idNumber"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-base font-semibold flex items-center gap-2">
                           <Shield className="h-4 w-4 text-primary" />
-                          Registration Number / Staff ID / Email
+                          Registration / Staff ID Number
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
                             <Input 
-                              placeholder="UG20/COMS/1284 or Staff/Adustech/1022 or admin@adustech.edu.ng" 
+                              placeholder="e.g., UG24/CSC/1002 or S1234" 
                               {...field} 
+                              disabled={!isFirebaseConfigured}
                               className="h-12 text-lg border-2 focus:border-primary transition-all duration-300 bg-background/50 backdrop-blur-sm"
                               onChange={(e) => {
                                 field.onChange(e);
@@ -292,7 +264,7 @@ export default function RegisterPage() {
                               }}
                             />
                             <AnimatePresence>
-                              {detectedRole && (
+                              {userRole && (
                                 <motion.div
                                   initial={{ opacity: 0, scale: 0.8, x: 10 }}
                                   animate={{ opacity: 1, scale: 1, x: 0 }}
@@ -313,7 +285,7 @@ export default function RegisterPage() {
 
                 {/* Enhanced Account Type Detection */}
                 <AnimatePresence>
-                  {isIdEntered && (
+                  {isIdEntered && isFirebaseConfigured && (
                     <motion.div
                       initial={{ opacity: 0, y: 20, scale: 0.95 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -323,7 +295,7 @@ export default function RegisterPage() {
                     >
                       {/* Account Type Badge */}
                       <AnimatePresence>
-                        {detectedRole && (
+                        {userRole && (
                           <motion.div
                             initial={{ opacity: 0, scale: 0.8, y: 10 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -332,7 +304,7 @@ export default function RegisterPage() {
                             className="grid gap-3"
                           >
                             <Label className="text-base font-semibold">Account Type Detected</Label>
-                            {detectedRole === 'student' ? (
+                            {userRole === 'student' ? (
                               <motion.div
                                 whileHover={{ scale: 1.02 }}
                                 className="relative overflow-hidden"
@@ -354,7 +326,7 @@ export default function RegisterPage() {
                                   </motion.span>
                                 </Badge>
                               </motion.div>
-                            ) : detectedRole === 'staff' ? (
+                            ) : (
                               <motion.div
                                 whileHover={{ scale: 1.02 }}
                                 className="relative overflow-hidden"
@@ -373,50 +345,6 @@ export default function RegisterPage() {
                                     transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
                                   >
                                     💼
-                                  </motion.span>
-                                </Badge>
-                              </motion.div>
-                            ) : detectedRole === 'admin' ? (
-                              <motion.div
-                                whileHover={{ scale: 1.02 }}
-                                className="relative overflow-hidden"
-                              >
-                                <Badge variant="secondary" className="w-full py-4 px-6 text-base justify-center relative">
-                                  <motion.div
-                                    className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10"
-                                    animate={{ opacity: [0.5, 1, 0.5] }}
-                                    transition={{ duration: 2, repeat: Infinity }}
-                                  />
-                                  <Shield className="mr-3 h-5 w-5 text-purple-500" />
-                                  <span className="relative z-10">Administrator Account Detected</span>
-                                  <motion.span
-                                    className="ml-2 text-lg"
-                                    animate={{ rotate: [0, 360] }}
-                                    transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-                                  >
-                                    👑
-                                  </motion.span>
-                                </Badge>
-                              </motion.div>
-                            ) : (
-                              <motion.div
-                                whileHover={{ scale: 1.02 }}
-                                className="relative overflow-hidden"
-                              >
-                                <Badge variant="secondary" className="w-full py-4 px-6 text-base justify-center relative">
-                                  <motion.div
-                                    className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-red-500/10"
-                                    animate={{ opacity: [0.5, 1, 0.5] }}
-                                    transition={{ duration: 2, repeat: Infinity }}
-                                  />
-                                  <Shield className="mr-3 h-5 w-5 text-orange-500" />
-                                  <span className="relative z-10">{detectedRole?.charAt(0).toUpperCase() + detectedRole?.slice(1)} Account Detected</span>
-                                  <motion.span
-                                    className="ml-2 text-lg"
-                                    animate={{ scale: [1, 1.2, 1] }}
-                                    transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                                  >
-                                    🚌
                                   </motion.span>
                                 </Badge>
                               </motion.div>
@@ -566,7 +494,7 @@ export default function RegisterPage() {
                           <Button 
                             type="submit" 
                             className="w-full h-14 text-lg font-semibold gradient-bg-primary text-white hover:scale-105 transition-all duration-300 glow-primary shadow-xl disabled:hover:scale-100 disabled:opacity-50" 
-                            disabled={!isIdEntered || isLoading}
+                            disabled={!isIdEntered || isLoading || !isFirebaseConfigured}
                           >
                             {isLoading ? (
                               <span className="flex items-center justify-center">
