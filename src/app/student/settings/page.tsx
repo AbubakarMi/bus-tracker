@@ -180,7 +180,7 @@ export default function StudentSettings() {
             </TabsTrigger>
           </TabsList>
 
-          {/* General Settings- */}
+          {/* General Settings */}
           <TabsContent value="general" className="space-y-6">
             <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
               <CardHeader>
