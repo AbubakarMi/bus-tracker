@@ -1,9 +1,15 @@
 {
   "/(auth)/login/page": "app/(auth)/login/page.js",
   "/_not-found/page": "app/_not-found/page.js",
-  "/dashboard/driver/page": "app/dashboard/driver/page.js",
+  "/admin/activity/page": "app/admin/activity/page.js",
+  "/admin/buses/page": "app/admin/buses/page.js",
+  "/admin/drivers/page": "app/admin/drivers/page.js",
+  "/admin/page": "app/admin/page.js",
+  "/admin/routes/page": "app/admin/routes/page.js",
+  "/admin/settings/page": "app/admin/settings/page.js",
+  "/admin/tracking/page": "app/admin/tracking/page.js",
+  "/admin/users/page": "app/admin/users/page.js",
   "/favicon.ico/route": "app/favicon.ico/route.js",
   "/page": "app/page.js",
-  "/staff/dashboard/page": "app/staff/dashboard/page.js",
   "/student/dashboard/page": "app/student/dashboard/page.js"
 }

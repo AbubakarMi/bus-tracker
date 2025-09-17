@@ -1070,7 +1070,7 @@ function getDashboardPath(role) {
         case 'staff':
             return '/staff/dashboard';
         case 'admin':
-            return '/dashboard/admin';
+            return '/admin';
         case 'driver':
             return '/dashboard/driver';
         case 'union':
