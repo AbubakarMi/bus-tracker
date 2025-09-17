@@ -10,8 +10,8 @@ const nextConfig: NextConfig = {
   },
   // Ensure consistent port usage
   env: {
-    CUSTOM_PORT: '3002',
-    NEXT_PUBLIC_PORT: '3002',
+    CUSTOM_PORT: '3001',
+    NEXT_PUBLIC_PORT: '3001',
   },
   images: {
     remotePatterns: [
