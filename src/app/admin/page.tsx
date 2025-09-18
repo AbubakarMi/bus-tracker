@@ -4,6 +4,10 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   Bus,
   Users,
@@ -26,7 +30,13 @@ import {
   ArrowDownRight,
   CheckCircle,
   XCircle,
-  AlertCircle
+  AlertCircle,
+  X,
+  Save,
+  Phone,
+  Mail,
+  FileText,
+  Wrench
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -71,6 +81,12 @@ export default function AdminDashboard() {
     { id: 4, type: 'route', message: 'Route to Hotoro updated', time: '1 hour ago', status: 'info' },
     { id: 5, type: 'booking', message: 'Booking cancelled: ADUS-002', time: '2 hours ago', status: 'error' }
   ]);
+
+  // Quick Access Modals State
+  const [showAddBusModal, setShowAddBusModal] = useState(false);
+  const [showAddDriverModal, setShowAddDriverModal] = useState(false);
+  const [showCreateRouteModal, setShowCreateRouteModal] = useState(false);
+  const [showMaintenanceModal, setShowMaintenanceModal] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -307,20 +323,36 @@ export default function AdminDashboard() {
         </CardHeader>
         <CardContent className="relative">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Button variant="outline" className="h-20 flex-col space-y-2 border-blue-200 hover:border-blue-400 hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50 transition-all duration-300 transform hover:scale-105 hover:shadow-lg group">
+            <Button
+              variant="outline"
+              className="h-20 flex-col space-y-2 border-blue-200 hover:border-blue-400 hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50 transition-all duration-300 transform hover:scale-105 hover:shadow-lg group"
+              onClick={() => setShowAddBusModal(true)}
+            >
               <Plus className="h-5 w-5 text-blue-600 group-hover:scale-110 transition-transform duration-200" />
               <span className="text-sm font-medium">Add Bus</span>
             </Button>
-            <Button variant="outline" className="h-20 flex-col space-y-2 border-emerald-200 hover:border-emerald-400 hover:bg-gradient-to-br hover:from-emerald-50 hover:to-green-50 transition-all duration-300 transform hover:scale-105 hover:shadow-lg group">
+            <Button
+              variant="outline"
+              className="h-20 flex-col space-y-2 border-emerald-200 hover:border-emerald-400 hover:bg-gradient-to-br hover:from-emerald-50 hover:to-green-50 transition-all duration-300 transform hover:scale-105 hover:shadow-lg group"
+              onClick={() => setShowAddDriverModal(true)}
+            >
               <UserCheck className="h-5 w-5 text-emerald-600 group-hover:scale-110 transition-transform duration-200" />
               <span className="text-sm font-medium">Add Driver</span>
             </Button>
-            <Button variant="outline" className="h-20 flex-col space-y-2 border-amber-200 hover:border-amber-400 hover:bg-gradient-to-br hover:from-amber-50 hover:to-orange-50 transition-all duration-300 transform hover:scale-105 hover:shadow-lg group">
+            <Button
+              variant="outline"
+              className="h-20 flex-col space-y-2 border-amber-200 hover:border-amber-400 hover:bg-gradient-to-br hover:from-amber-50 hover:to-orange-50 transition-all duration-300 transform hover:scale-105 hover:shadow-lg group"
+              onClick={() => setShowCreateRouteModal(true)}
+            >
               <Route className="h-5 w-5 text-amber-600 group-hover:scale-110 transition-transform duration-200" />
               <span className="text-sm font-medium">Create Route</span>
             </Button>
-            <Button variant="outline" className="h-20 flex-col space-y-2 border-purple-200 hover:border-purple-400 hover:bg-gradient-to-br hover:from-purple-50 hover:to-violet-50 transition-all duration-300 transform hover:scale-105 hover:shadow-lg group">
-              <Settings className="h-5 w-5 text-purple-600 group-hover:scale-110 transition-transform duration-200" />
+            <Button
+              variant="outline"
+              className="h-20 flex-col space-y-2 border-purple-200 hover:border-purple-400 hover:bg-gradient-to-br hover:from-purple-50 hover:to-violet-50 transition-all duration-300 transform hover:scale-105 hover:shadow-lg group"
+              onClick={() => setShowMaintenanceModal(true)}
+            >
+              <Wrench className="h-5 w-5 text-purple-600 group-hover:scale-110 transition-transform duration-200" />
               <span className="text-sm font-medium">Maintenance</span>
             </Button>
           </div>
@@ -487,6 +519,291 @@ export default function AdminDashboard() {
           </Card>
         </div>
       </div>
+
+      {/* Add Bus Modal */}
+      {showAddBusModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-blue-200/50">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
+                    <Bus className="h-5 w-5 text-white" />
+                  </div>
+                  <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Add New Bus</h2>
+                </div>
+                <Button variant="ghost" size="sm" onClick={() => setShowAddBusModal(false)}>
+                  <X className="h-5 w-5" />
+                </Button>
+              </div>
+            </div>
+            <div className="p-6 space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="busNumber">Bus Number</Label>
+                <Input id="busNumber" placeholder="e.g., ADUS-005" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="capacity">Capacity</Label>
+                <Input id="capacity" type="number" placeholder="e.g., 35" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="model">Bus Model</Label>
+                <Input id="model" placeholder="e.g., Mercedes Sprinter" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="year">Year</Label>
+                <Input id="year" type="number" placeholder="e.g., 2023" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="status">Status</Label>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="maintenance">Maintenance</SelectItem>
+                    <SelectItem value="offline">Offline</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex space-x-3 pt-4">
+                <Button
+                  className="flex-1 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700"
+                  onClick={() => {
+                    // Add bus logic here
+                    setShowAddBusModal(false);
+                  }}
+                >
+                  <Save className="h-4 w-4 mr-2" />
+                  Add Bus
+                </Button>
+                <Button variant="outline" onClick={() => setShowAddBusModal(false)}>
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Driver Modal */}
+      {showAddDriverModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-emerald-200/50">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-green-600 rounded-lg flex items-center justify-center">
+                    <UserCheck className="h-5 w-5 text-white" />
+                  </div>
+                  <h2 className="text-xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">Add New Driver</h2>
+                </div>
+                <Button variant="ghost" size="sm" onClick={() => setShowAddDriverModal(false)}>
+                  <X className="h-5 w-5" />
+                </Button>
+              </div>
+            </div>
+            <div className="p-6 space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="driverName">Full Name</Label>
+                <Input id="driverName" placeholder="e.g., Ahmed Hassan" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="licenseNumber">License Number</Label>
+                <Input id="licenseNumber" placeholder="e.g., ABC123456" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone Number</Label>
+                <Input id="phone" placeholder="e.g., +234 801 234 5678" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input id="email" type="email" placeholder="e.g., ahmed@example.com" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="experience">Years of Experience</Label>
+                <Input id="experience" type="number" placeholder="e.g., 5" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="address">Address</Label>
+                <Textarea id="address" placeholder="Driver's address" rows={3} />
+              </div>
+              <div className="flex space-x-3 pt-4">
+                <Button
+                  className="flex-1 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700"
+                  onClick={() => {
+                    // Add driver logic here
+                    setShowAddDriverModal(false);
+                  }}
+                >
+                  <Save className="h-4 w-4 mr-2" />
+                  Add Driver
+                </Button>
+                <Button variant="outline" onClick={() => setShowAddDriverModal(false)}>
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Create Route Modal */}
+      {showCreateRouteModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-amber-200/50">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-lg flex items-center justify-center">
+                    <Route className="h-5 w-5 text-white" />
+                  </div>
+                  <h2 className="text-xl font-bold bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">Create New Route</h2>
+                </div>
+                <Button variant="ghost" size="sm" onClick={() => setShowCreateRouteModal(false)}>
+                  <X className="h-5 w-5" />
+                </Button>
+              </div>
+            </div>
+            <div className="p-6 space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="routeName">Route Name</Label>
+                <Input id="routeName" placeholder="e.g., Campus to City Center" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="startPoint">Start Point</Label>
+                <Input id="startPoint" placeholder="e.g., ADUSTECH Main Gate" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="endPoint">End Point</Label>
+                <Input id="endPoint" placeholder="e.g., City Center Market" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="distance">Distance (km)</Label>
+                <Input id="distance" type="number" placeholder="e.g., 15.5" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="duration">Estimated Duration (minutes)</Label>
+                <Input id="duration" type="number" placeholder="e.g., 45" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="fare">Fare (₦)</Label>
+                <Input id="fare" type="number" placeholder="e.g., 200" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="stops">Intermediate Stops</Label>
+                <Textarea id="stops" placeholder="List major stops along the route" rows={3} />
+              </div>
+              <div className="flex space-x-3 pt-4">
+                <Button
+                  className="flex-1 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700"
+                  onClick={() => {
+                    // Create route logic here
+                    setShowCreateRouteModal(false);
+                  }}
+                >
+                  <Save className="h-4 w-4 mr-2" />
+                  Create Route
+                </Button>
+                <Button variant="outline" onClick={() => setShowCreateRouteModal(false)}>
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Maintenance Modal */}
+      {showMaintenanceModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-purple-200/50">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-violet-600 rounded-lg flex items-center justify-center">
+                    <Wrench className="h-5 w-5 text-white" />
+                  </div>
+                  <h2 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-violet-600 bg-clip-text text-transparent">Schedule Maintenance</h2>
+                </div>
+                <Button variant="ghost" size="sm" onClick={() => setShowMaintenanceModal(false)}>
+                  <X className="h-5 w-5" />
+                </Button>
+              </div>
+            </div>
+            <div className="p-6 space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="maintenanceBus">Select Bus</Label>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Choose bus for maintenance" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ADUS-001">ADUS-001</SelectItem>
+                    <SelectItem value="ADUS-002">ADUS-002</SelectItem>
+                    <SelectItem value="ADUS-003">ADUS-003</SelectItem>
+                    <SelectItem value="ADUS-004">ADUS-004</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="maintenanceType">Maintenance Type</Label>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select maintenance type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="routine">Routine Inspection</SelectItem>
+                    <SelectItem value="oil-change">Oil Change</SelectItem>
+                    <SelectItem value="tire-replacement">Tire Replacement</SelectItem>
+                    <SelectItem value="brake-service">Brake Service</SelectItem>
+                    <SelectItem value="engine-repair">Engine Repair</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="scheduledDate">Scheduled Date</Label>
+                <Input id="scheduledDate" type="date" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="priority">Priority Level</Label>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select priority" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="low">Low</SelectItem>
+                    <SelectItem value="medium">Medium</SelectItem>
+                    <SelectItem value="high">High</SelectItem>
+                    <SelectItem value="urgent">Urgent</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="notes">Notes</Label>
+                <Textarea id="notes" placeholder="Additional notes about the maintenance" rows={3} />
+              </div>
+              <div className="flex space-x-3 pt-4">
+                <Button
+                  className="flex-1 bg-gradient-to-r from-purple-500 to-violet-600 hover:from-purple-600 hover:to-violet-700"
+                  onClick={() => {
+                    // Schedule maintenance logic here
+                    setShowMaintenanceModal(false);
+                  }}
+                >
+                  <CalendarDays className="h-4 w-4 mr-2" />
+                  Schedule
+                </Button>
+                <Button variant="outline" onClick={() => setShowMaintenanceModal(false)}>
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

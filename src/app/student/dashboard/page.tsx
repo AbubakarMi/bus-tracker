@@ -2,50 +2,77 @@
 
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import Link from 'next/link';
 import {
-  MapPin,
-  Clock,
   Bus,
+  MapPin,
   Calendar,
+  Clock,
+  TrendingUp,
   Navigation,
   Users,
   CheckCircle,
   Star,
   Activity,
-  ArrowRight,
-  Bell,
-  Settings,
-  TrendingUp,
-  Award,
-  Zap,
-  Globe,
-  Shield,
-  Heart,
-  Smartphone,
-  Wifi,
-  Battery,
-  Signal,
+  ArrowUpRight,
   Route,
   Timer,
   DollarSign,
-  AlertCircle
+  AlertCircle,
+  Wifi,
+  Battery,
+  Zap
 } from 'lucide-react';
+
+interface BusStatus {
+  id: string;
+  number: string;
+  route: string;
+  status: 'on-time' | 'delayed' | 'boarding';
+  currentLocation: string;
+  nextStop: string;
+  eta: string;
+  distanceLeft: string;
+  occupancy: number;
+  availableSeats: number;
+  driver: string;
+  amenities: string[];
+  speed: number;
+}
+
+interface BookingData {
+  id: string;
+  busNumber: string;
+  route: string;
+  date: string;
+  departureTime: string;
+  boardingTime: string;
+  seat: string;
+  gate: string;
+  status: 'confirmed' | 'boarding' | 'completed';
+  price: string;
+}
 
 export default function StudentDashboard() {
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [liveBuses, setLiveBuses] = useState([]);
-  const [todayStats, setTodayStats] = useState({
+  const [availableBuses, setAvailableBuses] = useState<BusStatus[]>([]);
+  const [myBookings, setMyBookings] = useState<BookingData[]>([]);
+  const [stats, setStats] = useState({
     totalTrips: 0,
-    activeRoutes: 0,
-    onTimePerformance: 0,
-    availableSeats: 0
+    pendingBookings: 0,
+    onTimeRate: 0,
+    totalSpent: 0
   });
-  const [weather, setWeather] = useState({ temp: 28, condition: 'Sunny', humidity: 65 });
+
+  const [recentActivity, setRecentActivity] = useState([
+    { id: 1, type: 'booking', message: 'Seat confirmed for Lagos Express', time: '2 hours ago', status: 'success', icon: CheckCircle },
+    { id: 2, type: 'payment', message: 'Payment successful - ₦5,500', time: '2 hours ago', status: 'success', icon: DollarSign },
+    { id: 3, type: 'tracking', message: 'Bus BUS-001 departed on time', time: '5 hours ago', status: 'info', icon: Bus },
+    { id: 4, type: 'arrival', message: 'Trip completed: Campus Shuttle', time: '1 day ago', status: 'success', icon: CheckCircle },
+    { id: 5, type: 'booking', message: 'New route available: Airport Link', time: '2 days ago', status: 'info', icon: Route }
+  ]);
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -54,563 +81,423 @@ export default function StudentDashboard() {
 
   // Simulate real-time bus updates
   useEffect(() => {
-    const updateLiveBuses = () => {
-      const buses = [
+    const updateAvailableBuses = () => {
+      const buses: BusStatus[] = [
         {
           id: 'BUS-001',
+          number: 'ADUS-001',
           route: 'Lagos Express',
+          status: 'on-time',
           currentLocation: 'Mile 2 Bridge',
           nextStop: 'CMS Terminal',
           eta: '8 mins',
           distanceLeft: '12.5 km',
           occupancy: 78,
-          maxCapacity: 45,
           availableSeats: 10,
-          status: 'on-time',
-          delay: 0,
-          speed: 45,
           driver: 'Emeka Johnson',
-          amenities: ['wifi', 'ac', 'charging']
+          amenities: ['wifi', 'ac', 'charging'],
+          speed: 45
         },
         {
           id: 'BUS-003',
+          number: 'ADUS-003',
           route: 'Campus Shuttle',
+          status: 'boarding',
           currentLocation: 'Main Gate',
           nextStop: 'Library Complex',
           eta: '3 mins',
           distanceLeft: '2.1 km',
           occupancy: 45,
-          maxCapacity: 30,
           availableSeats: 17,
-          status: 'on-time',
-          delay: 0,
-          speed: 25,
           driver: 'Fatima Adebayo',
-          amenities: ['ac']
+          amenities: ['ac'],
+          speed: 25
         },
         {
           id: 'BUS-007',
+          number: 'ADUS-007',
           route: 'Airport Link',
+          status: 'delayed',
           currentLocation: 'Ikeja Along',
           nextStop: 'MM Airport T2',
           eta: '25 mins',
           distanceLeft: '18.7 km',
           occupancy: 92,
-          maxCapacity: 50,
           availableSeats: 4,
-          status: 'delayed',
-          delay: 5,
-          speed: 38,
           driver: 'Ibrahim Musa',
-          amenities: ['wifi', 'ac', 'charging', 'luggage']
+          amenities: ['wifi', 'ac', 'charging', 'luggage'],
+          speed: 38
         }
       ];
-      setLiveBuses(buses);
+      setAvailableBuses(buses);
+    };
 
-      // Update today's stats
-      setTodayStats({
-        totalTrips: 156,
-        activeRoutes: 12,
-        onTimePerformance: 94.2,
-        availableSeats: buses.reduce((total, bus) => total + bus.availableSeats, 0)
+    const updateMyBookings = () => {
+      const bookings: BookingData[] = [
+        {
+          id: 'BK-001',
+          busNumber: 'ADUS-001',
+          route: 'Lagos Express',
+          date: 'Today',
+          departureTime: '8:30 AM',
+          boardingTime: '8:15 AM',
+          seat: 'A12',
+          gate: 'Gate 3',
+          status: 'confirmed',
+          price: '₦5,500'
+        },
+        {
+          id: 'BK-002',
+          busNumber: 'ADUS-003',
+          route: 'Campus Shuttle',
+          date: 'Tomorrow',
+          departureTime: '2:15 PM',
+          boardingTime: '2:00 PM',
+          seat: 'B8',
+          gate: 'Gate 1',
+          status: 'confirmed',
+          price: '₦300'
+        }
+      ];
+      setMyBookings(bookings);
+    };
+
+    const updateStats = () => {
+      setStats({
+        totalTrips: 24,
+        pendingBookings: 2,
+        onTimeRate: 94.2,
+        totalSpent: 45600
       });
     };
 
-    updateLiveBuses();
-    const interval = setInterval(updateLiveBuses, 10000); // Update every 10 seconds
+    updateAvailableBuses();
+    updateMyBookings();
+    updateStats();
+
+    const interval = setInterval(() => {
+      updateAvailableBuses();
+    }, 10000);
+
     return () => clearInterval(interval);
   }, []);
 
-  const stats = [
+  const quickStats = [
     {
       icon: Bus,
-      value: todayStats.totalTrips.toString(),
-      label: "Today's Trips",
-      color: "bg-primary",
-      textColor: "text-primary",
-      growth: "+12%",
-      realTime: true
+      value: stats.totalTrips.toString(),
+      label: "Total Trips",
+      change: "+3 this month",
+      changeType: "positive" as const
     },
     {
-      icon: Route,
-      value: todayStats.activeRoutes.toString(),
-      label: "Active Routes",
-      color: "bg-accent",
-      textColor: "text-accent",
-      growth: "+3",
-      realTime: true
+      icon: Calendar,
+      value: stats.pendingBookings.toString(),
+      label: "Upcoming Trips",
+      change: "2 confirmed",
+      changeType: "neutral" as const
     },
     {
       icon: CheckCircle,
-      value: `${todayStats.onTimePerformance}%`,
+      value: `${stats.onTimeRate}%`,
       label: "On-Time Rate",
-      color: "bg-chart-2",
-      textColor: "text-chart-2",
-      growth: "+2.1%",
-      realTime: true
+      change: "+2.1% this month",
+      changeType: "positive" as const
     },
     {
-      icon: Users,
-      value: todayStats.availableSeats.toString(),
-      label: "Available Seats",
-      color: "bg-chart-4",
-      textColor: "text-chart-4",
-      growth: "Live",
-      realTime: true
+      icon: DollarSign,
+      value: `₦${(stats.totalSpent / 1000).toFixed(0)}k`,
+      label: "Total Spent",
+      change: "+₦5.8k this month",
+      changeType: "neutral" as const
     }
-  ];
-
-  const upcomingTrips = [
-    {
-      id: 1,
-      route: "Lagos Express",
-      departureTime: "8:30 AM",
-      date: "Today",
-      status: "confirmed",
-      seat: "A12",
-      price: "₦5,500",
-      gate: "Gate 3",
-      boarding: "8:15 AM",
-      availableSeats: 12,
-      busId: "BUS-001"
-    },
-    {
-      id: 2,
-      route: "Campus Shuttle",
-      departureTime: "2:15 PM",
-      date: "Today",
-      status: "confirmed",
-      seat: "B8",
-      price: "₦300",
-      gate: "Gate 1",
-      boarding: "2:00 PM",
-      availableSeats: 25,
-      busId: "BUS-003"
-    }
-  ];
-
-  const recentActivity = [
-    { message: 'Trip completed: Lagos Express', time: '2 hours ago', icon: CheckCircle, color: 'text-green-600' },
-    { message: 'Seat confirmed for Campus Shuttle', time: '5 hours ago', icon: Calendar, color: 'text-blue-600' },
-    { message: 'Payment successful - ₦5,500', time: '6 hours ago', icon: DollarSign, color: 'text-green-600' },
-    { message: 'Earned 50 eco-points', time: '1 day ago', icon: Star, color: 'text-yellow-600' },
-    { message: 'Bus BUS-007 arrived 3 mins early', time: '2 days ago', icon: Timer, color: 'text-blue-600' }
-  ];
-
-  const quickStats = [
-    { label: 'Weather', value: `${weather.temp}°C ${weather.condition}`, icon: Globe },
-    { label: 'Network', value: 'Strong', icon: Signal },
-    { label: 'Live Buses', value: liveBuses.length.toString(), icon: Activity }
   ];
 
   return (
-    <div className="h-full bg-gradient-to-br from-background via-muted/30 to-primary/5">
-      <div className="max-w-7xl mx-auto px-3 py-2 space-y-3">
-
-        {/* Enhanced Header Section */}
-        <div className="mb-2">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
-            <div className="flex items-center gap-4">
-              <Avatar className="h-16 w-16 border-4 border-primary/20">
-                <AvatarImage src="/api/placeholder/100/100" alt="Student" />
-                <AvatarFallback className="text-xl font-bold bg-primary text-white">ST</AvatarFallback>
-              </Avatar>
-              <div>
-                <h1 className="text-3xl font-bold text-foreground mb-1 animate-gradient-text">
-                  Welcome back, Student! 👋
-                </h1>
-                <p className="text-base text-muted-foreground flex items-center gap-2">
-                  <Activity className="h-4 w-4 text-primary" />
-                  {currentTime.toLocaleDateString('en-NG', {
-                    weekday: 'long',
-                    month: 'long',
-                    day: 'numeric'
-                  })} • {currentTime.toLocaleTimeString('en-NG', {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })}
-                </p>
-                <div className="flex items-center gap-4 mt-1">
-                  {quickStats.map((stat, index) => (
-                    <span key={index} className="text-sm flex items-center gap-1 text-muted-foreground">
-                      <stat.icon className="h-3 w-3" />
-                      <span className="font-medium">{stat.label}:</span>
-                      {stat.value}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap gap-3">
-              <Button className="gradient-bg-primary btn-interactive glow-primary hover-lift">
-                <Navigation className="h-4 w-4 mr-2" />
-                Track Live Bus
-              </Button>
-              <Button asChild variant="outline" className="border-2 border-border hover:border-primary/50 feature-card">
-                <Link href="/student/book">
-                  <Calendar className="h-4 w-4 mr-2" />
-                  Book with Live Seats
-                </Link>
-              </Button>
-            </div>
+    <div className="space-y-6">
+      {/* Header Section */}
+      <div className="mb-6">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              Welcome back, Student! 👋
+            </h1>
+            <p className="text-lg text-gray-600 flex items-center gap-3">
+              <Activity className="h-5 w-5 text-blue-600" />
+              {currentTime.toLocaleDateString('en-NG', {
+                weekday: 'long',
+                month: 'long',
+                day: 'numeric'
+              })} • {currentTime.toLocaleTimeString('en-NG', {
+                hour: '2-digit',
+                minute: '2-digit'
+              })}
+            </p>
           </div>
         </div>
+      </div>
 
-        {/* Enhanced Live Stats Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
-          {stats.map((stat, index) => (
-            <Card key={index} className="modern-card feature-card group animate-scale-in relative overflow-hidden" style={{ animationDelay: `${index * 0.1}s` }}>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div className={`p-3 rounded-full ${stat.color} group-hover:animate-pulse relative`}>
-                    <stat.icon className="h-6 w-6 text-white" />
-                    {stat.realTime && (
-                      <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                    )}
-                  </div>
-                  <div className="text-right">
-                    <div className="flex items-center gap-2 justify-end">
-                      <p className="text-2xl font-bold text-foreground">{stat.value}</p>
-                      <span className={`text-xs font-medium px-2 py-1 rounded-full animate-breathe ${
-                        stat.growth === 'Live' ? 'text-green-600 bg-green-100' : 'text-accent bg-accent/10'
-                      }`}>
-                        {stat.growth}
-                      </span>
-                    </div>
-                    <p className="text-sm text-muted-foreground">{stat.label}</p>
-                    {stat.realTime && (
-                      <span className="text-xs text-green-600 font-medium flex items-center gap-1">
-                        <div className="w-1 h-1 bg-green-500 rounded-full animate-pulse"></div>
-                        Live Data
-                      </span>
-                    )}
-                  </div>
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {quickStats.map((stat, index) => (
+          <Card key={index} className="bg-white/95 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] hover:-translate-y-1 relative overflow-hidden">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg">
+                  <stat.icon className="h-6 w-6 text-white" />
                 </div>
-                <div className={`absolute bottom-0 left-0 w-full h-1 ${stat.color} group-hover:h-2 transition-all duration-300`} />
-                {stat.realTime && (
-                  <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-green-500/20 to-transparent rounded-bl-full"></div>
-                )}
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                <div className="text-right">
+                  <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                  <p className="text-sm text-gray-600">{stat.label}</p>
+                  <span className={`text-xs font-medium px-2 py-1 rounded-full ${
+                    stat.changeType === 'positive'
+                      ? 'text-green-700 bg-green-100 border border-green-200'
+                      : 'text-blue-700 bg-blue-100 border border-blue-200'
+                  }`}>
+                    {stat.change}
+                  </span>
+                </div>
+              </div>
+              <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-600" />
+            </CardContent>
+          </Card>
+        ))}
+      </div>
 
-        {/* Enhanced Live Bus Tracking */}
-        <Card className="mb-3 modern-card animate-slide-in-up border-0 shadow-xl">
-          <CardHeader className="gradient-bg-primary text-white">
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+
+        {/* Available Buses */}
+        <Card className="xl:col-span-2 bg-white/95 backdrop-blur-sm border-0 shadow-xl">
+          <CardHeader className="bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 text-white">
             <CardTitle className="flex items-center justify-between text-xl">
               <div className="flex items-center gap-2">
-                <Navigation className="h-6 w-6 animate-float" />
-                Live Bus Tracking
-                <Badge className="bg-white/20 text-white ml-2">
-                  {liveBuses.length} Active
+                <Bus className="h-6 w-6" />
+                Available Buses
+                <Badge className="bg-white/20 text-white border border-white/30">
+                  {availableBuses.length} Live
                 </Badge>
               </div>
-              <Button variant="secondary" size="sm" className="bg-white/20 hover:bg-white/30 text-white">
-                View Map
+              <Button variant="secondary" size="sm" className="bg-white/20 hover:bg-white/30 text-white border border-white/30">
+                View All Routes
               </Button>
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {liveBuses.map((bus, index) => (
-                <div key={bus.id} className="p-4 modern-card hover-lift group border-l-4 border-primary animate-slide-in-up relative overflow-hidden" style={{ animationDelay: `${index * 0.1}s` }}>
+          <CardContent className="p-6 space-y-4">
+            {availableBuses.map((bus, index) => (
+              <div key={bus.id} className="p-4 bg-white/95 backdrop-blur-sm border border-gray-200/50 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] hover:-translate-y-1 border-l-4 border-blue-500 relative overflow-hidden">
 
-                  {/* Bus Header */}
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <div className={`p-2 rounded-full ${
-                        bus.status === 'on-time' ? 'bg-green-100' :
-                        bus.status === 'delayed' ? 'bg-red-100' : 'bg-yellow-100'
-                      }`}>
-                        <Bus className={`h-4 w-4 ${
-                          bus.status === 'on-time' ? 'text-green-600' :
-                          bus.status === 'delayed' ? 'text-red-600' : 'text-yellow-600'
-                        } group-hover:animate-bounce`} />
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-sm text-foreground group-hover:text-primary transition-colors">{bus.id}</h4>
-                        <p className="text-xs text-muted-foreground">{bus.route}</p>
-                      </div>
+                {/* Bus Header */}
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className={`p-2 rounded-full ${
+                      bus.status === 'on-time' ? 'bg-green-100' :
+                      bus.status === 'delayed' ? 'bg-red-100' : 'bg-yellow-100'
+                    }`}>
+                      <Bus className={`h-5 w-5 ${
+                        bus.status === 'on-time' ? 'text-green-600' :
+                        bus.status === 'delayed' ? 'text-red-600' : 'text-yellow-600'
+                      }`} />
                     </div>
-                    <div className="text-right">
-                      <Badge variant={bus.status === 'on-time' ? 'default' : 'destructive'} className="text-xs mb-1">
-                        {bus.status === 'delayed' ? `+${bus.delay}m` : 'On Time'}
-                      </Badge>
-                      <div className="text-xs text-muted-foreground">{bus.speed} km/h</div>
+                    <div>
+                      <h4 className="font-bold text-lg text-gray-900">{bus.number}</h4>
+                      <p className="text-sm text-gray-600">{bus.route}</p>
                     </div>
                   </div>
-
-                  {/* Location & ETA */}
-                  <div className="space-y-2 text-xs mb-3">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground flex items-center gap-1">
-                        <MapPin className="h-3 w-3" />
-                        Current:
-                      </span>
-                      <span className="font-medium text-foreground">{bus.currentLocation}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground flex items-center gap-1">
-                        <Navigation className="h-3 w-3" />
-                        Next Stop:
-                      </span>
-                      <span className="font-medium text-foreground">{bus.nextStop}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
-                        ETA:
-                      </span>
-                      <span className="font-bold text-accent">{bus.eta}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground flex items-center gap-1">
-                        <Route className="h-3 w-3" />
-                        Distance:
-                      </span>
-                      <span className="font-medium text-primary">{bus.distanceLeft}</span>
-                    </div>
-                  </div>
-
-                  {/* Occupancy */}
-                  <div className="mb-3">
-                    <div className="flex justify-between text-xs mb-1">
-                      <span className="text-muted-foreground">Occupancy ({bus.occupancy}%)</span>
-                      <span className={`font-medium ${
-                        bus.availableSeats > 10 ? 'text-green-600' :
-                        bus.availableSeats > 5 ? 'text-yellow-600' : 'text-red-600'
-                      }`}>
-                        {bus.availableSeats} seats left
-                      </span>
-                    </div>
-                    <Progress
-                      value={bus.occupancy}
-                      className={`h-2 ${
-                        bus.occupancy > 80 ? 'bg-red-100' :
-                        bus.occupancy > 60 ? 'bg-yellow-100' : 'bg-green-100'
-                      }`}
-                    />
-                  </div>
-
-                  {/* Driver & Amenities */}
-                  <div className="space-y-2 text-xs mb-3">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Driver:</span>
-                      <span className="font-medium text-foreground">{bus.driver}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <span className="text-muted-foreground">Features:</span>
-                      <div className="flex gap-1 ml-auto">
-                        {bus.amenities.includes('wifi') && <Wifi className="h-3 w-3 text-blue-500" />}
-                        {bus.amenities.includes('ac') && <Zap className="h-3 w-3 text-green-500" />}
-                        {bus.amenities.includes('charging') && <Battery className="h-3 w-3 text-yellow-500" />}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Action Buttons */}
-                  <div className="flex gap-2">
-                    <Button size="sm" variant="outline" className="flex-1 btn-interactive hover-lift text-xs">
-                      <MapPin className="h-3 w-3 mr-1" />
-                      Track
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant={bus.availableSeats > 0 ? "default" : "secondary"}
-                      disabled={bus.availableSeats === 0}
-                      className="flex-1 btn-interactive hover-lift text-xs"
-                    >
-                      <Calendar className="h-3 w-3 mr-1" />
-                      {bus.availableSeats > 0 ? 'Book' : 'Full'}
-                    </Button>
-                  </div>
-
-                  {/* Live indicator */}
-                  <div className="absolute top-2 right-2 flex items-center gap-1">
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    <span className="text-xs text-green-600 font-medium">LIVE</span>
+                  <div className="text-right">
+                    <Badge variant={bus.status === 'on-time' ? 'default' : bus.status === 'delayed' ? 'destructive' : 'secondary'}>
+                      {bus.status === 'delayed' ? 'Delayed' : bus.status === 'boarding' ? 'Boarding' : 'On Time'}
+                    </Badge>
+                    <div className="text-sm text-gray-500 mt-1">{bus.speed} km/h</div>
                   </div>
                 </div>
-              ))}
-            </div>
+
+                {/* Location & ETA */}
+                <div className="grid grid-cols-2 gap-4 text-sm mb-4">
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-gray-500 flex items-center gap-1">
+                        <MapPin className="h-4 w-4" />
+                        Current:
+                      </span>
+                      <span className="font-medium text-gray-900">{bus.currentLocation}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-500 flex items-center gap-1">
+                        <Navigation className="h-4 w-4" />
+                        Next Stop:
+                      </span>
+                      <span className="font-medium text-gray-900">{bus.nextStop}</span>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-gray-500 flex items-center gap-1">
+                        <Clock className="h-4 w-4" />
+                        ETA:
+                      </span>
+                      <span className="font-bold text-blue-600">{bus.eta}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-500 flex items-center gap-1">
+                        <Route className="h-4 w-4" />
+                        Distance:
+                      </span>
+                      <span className="font-medium text-blue-600">{bus.distanceLeft}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Occupancy */}
+                <div className="mb-4">
+                  <div className="flex justify-between text-sm mb-2">
+                    <span className="text-gray-500">Occupancy ({bus.occupancy}%)</span>
+                    <span className={`font-medium ${
+                      bus.availableSeats > 10 ? 'text-green-600' :
+                      bus.availableSeats > 5 ? 'text-yellow-600' : 'text-red-600'
+                    }`}>
+                      {bus.availableSeats} seats available
+                    </span>
+                  </div>
+                  <Progress
+                    value={bus.occupancy}
+                    className="h-2"
+                  />
+                </div>
+
+                {/* Driver & Amenities */}
+                <div className="flex justify-between items-center mb-4">
+                  <div className="text-sm">
+                    <span className="text-gray-500">Driver: </span>
+                    <span className="font-medium text-gray-900">{bus.driver}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {bus.amenities.includes('wifi') && <Wifi className="h-4 w-4 text-blue-500" />}
+                    {bus.amenities.includes('ac') && <Zap className="h-4 w-4 text-green-500" />}
+                    {bus.amenities.includes('charging') && <Battery className="h-4 w-4 text-yellow-500" />}
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex gap-3">
+                  <Button
+                    variant="outline"
+                    className="flex-1 border-blue-200 hover:border-blue-500 hover:bg-blue-50"
+                  >
+                    <MapPin className="h-4 w-4 mr-2" />
+                    Track Live
+                  </Button>
+                  <Button
+                    className={`flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 ${
+                      bus.availableSeats === 0 ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
+                    disabled={bus.availableSeats === 0}
+                  >
+                    <Calendar className="h-4 w-4 mr-2" />
+                    {bus.availableSeats > 0 ? 'Book Seat' : 'Full'}
+                  </Button>
+                </div>
+
+                {/* Live indicator */}
+                <div className="absolute top-3 right-3 flex items-center gap-1">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-xs text-green-600 font-medium">LIVE</span>
+                </div>
+              </div>
+            ))}
           </CardContent>
         </Card>
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-3 mb-3">
+        {/* My Bookings & Activity */}
+        <div className="space-y-6">
 
-          {/* Enhanced Upcoming Trips */}
-          <Card className="xl:col-span-2 modern-card animate-slide-in-left border-0 shadow-xl">
-            <CardHeader className="gradient-bg-primary text-white">
-              <CardTitle className="flex items-center justify-between text-xl">
-                <div className="flex items-center gap-2">
-                  <Bus className="h-6 w-6 animate-float" />
-                  Your Next Trips
-                </div>
-                <Badge className="bg-white/20 text-white">
-                  {upcomingTrips.length} Confirmed
+          {/* My Bookings */}
+          <Card className="bg-white/95 backdrop-blur-sm border-0 shadow-xl">
+            <CardHeader className="bg-gradient-to-r from-green-600 to-emerald-600 text-white">
+              <CardTitle className="flex items-center gap-2 text-xl">
+                <Calendar className="h-6 w-6" />
+                My Bookings
+                <Badge className="bg-white/20 text-white border border-white/30 ml-auto">
+                  {myBookings.length} Active
                 </Badge>
               </CardTitle>
             </CardHeader>
             <CardContent className="p-4 space-y-3">
-              {upcomingTrips.map((trip, index) => (
-                <div key={trip.id} className="p-4 modern-card hover-lift group animate-slide-in-up border-l-4 border-primary relative overflow-hidden" style={{ animationDelay: `${index * 0.1}s` }}>
-
-                  <div className="flex items-center justify-between mb-3">
+              {myBookings.map((booking, index) => (
+                <div key={booking.id} className="p-4 bg-white/95 backdrop-blur-sm border border-gray-200/50 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] hover:-translate-y-1 border-l-4 border-green-500 relative overflow-hidden">
+                  <div className="flex justify-between items-start mb-3">
                     <div>
-                      <div className="flex items-center gap-3 mb-2">
-                        <h4 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors">{trip.route}</h4>
-                        <Badge variant="default" className="text-xs bg-green-100 text-green-700">
-                          {trip.status}
-                        </Badge>
-                        <Badge variant="outline" className="text-xs">
-                          {trip.availableSeats} seats left
-                        </Badge>
-                      </div>
-                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm text-muted-foreground">
-                        <span className="flex items-center gap-1">
-                          <Calendar className="h-4 w-4" />
-                          {trip.date}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Clock className="h-4 w-4" />
-                          Departs: {trip.departureTime}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Users className="h-4 w-4" />
-                          Seat: {trip.seat}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <MapPin className="h-4 w-4" />
-                          {trip.gate}
-                        </span>
-                      </div>
-                      <div className="mt-2 text-sm">
-                        <span className="text-muted-foreground">Boarding: </span>
-                        <span className="font-medium text-foreground">{trip.boarding}</span>
-                        <span className="text-muted-foreground ml-4">Bus ID: </span>
-                        <span className="font-medium text-primary">{trip.busId}</span>
-                      </div>
+                      <h4 className="font-bold text-lg text-gray-900">{booking.route}</h4>
+                      <p className="text-sm text-gray-600">{booking.busNumber} • {booking.date}</p>
                     </div>
-                    <div className="text-right">
-                      <div className="text-2xl font-bold text-accent mb-2">{trip.price}</div>
-                      <div className="flex flex-col gap-1">
-                        <Button variant="outline" size="sm" className="btn-interactive hover-lift">
-                          <Navigation className="h-4 w-4 mr-2" />
-                          Track Live
-                        </Button>
-                        <Button variant="outline" size="sm" className="btn-interactive hover-lift">
-                          <Settings className="h-4 w-4 mr-2" />
-                          Manage
-                        </Button>
-                      </div>
+                    <Badge variant="default" className="bg-green-100 text-green-700">
+                      {booking.status}
+                    </Badge>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 text-sm mb-3">
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Departure:</span>
+                      <span className="font-medium">{booking.departureTime}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Seat:</span>
+                      <span className="font-medium">{booking.seat}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Boarding:</span>
+                      <span className="font-medium">{booking.boardingTime}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Gate:</span>
+                      <span className="font-medium">{booking.gate}</span>
                     </div>
                   </div>
 
-                  {/* Trip progress indicator */}
-                  <div className="mt-3 p-3 bg-muted/30 rounded-lg">
-                    <div className="flex items-center justify-between text-xs mb-2">
-                      <span className="text-muted-foreground">Trip Progress</span>
-                      <span className="font-medium">Ready to Board</span>
-                    </div>
-                    <Progress value={25} className="h-2" />
+                  <div className="flex justify-between items-center">
+                    <span className="text-lg font-bold text-green-600">{booking.price}</span>
+                    <Button size="sm" variant="outline" className="border-green-200 hover:border-green-500 hover:bg-green-50">
+                      <Navigation className="h-4 w-4 mr-1" />
+                      Track
+                    </Button>
                   </div>
                 </div>
               ))}
-
-              <Button asChild className="w-full h-14 gradient-bg-primary btn-interactive glow-primary text-white">
-                <Link href="/student/book">
-                  <Calendar className="h-6 w-6 mr-3" />
-                  <div className="text-left">
-                    <div className="font-bold text-lg">Book New Trip</div>
-                    <div className="text-sm opacity-90">Live seats • Real-time tracking</div>
-                  </div>
-                </Link>
-              </Button>
             </CardContent>
           </Card>
 
-          {/* Enhanced Activity Feed */}
-          <Card className="modern-card animate-slide-in-right border-0 shadow-xl">
-            <CardHeader className="bg-gradient-to-r from-chart-5 to-chart-1 text-white">
+          {/* Recent Activity */}
+          <Card className="bg-white/95 backdrop-blur-sm border-0 shadow-xl">
+            <CardHeader className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
               <CardTitle className="flex items-center gap-2 text-xl">
-                <Activity className="h-6 w-6 animate-float-delay-2" />
+                <Activity className="h-6 w-6" />
                 Recent Activity
               </CardTitle>
             </CardHeader>
             <CardContent className="p-4 space-y-3">
               {recentActivity.map((activity, index) => (
-                <div key={index} className="flex items-start gap-4 p-3 rounded-lg hover:bg-muted/30 transition-all hover-lift group animate-slide-in-up" style={{ animationDelay: `${index * 0.1}s` }}>
-                  <div className="p-2 bg-muted rounded-full group-hover:bg-primary/20 transition-colors">
-                    <activity.icon className={`h-4 w-4 ${activity.color} group-hover:animate-pulse`} />
+                <div key={activity.id} className="flex items-start gap-4 p-3 rounded-lg hover:bg-gray-50 transition-all">
+                  <div className={`p-2 rounded-full ${
+                    activity.status === 'success' ? 'bg-green-100' :
+                    activity.status === 'info' ? 'bg-blue-100' : 'bg-yellow-100'
+                  }`}>
+                    <activity.icon className={`h-4 w-4 ${
+                      activity.status === 'success' ? 'text-green-600' :
+                      activity.status === 'info' ? 'text-blue-600' : 'text-yellow-600'
+                    }`} />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-foreground">{activity.message}</p>
-                    <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                    <p className="text-sm font-medium text-gray-900">{activity.message}</p>
+                    <p className="text-xs text-gray-500 mt-1 flex items-center gap-1">
                       <Clock className="h-3 w-3" />
                       {activity.time}
                     </p>
                   </div>
                 </div>
               ))}
-
-              <Button variant="outline" className="w-full mt-4 btn-interactive hover-lift">
-                <Bell className="h-4 w-4 mr-2" />
-                View All Notifications
-              </Button>
             </CardContent>
           </Card>
         </div>
-
-        {/* Enhanced Quick Actions Bar */}
-        <Card className="modern-card gradient-bg-secondary text-white animate-glow-pulse overflow-hidden border-0 shadow-2xl">
-          <CardContent className="p-4 relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/30 to-accent/30 animate-morphing"></div>
-            <div className="relative z-10">
-              <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
-                <div className="text-center lg:text-left animate-slide-in-left">
-                  <h3 className="text-2xl font-bold mb-2 animate-gradient-text">Ready for Your Next Journey?</h3>
-                  <p className="text-primary-foreground/90 text-lg">Book now with real-time seat availability and live GPS tracking</p>
-                  <div className="flex items-center gap-6 mt-3">
-                    <span className="text-sm flex items-center gap-2">
-                      <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                      {todayStats.totalTrips} trips running today
-                    </span>
-                    <span className="text-sm flex items-center gap-2">
-                      <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
-                      {todayStats.availableSeats} seats available now
-                    </span>
-                    <span className="text-sm flex items-center gap-2">
-                      <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
-                      {liveBuses.length} buses live tracked
-                    </span>
-                  </div>
-                </div>
-                <div className="flex flex-wrap gap-3 animate-slide-in-right">
-                  <Button asChild size="lg" variant="secondary" className="bg-white text-primary hover:bg-muted btn-interactive feature-card">
-                    <Link href="/student/book">
-                      <Calendar className="h-6 w-6 mr-3" />
-                      <div className="text-left">
-                        <div className="font-bold">Book Live Seats</div>
-                        <div className="text-xs opacity-75">Real-time availability</div>
-                      </div>
-                    </Link>
-                  </Button>
-                  <Button size="lg" variant="outline" className="glass-card border-white/20 text-white hover:bg-white/20 btn-interactive">
-                    <MapPin className="h-5 w-5 mr-2" />
-                    Live Bus Map
-                  </Button>
-                  <Button size="lg" variant="outline" className="glass-card border-white/20 text-white hover:bg-white/20 btn-interactive">
-                    <Activity className="h-5 w-5 mr-2" />
-                    Trip History
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );
