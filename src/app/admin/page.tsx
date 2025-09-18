@@ -188,105 +188,109 @@ export default function AdminDashboard() {
 
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="bg-white border border-gray-200 shadow-sm">
-          <CardContent className="p-6">
+        <Card className="bg-white/80 backdrop-blur-sm border border-blue-200/50 shadow-lg hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-500 transform hover:scale-105 group overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <CardContent className="p-6 relative">
             <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center">
-                <Bus className="h-6 w-6 text-blue-600" />
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300">
+                <Bus className="h-6 w-6 text-white" />
               </div>
               <div className="text-right">
-                <div className="text-gray-600 text-sm">Total Fleet</div>
-                <div className="text-gray-400 text-xs">All Buses</div>
+                <div className="text-gray-600 text-sm font-medium">Total Fleet</div>
+                <div className="text-blue-500/70 text-xs">All Buses</div>
               </div>
             </div>
-            <div className="space-y-2">
-              <div className="text-3xl font-bold text-gray-900">{stats.totalBuses}</div>
+            <div className="space-y-3">
+              <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">{stats.totalBuses}</div>
               <div className="flex items-center space-x-2">
-                <div className="flex-1 bg-gray-200 rounded-full h-2">
+                <div className="flex-1 bg-gradient-to-r from-blue-200 to-indigo-200 rounded-full h-2.5 overflow-hidden">
                   <div
-                    className="h-full bg-blue-600 rounded-full transition-all duration-500"
+                    className="h-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full transition-all duration-1000 animate-pulse"
                     style={{ width: `${(stats.activeBuses / stats.totalBuses) * 100}%` }}
                   ></div>
                 </div>
-                <span className="text-green-600 font-medium text-sm">{stats.activeBuses} active</span>
+                <span className="text-green-600 font-semibold text-sm">{stats.activeBuses} active</span>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-white border border-gray-200 shadow-sm">
-          <CardContent className="p-6">
+        <Card className="bg-white/80 backdrop-blur-sm border border-emerald-200/50 shadow-lg hover:shadow-xl hover:shadow-emerald-500/10 transition-all duration-500 transform hover:scale-105 group overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-green-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <CardContent className="p-6 relative">
             <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-green-50 rounded-lg flex items-center justify-center">
-                <Users className="h-6 w-6 text-green-600" />
+              <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300">
+                <Users className="h-6 w-6 text-white" />
               </div>
               <div className="text-right">
-                <div className="text-gray-600 text-sm">Total Users</div>
-                <div className="text-gray-400 text-xs">Students & Staff</div>
+                <div className="text-gray-600 text-sm font-medium">Total Users</div>
+                <div className="text-emerald-500/70 text-xs">Students & Staff</div>
               </div>
             </div>
             <div className="space-y-3">
-              <div className="text-3xl font-bold text-gray-900">{stats.totalUsers.toLocaleString()}</div>
+              <div className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">{stats.totalUsers.toLocaleString()}</div>
               <div className="grid grid-cols-2 gap-2">
-                <div className="bg-gray-50 rounded-md p-2 text-center">
-                  <div className="text-gray-900 font-semibold text-sm">847</div>
-                  <div className="text-xs text-gray-500">Students</div>
+                <div className="bg-gradient-to-br from-emerald-50 to-green-50 border border-emerald-200/50 rounded-lg p-2 text-center transform hover:scale-105 transition-transform duration-200">
+                  <div className="text-emerald-700 font-bold text-sm">847</div>
+                  <div className="text-xs text-emerald-600/70">Students</div>
                 </div>
-                <div className="bg-gray-50 rounded-md p-2 text-center">
-                  <div className="text-gray-900 font-semibold text-sm">400</div>
-                  <div className="text-xs text-gray-500">Staff</div>
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200/50 rounded-lg p-2 text-center transform hover:scale-105 transition-transform duration-200">
+                  <div className="text-blue-700 font-bold text-sm">400</div>
+                  <div className="text-xs text-blue-600/70">Staff</div>
                 </div>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-white border border-gray-200 shadow-sm">
-          <CardContent className="p-6">
+        <Card className="bg-white/80 backdrop-blur-sm border border-amber-200/50 shadow-lg hover:shadow-xl hover:shadow-amber-500/10 transition-all duration-500 transform hover:scale-105 group overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 via-transparent to-orange-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <CardContent className="p-6 relative">
             <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-amber-50 rounded-lg flex items-center justify-center">
-                <TrendingUp className="h-6 w-6 text-amber-600" />
+              <div className="w-12 h-12 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300">
+                <TrendingUp className="h-6 w-6 text-white" />
               </div>
               <div className="text-right">
-                <div className="text-gray-600 text-sm">Today's Bookings</div>
-                <div className="text-gray-400 text-xs">Daily Activity</div>
+                <div className="text-gray-600 text-sm font-medium">Today's Bookings</div>
+                <div className="text-amber-500/70 text-xs">Daily Activity</div>
               </div>
             </div>
             <div className="space-y-3">
-              <div className="text-3xl font-bold text-gray-900">{stats.todayBookings}</div>
+              <div className="text-3xl font-bold bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">{stats.todayBookings}</div>
               <div className="flex items-center space-x-2">
-                <ArrowUpRight className="h-4 w-4 text-green-600" />
-                <span className="text-green-600 font-medium text-sm">+12% from yesterday</span>
+                <ArrowUpRight className="h-4 w-4 text-green-600 animate-bounce" />
+                <span className="text-green-600 font-semibold text-sm">+12% from yesterday</span>
               </div>
-              <div className="bg-amber-50 rounded-md p-3">
-                <div className="text-gray-900 font-semibold text-sm">₦{(stats.todayBookings * 150).toLocaleString()}</div>
-                <div className="text-gray-500 text-xs">Estimated revenue</div>
+              <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200/50 rounded-lg p-3 transform hover:scale-105 transition-transform duration-200">
+                <div className="text-amber-700 font-bold text-sm">₦{(stats.todayBookings * 150).toLocaleString()}</div>
+                <div className="text-amber-600/70 text-xs">Estimated revenue</div>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-white border border-gray-200 shadow-sm">
-          <CardContent className="p-6">
+        <Card className="bg-white/80 backdrop-blur-sm border border-red-200/50 shadow-lg hover:shadow-xl hover:shadow-red-500/10 transition-all duration-500 transform hover:scale-105 group overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-red-500/5 via-transparent to-rose-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <CardContent className="p-6 relative">
             <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-red-50 rounded-lg flex items-center justify-center">
-                <AlertTriangle className="h-6 w-6 text-red-600" />
+              <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-rose-600 rounded-xl flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300">
+                <AlertTriangle className="h-6 w-6 text-white animate-pulse" />
               </div>
               <div className="text-right">
-                <div className="text-gray-600 text-sm">Active Alerts</div>
-                <div className="text-gray-400 text-xs">Requires Attention</div>
+                <div className="text-gray-600 text-sm font-medium">Active Alerts</div>
+                <div className="text-red-500/70 text-xs">Requires Attention</div>
               </div>
             </div>
             <div className="space-y-3">
-              <div className="text-3xl font-bold text-gray-900">{stats.alerts}</div>
+              <div className="text-3xl font-bold bg-gradient-to-r from-red-600 to-rose-600 bg-clip-text text-transparent animate-pulse">{stats.alerts}</div>
               <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600 text-sm">Critical</span>
-                  <span className="text-red-600 font-semibold">1</span>
+                <div className="flex items-center justify-between p-2 bg-red-50 border border-red-200/50 rounded-lg transform hover:scale-105 transition-transform duration-200">
+                  <span className="text-red-700 text-sm font-medium">Critical</span>
+                  <span className="text-red-600 font-bold bg-red-100 px-2 py-1 rounded-full text-xs">1</span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600 text-sm">Warning</span>
-                  <span className="text-amber-600 font-semibold">2</span>
+                <div className="flex items-center justify-between p-2 bg-amber-50 border border-amber-200/50 rounded-lg transform hover:scale-105 transition-transform duration-200">
+                  <span className="text-amber-700 text-sm font-medium">Warning</span>
+                  <span className="text-amber-600 font-bold bg-amber-100 px-2 py-1 rounded-full text-xs">2</span>
                 </div>
               </div>
             </div>
@@ -295,28 +299,29 @@ export default function AdminDashboard() {
       </div>
 
       {/* Quick Actions */}
-      <Card className="bg-white border border-gray-200 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-lg font-semibold text-gray-900">Quick Actions</CardTitle>
+      <Card className="bg-white/80 backdrop-blur-sm border border-blue-200/50 shadow-lg hover:shadow-xl transition-all duration-500 group">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-lg"></div>
+        <CardHeader className="relative">
+          <CardTitle className="text-lg font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Quick Actions</CardTitle>
           <CardDescription className="text-gray-600">Common management tasks</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="relative">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Button variant="outline" className="h-20 flex-col space-y-2">
-              <Plus className="h-5 w-5" />
-              <span className="text-sm">Add Bus</span>
+            <Button variant="outline" className="h-20 flex-col space-y-2 border-blue-200 hover:border-blue-400 hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50 transition-all duration-300 transform hover:scale-105 hover:shadow-lg group">
+              <Plus className="h-5 w-5 text-blue-600 group-hover:scale-110 transition-transform duration-200" />
+              <span className="text-sm font-medium">Add Bus</span>
             </Button>
-            <Button variant="outline" className="h-20 flex-col space-y-2">
-              <UserCheck className="h-5 w-5" />
-              <span className="text-sm">Add Driver</span>
+            <Button variant="outline" className="h-20 flex-col space-y-2 border-emerald-200 hover:border-emerald-400 hover:bg-gradient-to-br hover:from-emerald-50 hover:to-green-50 transition-all duration-300 transform hover:scale-105 hover:shadow-lg group">
+              <UserCheck className="h-5 w-5 text-emerald-600 group-hover:scale-110 transition-transform duration-200" />
+              <span className="text-sm font-medium">Add Driver</span>
             </Button>
-            <Button variant="outline" className="h-20 flex-col space-y-2">
-              <Route className="h-5 w-5" />
-              <span className="text-sm">Create Route</span>
+            <Button variant="outline" className="h-20 flex-col space-y-2 border-amber-200 hover:border-amber-400 hover:bg-gradient-to-br hover:from-amber-50 hover:to-orange-50 transition-all duration-300 transform hover:scale-105 hover:shadow-lg group">
+              <Route className="h-5 w-5 text-amber-600 group-hover:scale-110 transition-transform duration-200" />
+              <span className="text-sm font-medium">Create Route</span>
             </Button>
-            <Button variant="outline" className="h-20 flex-col space-y-2">
-              <Settings className="h-5 w-5" />
-              <span className="text-sm">Maintenance</span>
+            <Button variant="outline" className="h-20 flex-col space-y-2 border-purple-200 hover:border-purple-400 hover:bg-gradient-to-br hover:from-purple-50 hover:to-violet-50 transition-all duration-300 transform hover:scale-105 hover:shadow-lg group">
+              <Settings className="h-5 w-5 text-purple-600 group-hover:scale-110 transition-transform duration-200" />
+              <span className="text-sm font-medium">Maintenance</span>
             </Button>
           </div>
         </CardContent>
@@ -326,20 +331,21 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Live Bus Tracking */}
         <div className="lg:col-span-2">
-          <Card className="bg-white border border-gray-200 shadow-sm">
-            <CardHeader>
+          <Card className="bg-white/80 backdrop-blur-sm border border-blue-200/50 shadow-lg hover:shadow-xl transition-all duration-500 group">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-lg"></div>
+            <CardHeader className="relative">
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
-                    <MapPin className="h-5 w-5" />
+                  <CardTitle className="text-lg font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center space-x-2">
+                    <MapPin className="h-5 w-5 text-blue-600" />
                     <span>Live Bus Tracking</span>
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-ping"></div>
                   </CardTitle>
                   <CardDescription className="text-gray-600">Real-time fleet monitoring</CardDescription>
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-gray-900">{buses.filter(b => b.status === 'active').length}</div>
-                  <div className="text-gray-500 text-sm">Active Buses</div>
+                  <div className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">{buses.filter(b => b.status === 'active').length}</div>
+                  <div className="text-green-600 text-sm font-medium">Active Buses</div>
                 </div>
               </div>
             </CardHeader>
@@ -348,18 +354,18 @@ export default function AdminDashboard() {
                 {buses.map((bus) => {
                   const occupancyPercentage = Math.round((bus.passengers / bus.capacity) * 100);
                   return (
-                    <div key={bus.id} className="p-4 border border-gray-200 rounded-lg hover:border-gray-300 transition-all">
+                    <div key={bus.id} className="p-4 border border-blue-200/30 rounded-xl hover:border-blue-400/50 hover:shadow-lg hover:shadow-blue-500/10 transition-all duration-300 transform hover:scale-[1.02] group bg-gradient-to-r from-white/50 to-blue-50/30">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4">
                           <div className={cn(
-                            "w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold relative",
-                            bus.status === 'active' ? "bg-green-600" :
-                            bus.status === 'maintenance' ? "bg-amber-600" : "bg-red-600"
+                            "w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold relative shadow-lg transform group-hover:scale-110 transition-transform duration-300",
+                            bus.status === 'active' ? "bg-gradient-to-br from-green-500 to-emerald-600" :
+                            bus.status === 'maintenance' ? "bg-gradient-to-br from-amber-500 to-orange-600" : "bg-gradient-to-br from-red-500 to-rose-600"
                           )}>
                             {bus.id}
                             <div className={cn(
-                              "absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white",
-                              bus.status === 'active' ? "bg-green-400" :
+                              "absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white shadow-md",
+                              bus.status === 'active' ? "bg-green-400 animate-pulse" :
                               bus.status === 'maintenance' ? "bg-amber-400" : "bg-red-400"
                             )}></div>
                           </div>
@@ -387,7 +393,7 @@ export default function AdminDashboard() {
                             <div className="text-sm font-medium text-gray-900">{bus.eta}</div>
                             <div className="text-xs text-gray-500">ETA</div>
                           </div>
-                          <Button size="sm" variant="outline">
+                          <Button size="sm" className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white border-none transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-lg">
                             <MapPin className="h-4 w-4 mr-1" />
                             Track
                           </Button>
@@ -403,10 +409,11 @@ export default function AdminDashboard() {
 
         {/* Activity Feed */}
         <div>
-          <Card className="bg-white border border-gray-200 shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
-                <Activity className="h-5 w-5" />
+          <Card className="bg-white/80 backdrop-blur-sm border border-emerald-200/50 shadow-lg hover:shadow-xl transition-all duration-500 group">
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-green-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-lg"></div>
+            <CardHeader className="relative">
+              <CardTitle className="text-lg font-semibold bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent flex items-center space-x-2">
+                <Activity className="h-5 w-5 text-emerald-600" />
                 <span>Recent Activity</span>
               </CardTitle>
               <CardDescription className="text-gray-600">Latest system events</CardDescription>
@@ -414,21 +421,21 @@ export default function AdminDashboard() {
             <CardContent>
               <div className="space-y-4">
                 {recentActivity.map((activity) => (
-                  <div key={activity.id} className="flex items-start space-x-3">
+                  <div key={activity.id} className="flex items-start space-x-3 p-3 rounded-lg hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-indigo-50/50 transition-all duration-200 transform hover:scale-[1.02] group">
                     <div className={cn(
-                      "w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0",
-                      activity.status === 'success' ? "bg-green-100" :
-                      activity.status === 'warning' ? "bg-amber-100" :
-                      activity.status === 'error' ? "bg-red-100" : "bg-blue-100"
+                      "w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm transform group-hover:scale-110 transition-transform duration-200",
+                      activity.status === 'success' ? "bg-gradient-to-br from-green-100 to-emerald-100" :
+                      activity.status === 'warning' ? "bg-gradient-to-br from-amber-100 to-orange-100" :
+                      activity.status === 'error' ? "bg-gradient-to-br from-red-100 to-rose-100" : "bg-gradient-to-br from-blue-100 to-indigo-100"
                     )}>
-                      {activity.status === 'success' && <CheckCircle className="h-4 w-4 text-green-600" />}
-                      {activity.status === 'warning' && <AlertCircle className="h-4 w-4 text-amber-600" />}
-                      {activity.status === 'error' && <XCircle className="h-4 w-4 text-red-600" />}
-                      {activity.status === 'info' && <Activity className="h-4 w-4 text-blue-600" />}
+                      {activity.status === 'success' && <CheckCircle className="h-4 w-4 text-green-600 animate-pulse" />}
+                      {activity.status === 'warning' && <AlertCircle className="h-4 w-4 text-amber-600 animate-pulse" />}
+                      {activity.status === 'error' && <XCircle className="h-4 w-4 text-red-600 animate-pulse" />}
+                      {activity.status === 'info' && <Activity className="h-4 w-4 text-blue-600 animate-pulse" />}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm text-gray-900">{activity.message}</p>
-                      <p className="text-xs text-gray-500">{activity.time}</p>
+                      <p className="text-sm text-gray-900 font-medium group-hover:text-gray-700">{activity.message}</p>
+                      <p className="text-xs text-gray-500 group-hover:text-gray-600">{activity.time}</p>
                     </div>
                   </div>
                 ))}
@@ -437,41 +444,42 @@ export default function AdminDashboard() {
           </Card>
 
           {/* Performance Metrics */}
-          <Card className="bg-white border border-gray-200 shadow-sm mt-6">
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
-                <BarChart3 className="h-5 w-5" />
+          <Card className="bg-white/80 backdrop-blur-sm border border-purple-200/50 shadow-lg hover:shadow-xl transition-all duration-500 group mt-6">
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-violet-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-lg"></div>
+            <CardHeader className="relative">
+              <CardTitle className="text-lg font-semibold bg-gradient-to-r from-purple-600 to-violet-600 bg-clip-text text-transparent flex items-center space-x-2">
+                <BarChart3 className="h-5 w-5 text-purple-600" />
                 <span>Performance</span>
               </CardTitle>
               <CardDescription className="text-gray-600">Today's metrics</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="relative">
               <div className="space-y-4">
-                <div>
+                <div className="p-3 rounded-lg hover:bg-gradient-to-r hover:from-green-50/50 hover:to-emerald-50/50 transition-all duration-200 transform hover:scale-[1.02] group">
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm text-gray-600">On-time Performance</span>
-                    <span className="text-sm font-medium text-gray-900">94%</span>
+                    <span className="text-sm text-gray-600 font-medium">On-time Performance</span>
+                    <span className="text-sm font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">94%</span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-green-600 h-2 rounded-full" style={{ width: '94%' }}></div>
+                  <div className="w-full bg-gradient-to-r from-green-200 to-emerald-200 rounded-full h-2.5 overflow-hidden">
+                    <div className="bg-gradient-to-r from-green-500 to-emerald-600 h-full rounded-full transition-all duration-1000 animate-pulse" style={{ width: '94%' }}></div>
                   </div>
                 </div>
-                <div>
+                <div className="p-3 rounded-lg hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-indigo-50/50 transition-all duration-200 transform hover:scale-[1.02] group">
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm text-gray-600">Fuel Efficiency</span>
-                    <span className="text-sm font-medium text-gray-900">87%</span>
+                    <span className="text-sm text-gray-600 font-medium">Fuel Efficiency</span>
+                    <span className="text-sm font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">87%</span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-blue-600 h-2 rounded-full" style={{ width: '87%' }}></div>
+                  <div className="w-full bg-gradient-to-r from-blue-200 to-indigo-200 rounded-full h-2.5 overflow-hidden">
+                    <div className="bg-gradient-to-r from-blue-500 to-indigo-600 h-full rounded-full transition-all duration-1000 animate-pulse" style={{ width: '87%' }}></div>
                   </div>
                 </div>
-                <div>
+                <div className="p-3 rounded-lg hover:bg-gradient-to-r hover:from-purple-50/50 hover:to-violet-50/50 transition-all duration-200 transform hover:scale-[1.02] group">
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm text-gray-600">Customer Satisfaction</span>
-                    <span className="text-sm font-medium text-gray-900">91%</span>
+                    <span className="text-sm text-gray-600 font-medium">Customer Satisfaction</span>
+                    <span className="text-sm font-bold bg-gradient-to-r from-purple-600 to-violet-600 bg-clip-text text-transparent">91%</span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-purple-600 h-2 rounded-full" style={{ width: '91%' }}></div>
+                  <div className="w-full bg-gradient-to-r from-purple-200 to-violet-200 rounded-full h-2.5 overflow-hidden">
+                    <div className="bg-gradient-to-r from-purple-500 to-violet-600 h-full rounded-full transition-all duration-1000 animate-pulse" style={{ width: '91%' }}></div>
                   </div>
                 </div>
               </div>

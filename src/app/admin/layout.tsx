@@ -90,7 +90,7 @@ export default function AdminLayout({
   const pathname = usePathname();
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
 
 
       <div className="relative z-10 flex h-screen">
@@ -99,17 +99,17 @@ export default function AdminLayout({
           "fixed inset-y-0 left-0 z-50 w-72 transform transition-all duration-300 ease-in-out lg:translate-x-0 lg:relative lg:z-auto",
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}>
-          <div className="h-full bg-white border-r border-gray-200 shadow-sm">
+          <div className="h-full bg-white/95 backdrop-blur-sm border-r border-blue-200/50 shadow-xl shadow-blue-500/5">
 
             {/* Sidebar Header */}
-            <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
+            <div className="flex items-center justify-between h-16 px-6 border-b border-blue-200/50">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-600 via-blue-500 to-indigo-600 rounded-lg flex items-center justify-center shadow-lg transform hover:scale-105 transition-transform duration-300">
                   <Bus className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-xl font-bold text-gray-900">ADUSTECH</h1>
-                  <p className="text-xs text-gray-500">Bus Management</p>
+                  <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">ADUSTECH</h1>
+                  <p className="text-xs text-blue-600/70">Bus Management</p>
                 </div>
               </div>
               <Button
@@ -145,16 +145,16 @@ export default function AdminLayout({
                       <Link
                         href={item.href}
                         className={cn(
-                          "group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200",
+                          "group flex items-center px-3 py-3 text-sm font-medium rounded-xl transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg",
                           isActive
-                            ? "bg-blue-50 text-blue-700 border-l-4 border-blue-600"
-                            : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                            ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/25"
+                            : "text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:text-blue-700 hover:shadow-md"
                         )}
                         onClick={() => setSidebarOpen(false)}
                       >
                         <Icon className={cn(
-                          "h-5 w-5 mr-3 transition-all duration-200",
-                          isActive ? "text-blue-600" : "text-gray-400 group-hover:text-gray-500"
+                          "h-5 w-5 mr-3 transition-all duration-300 transform group-hover:scale-110",
+                          isActive ? "text-white" : "text-gray-400 group-hover:text-blue-600"
                         )} />
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between">
@@ -197,7 +197,7 @@ export default function AdminLayout({
         {/* Main Content Area */}
         <div className="flex-1 flex flex-col min-w-0">
           {/* Header */}
-          <header className="bg-white border-b border-gray-200 sticky top-0 z-30">
+          <header className="bg-white/95 backdrop-blur-sm border-b border-blue-200/50 sticky top-0 z-30 shadow-sm">
             <div className="px-6 lg:px-8">
               <div className="flex justify-between items-center h-16">
                 <div className="flex items-center space-x-4">
