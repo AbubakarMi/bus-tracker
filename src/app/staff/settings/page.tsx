@@ -46,7 +46,8 @@ import {
   Zap,
   Users,
   Bus,
-  Briefcase
+  Briefcase,
+  CheckCircle
 } from 'lucide-react';
 
 export default function StaffSettings() {
