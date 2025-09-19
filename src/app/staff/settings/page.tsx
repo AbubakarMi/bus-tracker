@@ -45,7 +45,8 @@ import {
   Activity,
   Zap,
   Users,
-  Bus
+  Bus,
+  Briefcase
 } from 'lucide-react';
 
 export default function StaffSettings() {

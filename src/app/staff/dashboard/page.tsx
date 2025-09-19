@@ -5,6 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Bus,
   MapPin,
@@ -25,7 +29,13 @@ import {
   Battery,
   Zap,
   ClipboardList,
-  FileText
+  FileText,
+  Ticket,
+  CreditCard,
+  Download,
+  X,
+  Plus,
+  Search
 } from 'lucide-react';
 
 interface BusStatus {
@@ -68,6 +78,12 @@ export default function StaffDashboard() {
     onTimeRate: 0,
     travelBudget: 0
   });
+
+  // Quick Access Modal States
+  const [showTravelRequestModal, setShowTravelRequestModal] = useState(false);
+  const [showTrackBusModal, setShowTrackBusModal] = useState(false);
+  const [showReportsModal, setShowReportsModal] = useState(false);
+  const [showExpenseModal, setShowExpenseModal] = useState(false);
 
   const [recentActivity, setRecentActivity] = useState([
     { id: 1, type: 'travel', message: 'Official travel approved: Lagos Conference', time: '1 hour ago', status: 'success', icon: CheckCircle },
@@ -218,7 +234,48 @@ export default function StaffDashboard() {
     }
   ];
 
+  // PDF Download Function
+  const downloadTravelTicket = (travel: TravelData) => {
+    const ticketData = `
+      ADUSTECH STAFF TRAVEL TICKET
+      ============================
+
+      Travel ID: ${travel.id}
+      Purpose: ${travel.purpose}
+      Route: ${travel.route}
+      Bus: ${travel.busNumber}
+
+      Travel Details:
+      Date: ${travel.date}
+      Departure: ${travel.departureTime}
+      Boarding Time: ${travel.boardingTime}
+      Seat: ${travel.seat}
+      Gate: ${travel.gate}
+
+      Amount: ${travel.price}
+      Status: ${travel.status}
+
+      This is an official travel authorization.
+      Please arrive at the boarding gate 15 minutes before departure time.
+
+      Contact: transport@adustech.edu.ng
+      Phone: +234-800-ADUSTECH
+    `;
+
+    const blob = new Blob([ticketData], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    a.download = `travel-ticket-${travel.id}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+  };
+
   return (
+    <>
     <div className="space-y-6">
       {/* Header Section */}
       <div className="mb-6">
@@ -238,6 +295,41 @@ export default function StaffDashboard() {
                 minute: '2-digit'
               })}
             </p>
+          </div>
+
+          {/* Quick Access Buttons */}
+          <div className="flex flex-wrap gap-3">
+            <Button
+              onClick={() => setShowTravelRequestModal(true)}
+              className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+            >
+              <Calendar className="h-4 w-4 mr-2" />
+              Request Travel
+            </Button>
+            <Button
+              onClick={() => setShowTrackBusModal(true)}
+              variant="outline"
+              className="border-green-200 hover:border-green-500 hover:bg-green-50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+            >
+              <MapPin className="h-4 w-4 mr-2" />
+              Track Bus
+            </Button>
+            <Button
+              onClick={() => setShowReportsModal(true)}
+              variant="outline"
+              className="border-purple-200 hover:border-purple-500 hover:bg-purple-50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+            >
+              <ClipboardList className="h-4 w-4 mr-2" />
+              Reports
+            </Button>
+            <Button
+              onClick={() => setShowExpenseModal(true)}
+              variant="outline"
+              className="border-orange-200 hover:border-orange-500 hover:bg-orange-50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+            >
+              <DollarSign className="h-4 w-4 mr-2" />
+              Expenses
+            </Button>
           </div>
         </div>
       </div>
@@ -462,10 +554,25 @@ export default function StaffDashboard() {
 
                   <div className="flex justify-between items-center">
                     <span className="text-lg font-bold text-purple-600">{travel.price}</span>
-                    <Button size="sm" variant="outline" className="border-purple-200 hover:border-purple-500 hover:bg-purple-50">
-                      <Navigation className="h-4 w-4 mr-1" />
-                      Track
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="border-purple-200 hover:border-purple-500 hover:bg-purple-50"
+                        onClick={() => setShowTrackBusModal(true)}
+                      >
+                        <Navigation className="h-4 w-4 mr-1" />
+                        Track
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => downloadTravelTicket(travel)}
+                        className="bg-purple-600 hover:bg-purple-700 text-white"
+                      >
+                        <Download className="h-4 w-4 mr-1" />
+                        Ticket
+                      </Button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -506,5 +613,287 @@ export default function StaffDashboard() {
         </div>
       </div>
     </div>
+
+    {/* Travel Request Modal */}
+    {showTravelRequestModal && (
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+          <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6 rounded-t-xl">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-bold flex items-center gap-2">
+                <Calendar className="h-6 w-6" />
+                Official Travel Request
+              </h2>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowTravelRequestModal(false)}
+                className="text-white hover:bg-white/20"
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+          </div>
+
+          <div className="p-6 space-y-6">
+            <div className="grid grid-cols-1 gap-4">
+              <div>
+                <Label htmlFor="purpose" className="text-sm font-medium text-gray-700">Travel Purpose</Label>
+                <Select>
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Select travel purpose" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="conference">Official Conference</SelectItem>
+                    <SelectItem value="meeting">Business Meeting</SelectItem>
+                    <SelectItem value="training">Training Program</SelectItem>
+                    <SelectItem value="inspection">Site Inspection</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="route" className="text-sm font-medium text-gray-700">Destination</Label>
+                <Select>
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Choose destination" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="lagos">Lagos Express</SelectItem>
+                    <SelectItem value="airport">Airport Link</SelectItem>
+                    <SelectItem value="city">City Center</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label htmlFor="date" className="text-sm font-medium text-gray-700">Travel Date</Label>
+                  <Input type="date" className="mt-1" />
+                </div>
+                <div>
+                  <Label htmlFor="time" className="text-sm font-medium text-gray-700">Departure Time</Label>
+                  <Select>
+                    <SelectTrigger className="mt-1">
+                      <SelectValue placeholder="Time" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="6:00">6:00 AM</SelectItem>
+                      <SelectItem value="9:00">9:00 AM</SelectItem>
+                      <SelectItem value="2:00">2:00 PM</SelectItem>
+                      <SelectItem value="5:00">5:00 PM</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="justification" className="text-sm font-medium text-gray-700">Justification</Label>
+                <Textarea
+                  placeholder="Brief explanation of travel necessity..."
+                  className="mt-1 resize-none"
+                  rows={3}
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => setShowTravelRequestModal(false)}
+              >
+                Cancel
+              </Button>
+              <Button className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700">
+                <FileText className="h-4 w-4 mr-2" />
+                Submit Request
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {/* Track Bus Modal */}
+    {showTrackBusModal && (
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+          <div className="sticky top-0 bg-gradient-to-r from-green-600 to-emerald-600 text-white p-6 rounded-t-xl">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-bold flex items-center gap-2">
+                <MapPin className="h-6 w-6" />
+                Track Official Travel
+              </h2>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowTrackBusModal(false)}
+                className="text-white hover:bg-white/20"
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+          </div>
+
+          <div className="p-6 space-y-6">
+            <div>
+              <Label htmlFor="travel-id" className="text-sm font-medium text-gray-700">Travel ID or Bus Number</Label>
+              <Input placeholder="Enter TRV-001 or ADUS-001" className="mt-1" />
+            </div>
+
+            <div className="bg-gray-50 rounded-lg p-4">
+              <h3 className="font-bold text-gray-900 mb-3">Current Status</h3>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Bus:</span>
+                  <span className="font-medium">ADUS-001</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Status:</span>
+                  <Badge variant="default" className="bg-green-100 text-green-700">On Time</Badge>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Current Location:</span>
+                  <span className="font-medium">Mile 2 Bridge</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">ETA:</span>
+                  <span className="font-bold text-green-600">8 mins</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Travel Purpose:</span>
+                  <span className="font-medium text-blue-600">Official Conference</span>
+                </div>
+              </div>
+            </div>
+
+            <Button className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:from-green-700 hover:to-emerald-700">
+              <Navigation className="h-4 w-4 mr-2" />
+              View Live Map
+            </Button>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {/* Reports Modal */}
+    {showReportsModal && (
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+          <div className="sticky top-0 bg-gradient-to-r from-purple-600 to-violet-600 text-white p-6 rounded-t-xl">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-bold flex items-center gap-2">
+                <ClipboardList className="h-6 w-6" />
+                Travel Reports
+              </h2>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowReportsModal(false)}
+                className="text-white hover:bg-white/20"
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+          </div>
+
+          <div className="p-6 space-y-6">
+            <div className="bg-gray-50 rounded-lg p-4">
+              <h3 className="font-bold text-gray-900 mb-3">Report Summary</h3>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Total Travels:</span>
+                  <span className="font-bold text-purple-600">18</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Pending Reports:</span>
+                  <span className="font-medium text-orange-600">3</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Completed Reports:</span>
+                  <span className="font-medium text-green-600">15</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <Button className="w-full bg-gradient-to-r from-purple-600 to-violet-600 text-white hover:from-purple-700 hover:to-violet-700">
+                <FileText className="h-4 w-4 mr-2" />
+                Submit New Report
+              </Button>
+              <Button variant="outline" className="w-full border-purple-200 hover:border-purple-500 hover:bg-purple-50">
+                <ClipboardList className="h-4 w-4 mr-2" />
+                View Report History
+              </Button>
+              <Button variant="outline" className="w-full border-blue-200 hover:border-blue-500 hover:bg-blue-50">
+                <Download className="h-4 w-4 mr-2" />
+                Download Reports
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {/* Expense Modal */}
+    {showExpenseModal && (
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+          <div className="sticky top-0 bg-gradient-to-r from-orange-600 to-red-600 text-white p-6 rounded-t-xl">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-bold flex items-center gap-2">
+                <DollarSign className="h-6 w-6" />
+                Travel Expenses
+              </h2>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowExpenseModal(false)}
+                className="text-white hover:bg-white/20"
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+          </div>
+
+          <div className="p-6 space-y-6">
+            <div className="bg-gray-50 rounded-lg p-4">
+              <h3 className="font-bold text-gray-900 mb-3">Expense Summary</h3>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Travel Budget:</span>
+                  <span className="font-bold text-green-600">₦125,000</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Used This Month:</span>
+                  <span className="font-medium text-orange-600">₦45,000</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Remaining:</span>
+                  <span className="font-medium text-blue-600">₦80,000</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <Button className="w-full bg-gradient-to-r from-orange-600 to-red-600 text-white hover:from-orange-700 hover:to-red-700">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Expense
+              </Button>
+              <Button variant="outline" className="w-full border-orange-200 hover:border-orange-500 hover:bg-orange-50">
+                <FileText className="h-4 w-4 mr-2" />
+                Expense History
+              </Button>
+              <Button variant="outline" className="w-full border-green-200 hover:border-green-500 hover:bg-green-50">
+                <Download className="h-4 w-4 mr-2" />
+                Export Expenses
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+  </>
   );
 }

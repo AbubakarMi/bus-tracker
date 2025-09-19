@@ -5,6 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Bus,
   MapPin,
@@ -23,7 +27,13 @@ import {
   AlertCircle,
   Wifi,
   Battery,
-  Zap
+  Zap,
+  Ticket,
+  CreditCard,
+  Download,
+  X,
+  Plus,
+  Search
 } from 'lucide-react';
 
 interface BusStatus {
@@ -65,6 +75,12 @@ export default function StudentDashboard() {
     onTimeRate: 0,
     totalSpent: 0
   });
+
+  // Quick Access Modal States
+  const [showBookSeatModal, setShowBookSeatModal] = useState(false);
+  const [showTrackBusModal, setShowTrackBusModal] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showTicketModal, setShowTicketModal] = useState(false);
 
   const [recentActivity, setRecentActivity] = useState([
     { id: 1, type: 'booking', message: 'Seat confirmed for Lagos Express', time: '2 hours ago', status: 'success', icon: CheckCircle },
@@ -213,7 +229,47 @@ export default function StudentDashboard() {
     }
   ];
 
+  // PDF Download Function
+  const downloadTicketPDF = (booking: BookingData) => {
+    const ticketData = `
+      ADUSTECH BUS TICKET
+      ===================
+
+      Booking ID: ${booking.id}
+      Route: ${booking.route}
+      Bus: ${booking.busNumber}
+
+      Travel Details:
+      Date: ${booking.date}
+      Departure: ${booking.departureTime}
+      Boarding Time: ${booking.boardingTime}
+      Seat: ${booking.seat}
+      Gate: ${booking.gate}
+
+      Amount: ${booking.price}
+      Status: ${booking.status}
+
+      Please arrive at the boarding gate 15 minutes before departure time.
+      Keep this ticket for verification during boarding.
+
+      Contact: transport@adustech.edu.ng
+      Phone: +234-800-ADUSTECH
+    `;
+
+    const blob = new Blob([ticketData], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    a.download = `ticket-${booking.id}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+  };
+
   return (
+    <>
     <div className="space-y-6">
       {/* Header Section */}
       <div className="mb-6">
@@ -233,6 +289,33 @@ export default function StudentDashboard() {
                 minute: '2-digit'
               })}
             </p>
+          </div>
+
+          {/* Quick Access Buttons */}
+          <div className="flex flex-wrap gap-3">
+            <Button
+              onClick={() => setShowBookSeatModal(true)}
+              className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+            >
+              <Calendar className="h-4 w-4 mr-2" />
+              Quick Book
+            </Button>
+            <Button
+              onClick={() => setShowTrackBusModal(true)}
+              variant="outline"
+              className="border-green-200 hover:border-green-500 hover:bg-green-50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+            >
+              <MapPin className="h-4 w-4 mr-2" />
+              Track Bus
+            </Button>
+            <Button
+              onClick={() => setShowPaymentModal(true)}
+              variant="outline"
+              className="border-purple-200 hover:border-purple-500 hover:bg-purple-50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+            >
+              <CreditCard className="h-4 w-4 mr-2" />
+              Payments
+            </Button>
           </div>
         </div>
       </div>
@@ -456,10 +539,25 @@ export default function StudentDashboard() {
 
                   <div className="flex justify-between items-center">
                     <span className="text-lg font-bold text-green-600">{booking.price}</span>
-                    <Button size="sm" variant="outline" className="border-green-200 hover:border-green-500 hover:bg-green-50">
-                      <Navigation className="h-4 w-4 mr-1" />
-                      Track
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="border-green-200 hover:border-green-500 hover:bg-green-50"
+                        onClick={() => setShowTrackBusModal(true)}
+                      >
+                        <Navigation className="h-4 w-4 mr-1" />
+                        Track
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => downloadTicketPDF(booking)}
+                        className="bg-blue-600 hover:bg-blue-700 text-white"
+                      >
+                        <Download className="h-4 w-4 mr-1" />
+                        Ticket
+                      </Button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -500,5 +598,209 @@ export default function StudentDashboard() {
         </div>
       </div>
     </div>
+
+    {/* Quick Book Modal */}
+    {showBookSeatModal && (
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+          <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6 rounded-t-xl">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-bold flex items-center gap-2">
+                <Calendar className="h-6 w-6" />
+                Quick Book Seat
+              </h2>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowBookSeatModal(false)}
+                className="text-white hover:bg-white/20"
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+          </div>
+
+          <div className="p-6 space-y-6">
+            <div className="grid grid-cols-1 gap-4">
+              <div>
+                <Label htmlFor="route" className="text-sm font-medium text-gray-700">Select Route</Label>
+                <Select>
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Choose your destination" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="lagos">Lagos Express</SelectItem>
+                    <SelectItem value="campus">Campus Shuttle</SelectItem>
+                    <SelectItem value="airport">Airport Link</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="date" className="text-sm font-medium text-gray-700">Travel Date</Label>
+                <Input type="date" className="mt-1" />
+              </div>
+
+              <div>
+                <Label htmlFor="time" className="text-sm font-medium text-gray-700">Departure Time</Label>
+                <Select>
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Select departure time" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="6:00">6:00 AM</SelectItem>
+                    <SelectItem value="8:30">8:30 AM</SelectItem>
+                    <SelectItem value="2:15">2:15 PM</SelectItem>
+                    <SelectItem value="5:45">5:45 PM</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="passengers" className="text-sm font-medium text-gray-700">Number of Passengers</Label>
+                <Select>
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Select passengers" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">1 Passenger</SelectItem>
+                    <SelectItem value="2">2 Passengers</SelectItem>
+                    <SelectItem value="3">3 Passengers</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => setShowBookSeatModal(false)}
+              >
+                Cancel
+              </Button>
+              <Button className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700">
+                <Ticket className="h-4 w-4 mr-2" />
+                Book Now
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {/* Track Bus Modal */}
+    {showTrackBusModal && (
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+          <div className="sticky top-0 bg-gradient-to-r from-green-600 to-emerald-600 text-white p-6 rounded-t-xl">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-bold flex items-center gap-2">
+                <MapPin className="h-6 w-6" />
+                Track Your Bus
+              </h2>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowTrackBusModal(false)}
+                className="text-white hover:bg-white/20"
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+          </div>
+
+          <div className="p-6 space-y-6">
+            <div>
+              <Label htmlFor="booking-id" className="text-sm font-medium text-gray-700">Booking ID or Bus Number</Label>
+              <Input placeholder="Enter BK-001 or ADUS-001" className="mt-1" />
+            </div>
+
+            <div className="bg-gray-50 rounded-lg p-4">
+              <h3 className="font-bold text-gray-900 mb-3">Current Location</h3>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Bus:</span>
+                  <span className="font-medium">ADUS-001</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Status:</span>
+                  <Badge variant="default" className="bg-green-100 text-green-700">On Time</Badge>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Current Location:</span>
+                  <span className="font-medium">Mile 2 Bridge</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">ETA:</span>
+                  <span className="font-bold text-green-600">8 mins</span>
+                </div>
+              </div>
+            </div>
+
+            <Button className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:from-green-700 hover:to-emerald-700">
+              <Navigation className="h-4 w-4 mr-2" />
+              View on Map
+            </Button>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {/* Payment Modal */}
+    {showPaymentModal && (
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+          <div className="sticky top-0 bg-gradient-to-r from-purple-600 to-violet-600 text-white p-6 rounded-t-xl">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-bold flex items-center gap-2">
+                <CreditCard className="h-6 w-6" />
+                Payment Center
+              </h2>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowPaymentModal(false)}
+                className="text-white hover:bg-white/20"
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+          </div>
+
+          <div className="p-6 space-y-6">
+            <div className="bg-gray-50 rounded-lg p-4">
+              <h3 className="font-bold text-gray-900 mb-3">Payment Summary</h3>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Total Spent:</span>
+                  <span className="font-bold text-green-600">₦45,600</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">This Month:</span>
+                  <span className="font-medium">₦5,800</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Pending:</span>
+                  <span className="font-medium text-orange-600">₦5,500</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <Button className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700">
+                <CreditCard className="h-4 w-4 mr-2" />
+                Add Payment Method
+              </Button>
+              <Button variant="outline" className="w-full">
+                <DollarSign className="h-4 w-4 mr-2" />
+                View Payment History
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+  </>
   );
 }
