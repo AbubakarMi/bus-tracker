@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Toaster } from '@/components/ui/toaster';
 import { MotionProvider } from '@/components/motion-provider';
+import RouteGuard from '@/components/auth/route-guard';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -28,7 +29,11 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased">
-        <MotionProvider>{children}</MotionProvider>
+        <MotionProvider>
+          <RouteGuard>
+            {children}
+          </RouteGuard>
+        </MotionProvider>
         <Toaster />
       </body>
     </html>

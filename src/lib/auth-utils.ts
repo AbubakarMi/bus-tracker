@@ -1,4 +1,4 @@
-export type UserRole = 'student' | 'staff' | 'admin' | 'union' | 'driver';
+export type UserRole = 'admin' | 'driver' | 'student' | 'staff';
 
 export interface UserData {
   id: string;
@@ -6,26 +6,30 @@ export interface UserData {
   email?: string;
   regNumber?: string;
   staffId?: string;
-  name?: string;
+  name: string;
   department?: string;
   course?: string;
   admissionYear?: string;
   busAssigned?: string;
+  password?: string;
 }
 
 // Student registration number pattern: UGYear/COURSE/SerialNo
-const STUDENT_REG_PATTERN = /^UG\d{2}\/[A-Z]{2,6}\/\d{3,4}$/i;  // UG20/COMS/1284, UG25/BCHM/1003
+const STUDENT_REG_PATTERN = /^UG\d{2}\/[A-Z]{2,6}\/\d{3,4}$/i;
 
 // Staff ID pattern: Staff/Adustech/SerialNo
-const STAFF_ID_PATTERN = /^Staff\/Adustech\/\d{3,4}$/i;  // Staff/Adustech/1022
+const STAFF_ID_PATTERN = /^Staff\/Adustech\/\d{3,4}$/i;
 
 // Admin email
 const ADMIN_EMAIL = 'admin@adustech.edu.ng';
-
-// Union identifier pattern (for external buses)
-const UNION_ID_PATTERN = /^Union\/\d{3,4}$/i;
+const DEFAULT_PASSWORD = 'pass123';
 
 export function detectUserRole(identifier: string): UserRole | null {
+  // Check if it's admin email
+  if (identifier.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+    return 'admin';
+  }
+
   // Check if it's a student registration number
   if (STUDENT_REG_PATTERN.test(identifier)) {
     return 'student';
@@ -36,19 +40,15 @@ export function detectUserRole(identifier: string): UserRole | null {
     return 'staff';
   }
 
-  // Check if it's admin email
-  if (identifier.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
-    return 'admin';
-  }
-
-  // Check if it's union identifier
-  if (UNION_ID_PATTERN.test(identifier)) {
-    return 'union';
-  }
-
-  // Check if it's a driver email (created by admin)
-  if (identifier.includes('@') && identifier.includes('driver')) {
-    return 'driver';
+  // Check if it's a driver email (any email created by admin)
+  if (identifier.includes('@') && !identifier.toLowerCase().includes('admin')) {
+    // Check if it's in the registered drivers (created by admin)
+    if (typeof window !== 'undefined') {
+      const registeredDrivers = JSON.parse(localStorage.getItem('registeredDrivers') || '{}');
+      if (registeredDrivers[identifier]) {
+        return 'driver';
+      }
+    }
   }
 
   return null;
@@ -60,35 +60,33 @@ export function validateCredentials(identifier: string, password: string): boole
 
 export function formatDisplayName(userData: UserData): string {
   if (userData.name) return userData.name;
-  
+
   if (userData.role === 'student' && userData.regNumber) {
     const parts = userData.regNumber.split('/');
     return `${parts[1]} Student - ${parts[2]}`;
   }
-  
+
   if (userData.role === 'staff' && userData.staffId) {
     return `Staff ${userData.staffId.split('/')[2]}`;
   }
-  
+
   if (userData.email) {
     return userData.email.split('@')[0];
   }
-  
+
   return userData.id;
 }
 
 export function getDashboardPath(role: UserRole): string {
   switch (role) {
+    case 'admin':
+      return '/dashboard/admin';
+    case 'driver':
+      return '/dashboard/driver';
     case 'student':
       return '/student/dashboard';
     case 'staff':
       return '/staff/dashboard';
-    case 'admin':
-      return '/admin';
-    case 'driver':
-      return '/dashboard/driver';
-    case 'union':
-      return '/dashboard';
     default:
       return '/dashboard';
   }
@@ -96,118 +94,76 @@ export function getDashboardPath(role: UserRole): string {
 
 export function getAvailableFeatures(role: UserRole): string[] {
   switch (role) {
+    case 'admin':
+      return ['user-management', 'bus-management', 'driver-management', 'route-management', 'analytics'];
+    case 'driver':
+      return ['driver-dashboard', 'route-management', 'passenger-list'];
     case 'student':
       return ['book-seat', 'track-bus', 'view-schedule'];
     case 'staff':
-      return ['driver-dashboard', 'route-management', 'passenger-list'];
-    case 'driver':
-      return ['driver-dashboard', 'route-management', 'passenger-list'];
-    case 'admin':
-      return ['user-management', 'bus-management', 'driver-management', 'route-management', 'analytics'];
-    case 'union':
-      return ['bus-management', 'route-management', 'passenger-list'];
+      return ['book-seat', 'track-bus', 'view-schedule', 'staff-reports'];
     default:
       return [];
   }
 }
 
-// Mock user database - replace with real database later
-export const mockUsers: Record<string, UserData> = {
-  'UG20/COMS/1284': {
-    id: 'UG20/COMS/1284',
-    role: 'student',
-    regNumber: 'UG20/COMS/1284',
-    name: 'Ahmed Hassan',
-    course: 'Computer Science',
-    admissionYear: '2020',
-    email: 'ahmed.hassan@student.adustech.edu.ng'
-  },
-  'UG25/BCHM/1003': {
-    id: 'UG25/BCHM/1003',
-    role: 'student',
-    regNumber: 'UG25/BCHM/1003',
-    name: 'Fatima Aliyu',
-    course: 'Biochemistry',
-    admissionYear: '2025',
-    email: 'fatima.aliyu@student.adustech.edu.ng'
-  },
-  'Staff/Adustech/1022': {
-    id: 'Staff/Adustech/1022',
-    role: 'staff',
-    staffId: 'Staff/Adustech/1022',
-    name: 'Musa Ibrahim',
-    department: 'Transport Department',
-    email: 'musa.ibrahim@adustech.edu.ng'
-  },
-  'admin@adustech.edu.ng': {
-    id: 'admin@adustech.edu.ng',
-    role: 'admin',
-    email: 'admin@adustech.edu.ng',
-    name: 'Admin User'
-  }
+// Admin user data
+const adminUser: UserData = {
+  id: 'admin@adustech.edu.ng',
+  role: 'admin',
+  email: 'admin@adustech.edu.ng',
+  name: 'Admin User'
 };
 
 export function authenticateUser(identifier: string, password: string): UserData | null {
-  // Special case for admin
-  if (identifier.toLowerCase() === 'admin@adustech.edu.ng' && password === 'Password123') {
-    return mockUsers['admin@adustech.edu.ng'];
+  // Check admin credentials
+  if (identifier.toLowerCase() === ADMIN_EMAIL.toLowerCase() && password === DEFAULT_PASSWORD) {
+    return adminUser;
   }
 
   const role = detectUserRole(identifier);
   if (!role) return null;
 
-  // Check if user exists in mock database
-  if (mockUsers[identifier]) {
-    return mockUsers[identifier];
-  }
-
-  // Check if user exists in registered users (localStorage)
   if (typeof window !== 'undefined') {
-    const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '{}');
-    if (registeredUsers[identifier]) {
-      return registeredUsers[identifier];
+    // Check driver credentials in localStorage
+    if (role === 'driver') {
+      const registeredDrivers = JSON.parse(localStorage.getItem('registeredDrivers') || '{}');
+      if (registeredDrivers[identifier] && password === DEFAULT_PASSWORD) {
+        return registeredDrivers[identifier];
+      }
     }
-  }
 
-  // For demo, create a user if the format is valid and password is provided
-  if (role === 'student' && STUDENT_REG_PATTERN.test(identifier)) {
-    const parts = identifier.split('/');
-    const year = parts[0].substring(2); // Extract year from UGxx
-    const course = parts[1];
-    const serialNo = parts[2];
-    
-    return {
-      id: identifier,
-      role: 'student',
-      regNumber: identifier,
-      name: `Student ${serialNo}`,
-      course: course,
-      admissionYear: `20${year}`,
-      email: `student${serialNo}@student.adustech.edu.ng`
-    };
-  }
+    // Check student credentials in localStorage
+    if (role === 'student') {
+      const registeredStudents = JSON.parse(localStorage.getItem('registeredStudents') || '{}');
+      if (registeredStudents[identifier]) {
+        const student = registeredStudents[identifier];
+        if (student.password === password) {
+          return student;
+        }
+      }
+    }
 
-  if (role === 'staff' && STAFF_ID_PATTERN.test(identifier)) {
-    const parts = identifier.split('/');
-    const staffNo = parts[2];
-    
-    return {
-      id: identifier,
-      role: 'staff',
-      staffId: identifier,
-      name: `Staff ${staffNo}`,
-      department: 'Transport Department',
-      email: `staff${staffNo}@adustech.edu.ng`
-    };
+    // Check staff credentials in localStorage
+    if (role === 'staff') {
+      const registeredStaff = JSON.parse(localStorage.getItem('registeredStaff') || '{}');
+      if (registeredStaff[identifier]) {
+        const staff = registeredStaff[identifier];
+        if (staff.password === password) {
+          return staff;
+        }
+      }
+    }
   }
 
   return null;
 }
 
+// Helper functions for validation
 export function parseStudentRegNo(regNo: string): { year: string, course: string, serialNo: string } | null {
   const match = regNo.match(STUDENT_REG_PATTERN);
   if (!match) return null;
-  
+
   const parts = regNo.split('/');
   return {
     year: parts[0].substring(2), // Remove UG prefix
@@ -219,7 +175,7 @@ export function parseStudentRegNo(regNo: string): { year: string, course: string
 export function parseStaffId(staffId: string): { serialNo: string } | null {
   const match = staffId.match(STAFF_ID_PATTERN);
   if (!match) return null;
-  
+
   const parts = staffId.split('/');
   return {
     serialNo: parts[2]
@@ -233,3 +189,56 @@ export function isValidStudentRegNo(regNo: string): boolean {
 export function isValidStaffId(staffId: string): boolean {
   return STAFF_ID_PATTERN.test(staffId);
 }
+
+// Registration functions
+export function registerStudent(regNo: string, password: string, name: string, course?: string): UserData | null {
+  if (!isValidStudentRegNo(regNo) || !password || !name) return null;
+
+  const parsedRegNo = parseStudentRegNo(regNo);
+  if (!parsedRegNo) return null;
+
+  const student: UserData = {
+    id: regNo,
+    role: 'student',
+    regNumber: regNo,
+    name: name,
+    course: course || parsedRegNo.course,
+    admissionYear: `20${parsedRegNo.year}`,
+    email: `${name.toLowerCase().replace(/\s+/g, '.')}@student.adustech.edu.ng`,
+    password: password
+  };
+
+  if (typeof window !== 'undefined') {
+    const registeredStudents = JSON.parse(localStorage.getItem('registeredStudents') || '{}');
+    registeredStudents[regNo] = student;
+    localStorage.setItem('registeredStudents', JSON.stringify(registeredStudents));
+  }
+
+  return student;
+}
+
+export function registerStaff(staffId: string, password: string, name: string, department?: string): UserData | null {
+  if (!isValidStaffId(staffId) || !password || !name) return null;
+
+  const parsedStaffId = parseStaffId(staffId);
+  if (!parsedStaffId) return null;
+
+  const staff: UserData = {
+    id: staffId,
+    role: 'staff',
+    staffId: staffId,
+    name: name,
+    department: department || 'General',
+    email: `${name.toLowerCase().replace(/\s+/g, '.')}@adustech.edu.ng`,
+    password: password
+  };
+
+  if (typeof window !== 'undefined') {
+    const registeredStaff = JSON.parse(localStorage.getItem('registeredStaff') || '{}');
+    registeredStaff[staffId] = staff;
+    localStorage.setItem('registeredStaff', JSON.stringify(registeredStaff));
+  }
+
+  return staff;
+}
+

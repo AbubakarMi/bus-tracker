@@ -94,16 +94,14 @@ export default function LoginPage() {
 
   function getRoleIcon(role: UserRole | null) {
     switch (role) {
+      case 'admin':
+        return <Crown className="h-4 w-4 text-purple-500" />;
+      case 'driver':
+        return <Users className="h-4 w-4 text-teal-500" />;
       case 'student':
         return <GraduationCap className="h-4 w-4 text-blue-500" />;
       case 'staff':
         return <Users className="h-4 w-4 text-green-500" />;
-      case 'admin':
-        return <Crown className="h-4 w-4 text-purple-500" />;
-      case 'union':
-        return <Shield className="h-4 w-4 text-orange-500" />;
-      case 'driver':
-        return <Users className="h-4 w-4 text-teal-500" />;
       default:
         return null;
     }
@@ -111,16 +109,14 @@ export default function LoginPage() {
 
   function getRoleLabel(role: UserRole | null) {
     switch (role) {
+      case 'admin':
+        return 'Administrator';
+      case 'driver':
+        return 'Driver';
       case 'student':
         return 'Student';
       case 'staff':
         return 'Staff';
-      case 'admin':
-        return 'Administrator';
-      case 'union':
-        return 'Union';
-      case 'driver':
-        return 'Driver';
       default:
         return null;
     }
@@ -258,34 +254,6 @@ export default function LoginPage() {
             </motion.div>
           </motion.div>
 
-          {/* Enhanced Login Instructions */}
-          <motion.div
-            initial={{ opacity: 0, y: -10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.6, delay: 1.2 }}
-            className="mb-6"
-          >
-            <div className="glass-card border border-primary/20 bg-primary/5 p-4 rounded-xl">
-              <div className="flex items-center gap-2 mb-3">
-                <Sparkles className="h-4 w-4 text-primary" />
-                <span className="text-sm font-semibold text-primary">Role-Based Login</span>
-              </div>
-              <div className="space-y-2 text-xs">
-                <div className="flex items-center gap-2">
-                  <GraduationCap className="h-3 w-3 text-blue-500" />
-                  <span className="text-muted-foreground">Students: Use reg no (UG20/COMS/1284)</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Users className="h-3 w-3 text-green-500" />
-                  <span className="text-muted-foreground">Staff: Use staff ID (Staff/Adustech/1022)</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Crown className="h-3 w-3 text-purple-500" />
-                  <span className="text-muted-foreground">Admin: admin@adustech.edu.ng</span>
-                </div>
-              </div>
-            </div>
-          </motion.div>
 
           {/* Enhanced Form */}
           <motion.div
@@ -312,10 +280,10 @@ export default function LoginPage() {
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Input 
+                            <Input
                               type="text"
-                              placeholder="UG20/COMS/1284 or Staff/Adustech/1022 or admin@adustech.edu.ng" 
-                              {...field} 
+                              placeholder="UG20/COMS/1284 or Staff/Adustech/1022 or admin@adustech.edu.ng"
+                              {...field}
                               className="h-12 text-lg border-2 focus:border-primary transition-all duration-300 bg-background/50 backdrop-blur-sm pl-4 pr-16"
                             />
                             <AnimatePresence>
@@ -479,22 +447,34 @@ export default function LoginPage() {
 
             {/* Quick login options */}
             <motion.div
-              className="flex justify-center gap-4 pt-4"
+              className="flex flex-wrap justify-center gap-2 pt-4"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 2.6 }}
             >
-              <motion.div 
-                className="glass-card px-4 py-2 rounded-full text-xs font-medium"
+              <motion.div
+                className="glass-card px-3 py-1.5 rounded-full text-xs font-medium"
                 whileHover={{ scale: 1.05 }}
               >
-                🎓 Student Login
+                🎓 Student
               </motion.div>
-              <motion.div 
-                className="glass-card px-4 py-2 rounded-full text-xs font-medium"
+              <motion.div
+                className="glass-card px-3 py-1.5 rounded-full text-xs font-medium"
                 whileHover={{ scale: 1.05 }}
               >
-                👨‍🏫 Staff Login
+                👨‍🏫 Staff
+              </motion.div>
+              <motion.div
+                className="glass-card px-3 py-1.5 rounded-full text-xs font-medium"
+                whileHover={{ scale: 1.05 }}
+              >
+                👑 Admin
+              </motion.div>
+              <motion.div
+                className="glass-card px-3 py-1.5 rounded-full text-xs font-medium"
+                whileHover={{ scale: 1.05 }}
+              >
+                🚌 Driver
               </motion.div>
             </motion.div>
           </motion.div>
