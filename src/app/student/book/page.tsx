@@ -149,7 +149,7 @@ export default function StudentBooking() {
   }, []);
 
   const selectedRouteData = realTimeBuses.find(r => r.id === selectedRoute);
-  const selectedTripData = selectedRouteData?.trips.find(t => t.id === selectedTrip);
+  const selectedTripData = selectedRouteData?.trips.find((t: any) => t.id === selectedTrip);
   const progress = (currentStep / 5) * 100;
 
   const stepTitles = [

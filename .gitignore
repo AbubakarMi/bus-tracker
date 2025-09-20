@@ -1,6 +1,7 @@
 # Dependencies
 node_modules/
 jspm_packages/
+bower_components/
 
 # Environment files
 .env
@@ -13,6 +14,8 @@ jspm_packages/
 # Firebase
 .firebase/
 firebase-debug.log
+firestore-debug.log
+ui-debug.log
 
 # Next.js build outputs and cache
 .next/
@@ -21,6 +24,7 @@ out/
 dist/
 build/
 .turbo
+.swc/
 
 # Runtime data
 pids
@@ -37,6 +41,9 @@ coverage/
 
 # Optional npm cache directory
 .npm
+
+# Optional PNPM cache directory
+.pnpm-debug.log*
 
 # Optional eslint cache
 .eslintcache
@@ -58,6 +65,10 @@ coverage/
 # Yarn Integrity file
 .yarn-integrity
 
+# dotenv environment variables file
+.env
+.env.build
+
 # Logs
 logs
 *.log
@@ -65,6 +76,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
+.pnpm-debug.log*
 
 # OS generated files
 .DS_Store
@@ -74,15 +86,104 @@ lerna-debug.log*
 .Trashes
 ehthumbs.db
 Thumbs.db
+Desktop.ini
 
 # IDE files
 .vscode/
+!.vscode/extensions.json
 .idea/
 *.swp
 *.swo
 *~
 
+# JetBrains IDEs
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Sublime Text
+*.sublime-workspace
+*.sublime-project
+
+# Atom
+.atom/
+
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
 # Temporary folders
 tmp/
 temp/
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Vercel deployment outputs
+.vercel
+
+# Testing
+.nyc_output
+coverage/
+
+# Storybook build outputs
+storybook-static/
+
+# Local development files
+.local
+
+# Mac system files
+.AppleDouble
+.LSOverride
+
+# Windows system files
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux system files
+*~
+
+# Editor backup files
+*.bak
+*.tmp
+*.orig
+*.rej
+
+# Project specific ignores
+/public/uploads/
+/storage/
+*.sqlite
+*.db
+
+# Backup files
+*.backup
+*.old
+*.prev
+
+# Error logs
+error.log
+debug.log
+
+# Package manager lock files (choose one)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# Generated documentation
+docs/build/
+
+# Build artifacts
+*.map
+*.min.js
+*.min.css
 
