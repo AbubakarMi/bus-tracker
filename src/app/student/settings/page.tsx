@@ -115,7 +115,7 @@ export default function StudentSettings() {
     setPreferences(prev => ({
       ...prev,
       [category]: {
-        ...prev[category as keyof typeof prev],
+        ...(prev[category as keyof typeof prev] as object),
         [key]: value
       }
     }));

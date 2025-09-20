@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { RealTimeTracker } from '@/components/tracking/real-time-tracker';
 import {
   Bus,
   MapPin,
@@ -692,12 +693,12 @@ export default function StudentDashboard() {
     {/* Track Bus Modal */}
     {showTrackBusModal && (
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+        <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
           <div className="sticky top-0 bg-gradient-to-r from-green-600 to-emerald-600 text-white p-6 rounded-t-xl">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold flex items-center gap-2">
                 <MapPin className="h-6 w-6" />
-                Track Your Bus
+                Real-Time Bus Tracking
               </h2>
               <Button
                 variant="ghost"
@@ -710,38 +711,21 @@ export default function StudentDashboard() {
             </div>
           </div>
 
-          <div className="p-6 space-y-6">
-            <div>
-              <Label htmlFor="booking-id" className="text-sm font-medium text-gray-700">Booking ID or Bus Number</Label>
-              <Input placeholder="Enter BK-001 or ADUS-001" className="mt-1" />
-            </div>
-
-            <div className="bg-gray-50 rounded-lg p-4">
-              <h3 className="font-bold text-gray-900 mb-3">Current Location</h3>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Bus:</span>
-                  <span className="font-medium">ADUS-001</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Status:</span>
-                  <Badge variant="default" className="bg-green-100 text-green-700">On Time</Badge>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Current Location:</span>
-                  <span className="font-medium">Mile 2 Bridge</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">ETA:</span>
-                  <span className="font-bold text-green-600">8 mins</span>
-                </div>
-              </div>
-            </div>
-
-            <Button className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:from-green-700 hover:to-emerald-700">
-              <Navigation className="h-4 w-4 mr-2" />
-              View on Map
-            </Button>
+          <div className="p-6">
+            <RealTimeTracker
+              userInfo={{
+                userId: 'UG20/COMS/1284',
+                routeId: 'route-1',
+                routeName: 'Campus to City Center',
+                busId: 'BUS-001',
+                busPlateNumber: 'ADUS-001',
+                driverName: 'Mohammed Ali',
+                pickupPoint: 'ADU Campus Gate',
+                dropoffPoint: 'Kano City Center',
+                status: 'waiting'
+              }}
+              allowedRoutes={['route-1']}
+            />
           </div>
         </div>
       </div>

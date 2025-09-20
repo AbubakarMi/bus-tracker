@@ -18,13 +18,18 @@ import { Separator } from '../ui/separator';
 const studentLinks = [
   { href: '/student/dashboard', icon: <Home />, label: 'Overview' },
   { href: '/student/book', icon: <Ticket />, label: 'Book Bus' },
+  { href: '/student/tracking', icon: <MapPin />, label: 'Track Bus' },
+  { href: '/student/bookings', icon: <Route />, label: 'My Bookings' },
   { href: '/student/profile', icon: <User />, label: 'Profile' },
   { href: '/student/settings', icon: <Settings />, label: 'Settings' },
 ];
 
 const staffLinks = [
   { href: '/staff/dashboard', icon: <Home />, label: 'Fleet Control' },
-  { href: '/staff/book', icon: <Ticket />, label: 'Book for Others' },
+  { href: '/staff/tracking', icon: <MapPin />, label: 'Track Fleet' },
+  { href: '/staff/bookings', icon: <Ticket />, label: 'Manage Bookings' },
+  { href: '/staff/routes', icon: <Route />, label: 'Routes' },
+  { href: '/staff/reports', icon: <Users />, label: 'Reports' },
   { href: '/staff/profile', icon: <User />, label: 'Profile' },
   { href: '/staff/settings', icon: <Settings />, label: 'Settings' },
 ];
@@ -41,11 +46,17 @@ const adminLinks = [
 
 export function DashboardSidebar() {
   const pathname = usePathname();
-  
+
   const isStudent = pathname?.startsWith('/student');
   const isStaff = pathname?.startsWith('/staff');
-  
-  const currentLinks = isStudent ? studentLinks : isStaff ? staffLinks : studentLinks;
+  const isDriver = pathname?.startsWith('/dashboard/driver');
+  const isAdmin = pathname?.startsWith('/dashboard/admin');
+
+  const currentLinks = isStudent ? studentLinks :
+                      isStaff ? staffLinks :
+                      isDriver ? driverLinks :
+                      isAdmin ? adminLinks :
+                      studentLinks;
 
   return (
     <Sidebar>
