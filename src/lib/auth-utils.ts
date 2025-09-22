@@ -1,3 +1,6 @@
+import { db } from './firebase';
+import { doc, setDoc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
+
 export type UserRole = 'admin' | 'driver' | 'student' | 'staff';
 
 export interface UserData {
@@ -115,49 +118,43 @@ const adminUser: UserData = {
   name: 'Admin User'
 };
 
-export function authenticateUser(identifier: string, password: string): UserData | null {
+export async function authenticateUser(identifier: string, password: string): Promise<UserData | null> {
   // Check admin credentials
   if (identifier.toLowerCase() === ADMIN_EMAIL.toLowerCase() && password === DEFAULT_PASSWORD) {
     return adminUser;
   }
 
   const role = detectUserRole(identifier);
-  if (!role) return null;
+  if (!role || !db) return null;
 
-  if (typeof window !== 'undefined') {
-    // Check driver credentials in localStorage
-    if (role === 'driver') {
-      const registeredDrivers = JSON.parse(localStorage.getItem('registeredDrivers') || '{}');
-      if (registeredDrivers[identifier] && password === DEFAULT_PASSWORD) {
-        return registeredDrivers[identifier];
+  try {
+    // Check user credentials in Firestore
+    const userDoc = await getDoc(doc(db, 'users', identifier));
+
+    if (userDoc.exists()) {
+      const userData = userDoc.data() as UserData;
+      if (userData.password === password) {
+        return userData;
       }
     }
-
-    // Check student credentials in localStorage
-    if (role === 'student') {
-      const registeredStudents = JSON.parse(localStorage.getItem('registeredStudents') || '{}');
-      if (registeredStudents[identifier]) {
-        const student = registeredStudents[identifier];
-        if (student.password === password) {
-          return student;
-        }
-      }
-    }
-
-    // Check staff credentials in localStorage
-    if (role === 'staff') {
-      const registeredStaff = JSON.parse(localStorage.getItem('registeredStaff') || '{}');
-      if (registeredStaff[identifier]) {
-        const staff = registeredStaff[identifier];
-        if (staff.password === password) {
-          return staff;
-        }
-      }
-    }
+  } catch (error) {
+    console.error('Error authenticating user:', error);
   }
 
   return null;
 }
+
+// Course mapping based on registration number prefix
+const COURSE_MAPPING: { [key: string]: string } = {
+  'COMS': 'Computer Science',
+  'ICT': 'Information Communication Technology',
+  'BIOL': 'Biology',
+  'MATHS': 'Mathematics',
+  'STA': 'Statistics',
+  'CRS': 'Crop Science',
+  'BIOC': 'Biochemistry',
+  'CHEM': 'Chemistry'
+};
 
 // Helper functions for validation
 export function parseStudentRegNo(regNo: string): { year: string, course: string, serialNo: string } | null {
@@ -165,11 +162,19 @@ export function parseStudentRegNo(regNo: string): { year: string, course: string
   if (!match) return null;
 
   const parts = regNo.split('/');
+  const courseCode = parts[1].toUpperCase();
+  const fullCourseName = COURSE_MAPPING[courseCode] || courseCode;
+
   return {
     year: parts[0].substring(2), // Remove UG prefix
-    course: parts[1],
+    course: fullCourseName,
     serialNo: parts[2]
   };
+}
+
+export function detectCourseFromRegNo(regNo: string): string | null {
+  const parsed = parseStudentRegNo(regNo);
+  return parsed ? parsed.course : null;
 }
 
 export function parseStaffId(staffId: string): { serialNo: string } | null {
@@ -191,8 +196,8 @@ export function isValidStaffId(staffId: string): boolean {
 }
 
 // Registration functions
-export function registerStudent(regNo: string, password: string, name: string, course?: string): UserData | null {
-  if (!isValidStudentRegNo(regNo) || !password || !name) return null;
+export async function registerStudent(regNo: string, password: string, name: string, course?: string): Promise<UserData | null> {
+  if (!isValidStudentRegNo(regNo) || !password || !name || !db) return null;
 
   const parsedRegNo = parseStudentRegNo(regNo);
   if (!parsedRegNo) return null;
@@ -208,17 +213,25 @@ export function registerStudent(regNo: string, password: string, name: string, c
     password: password
   };
 
-  if (typeof window !== 'undefined') {
-    const registeredStudents = JSON.parse(localStorage.getItem('registeredStudents') || '{}');
-    registeredStudents[regNo] = student;
-    localStorage.setItem('registeredStudents', JSON.stringify(registeredStudents));
-  }
+  try {
+    // Check if user already exists
+    const userDoc = await getDoc(doc(db, 'users', regNo));
+    if (userDoc.exists()) {
+      console.error('Student already registered');
+      return null;
+    }
 
-  return student;
+    // Save to Firestore
+    await setDoc(doc(db, 'users', regNo), student);
+    return student;
+  } catch (error) {
+    console.error('Error registering student:', error);
+    return null;
+  }
 }
 
-export function registerStaff(staffId: string, password: string, name: string, department?: string): UserData | null {
-  if (!isValidStaffId(staffId) || !password || !name) return null;
+export async function registerStaff(staffId: string, password: string, name: string, department?: string): Promise<UserData | null> {
+  if (!isValidStaffId(staffId) || !password || !name || !db) return null;
 
   const parsedStaffId = parseStaffId(staffId);
   if (!parsedStaffId) return null;
@@ -233,12 +246,20 @@ export function registerStaff(staffId: string, password: string, name: string, d
     password: password
   };
 
-  if (typeof window !== 'undefined') {
-    const registeredStaff = JSON.parse(localStorage.getItem('registeredStaff') || '{}');
-    registeredStaff[staffId] = staff;
-    localStorage.setItem('registeredStaff', JSON.stringify(registeredStaff));
-  }
+  try {
+    // Check if user already exists
+    const userDoc = await getDoc(doc(db, 'users', staffId));
+    if (userDoc.exists()) {
+      console.error('Staff already registered');
+      return null;
+    }
 
-  return staff;
+    // Save to Firestore
+    await setDoc(doc(db, 'users', staffId), staff);
+    return staff;
+  } catch (error) {
+    console.error('Error registering staff:', error);
+    return null;
+  }
 }
 

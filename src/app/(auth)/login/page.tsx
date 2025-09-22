@@ -62,7 +62,7 @@ export default function LoginPage() {
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       // Authenticate user using the new system
-      const user = authenticateUser(values.identifier, values.password);
+      const user = await authenticateUser(values.identifier, values.password);
       
       if (user) {
         // Store auth state in localStorage

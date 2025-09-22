@@ -1,6 +1,7 @@
 
 import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
 import { getAuth, type Auth } from "firebase/auth";
+import { getFirestore, type Firestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -16,22 +17,25 @@ const isFirebaseConfigured = !!firebaseConfig.apiKey;
 
 let app: FirebaseApp;
 let auth: Auth | null = null;
+let db: Firestore | null = null;
 
 if (isFirebaseConfigured) {
   if (!getApps().length) {
     try {
       app = initializeApp(firebaseConfig);
       auth = getAuth(app);
+      db = getFirestore(app);
     } catch (e) {
       console.error("Failed to initialize Firebase", e)
     }
   } else {
     app = getApps()[0];
     auth = getAuth(app);
+    db = getFirestore(app);
   }
 } else {
   console.warn("Firebase config is missing. Please set up your .env file.");
 }
 
 
-export { auth, isFirebaseConfigured };
+export { auth, db, isFirebaseConfigured };
