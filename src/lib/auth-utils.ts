@@ -197,10 +197,28 @@ export function isValidStaffId(staffId: string): boolean {
 
 // Registration functions
 export async function registerStudent(regNo: string, password: string, name: string, course?: string): Promise<UserData | null> {
-  if (!isValidStudentRegNo(regNo) || !password || !name || !db) return null;
+  console.log('Registering student:', { regNo, name, course, dbStatus: !!db });
+
+  if (!isValidStudentRegNo(regNo)) {
+    throw new Error('Invalid registration number format');
+  }
+
+  if (!password || password.length < 6) {
+    throw new Error('Password must be at least 6 characters long');
+  }
+
+  if (!name || name.trim().length < 2) {
+    throw new Error('Name must be at least 2 characters long');
+  }
+
+  if (!db) {
+    throw new Error('Database connection not available. Please check your internet connection.');
+  }
 
   const parsedRegNo = parseStudentRegNo(regNo);
-  if (!parsedRegNo) return null;
+  if (!parsedRegNo) {
+    throw new Error('Unable to parse registration number');
+  }
 
   const student: UserData = {
     id: regNo,
@@ -217,24 +235,45 @@ export async function registerStudent(regNo: string, password: string, name: str
     // Check if user already exists
     const userDoc = await getDoc(doc(db, 'users', regNo));
     if (userDoc.exists()) {
-      console.error('Student already registered');
-      return null;
+      throw new Error('A student with this registration number is already registered');
     }
 
     // Save to Firestore
     await setDoc(doc(db, 'users', regNo), student);
+    console.log('Student registered successfully:', regNo);
     return student;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error registering student:', error);
-    return null;
+    if (error.message) {
+      throw error; // Re-throw with original message
+    }
+    throw new Error('Failed to register student. Please try again.');
   }
 }
 
 export async function registerStaff(staffId: string, password: string, name: string, department?: string): Promise<UserData | null> {
-  if (!isValidStaffId(staffId) || !password || !name || !db) return null;
+  console.log('Registering staff:', { staffId, name, department, dbStatus: !!db });
+
+  if (!isValidStaffId(staffId)) {
+    throw new Error('Invalid staff ID format');
+  }
+
+  if (!password || password.length < 6) {
+    throw new Error('Password must be at least 6 characters long');
+  }
+
+  if (!name || name.trim().length < 2) {
+    throw new Error('Name must be at least 2 characters long');
+  }
+
+  if (!db) {
+    throw new Error('Database connection not available. Please check your internet connection.');
+  }
 
   const parsedStaffId = parseStaffId(staffId);
-  if (!parsedStaffId) return null;
+  if (!parsedStaffId) {
+    throw new Error('Unable to parse staff ID');
+  }
 
   const staff: UserData = {
     id: staffId,
@@ -250,16 +289,19 @@ export async function registerStaff(staffId: string, password: string, name: str
     // Check if user already exists
     const userDoc = await getDoc(doc(db, 'users', staffId));
     if (userDoc.exists()) {
-      console.error('Staff already registered');
-      return null;
+      throw new Error('A staff member with this ID is already registered');
     }
 
     // Save to Firestore
     await setDoc(doc(db, 'users', staffId), staff);
+    console.log('Staff registered successfully:', staffId);
     return staff;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error registering staff:', error);
-    return null;
+    if (error.message) {
+      throw error; // Re-throw with original message
+    }
+    throw new Error('Failed to register staff member. Please try again.');
   }
 }
 

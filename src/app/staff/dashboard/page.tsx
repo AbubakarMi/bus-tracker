@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -35,7 +36,20 @@ import {
   Download,
   X,
   Plus,
-  Search
+  Search,
+  Sparkles,
+  Globe,
+  Shield,
+  Target,
+  TrendingDown,
+  Heart,
+  Lightning,
+  Award,
+  BookOpen,
+  Coffee,
+  Briefcase,
+  UserCheck,
+  Plane
 } from 'lucide-react';
 
 interface BusStatus {
@@ -276,16 +290,87 @@ export default function StaffDashboard() {
 
   return (
     <>
-    <div className="space-y-6">
+    {/* Animated Background Elements */}
+    <div className="fixed inset-0 -z-10 overflow-hidden">
+      <motion.div
+        className="absolute -top-1/2 -right-1/2 w-full h-full bg-gradient-to-br from-blue-500/10 via-purple-500/5 to-indigo-500/10 rounded-full"
+        animate={{
+          rotate: 360,
+          scale: [1, 1.1, 1],
+        }}
+        transition={{
+          duration: 20,
+          repeat: Infinity,
+          ease: "linear"
+        }}
+      />
+      <motion.div
+        className="absolute -bottom-1/2 -left-1/2 w-3/4 h-3/4 bg-gradient-to-tr from-emerald-500/10 via-cyan-500/5 to-blue-500/10 rounded-full"
+        animate={{
+          rotate: -360,
+          scale: [1, 1.2, 1],
+        }}
+        transition={{
+          duration: 25,
+          repeat: Infinity,
+          ease: "linear"
+        }}
+      />
+      <motion.div
+        className="absolute top-1/4 left-1/4 w-1/2 h-1/2 bg-gradient-to-bl from-purple-500/8 via-pink-500/4 to-indigo-500/8 rounded-full"
+        animate={{
+          rotate: 180,
+          scale: [1, 0.8, 1],
+        }}
+        transition={{
+          duration: 15,
+          repeat: Infinity,
+          ease: "linear"
+        }}
+      />
+    </div>
+
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.6 }}
+      className="space-y-6 relative z-10">
       {/* Header Section */}
       <div className="mb-6">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Welcome back, Staff Member! 👨‍💼
-            </h1>
-            <p className="text-lg text-gray-600 flex items-center gap-3">
-              <Activity className="h-5 w-5 text-blue-600" />
+            <motion.h1
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent mb-2 flex items-center gap-3"
+            >
+              <motion.span
+                animate={{ rotate: [0, 10, -10, 0] }}
+                transition={{ duration: 2, repeat: Infinity, delay: 1 }}
+              >
+                👨‍💼
+              </motion.span>
+              Welcome back, Staff Member!
+              <motion.div
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
+              >
+                <Sparkles className="h-8 w-8 text-yellow-500" />
+              </motion.div>
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="text-lg text-gray-700 flex items-center gap-3 font-medium"
+            >
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+              >
+                <Globe className="h-5 w-5 text-emerald-600" />
+              </motion.div>
               {currentTime.toLocaleDateString('en-NG', {
                 weekday: 'long',
                 month: 'long',
@@ -294,7 +379,13 @@ export default function StaffDashboard() {
                 hour: '2-digit',
                 minute: '2-digit'
               })}
-            </p>
+              <motion.div
+                animate={{ scale: [1, 1.3, 1] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              >
+                <Heart className="h-4 w-4 text-red-500" />
+              </motion.div>
+            </motion.p>
           </div>
 
           {/* Quick Access Buttons */}

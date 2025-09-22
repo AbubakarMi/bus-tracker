@@ -25,17 +25,25 @@ if (isFirebaseConfigured) {
       app = initializeApp(firebaseConfig);
       auth = getAuth(app);
       db = getFirestore(app);
+      console.log("✅ Firebase initialized successfully");
     } catch (e) {
-      console.error("Failed to initialize Firebase", e)
+      console.error("❌ Failed to initialize Firebase", e)
     }
   } else {
     app = getApps()[0];
     auth = getAuth(app);
     db = getFirestore(app);
+    console.log("✅ Firebase already initialized");
   }
 } else {
-  console.warn("Firebase config is missing. Please set up your .env file.");
+  console.error("❌ Firebase config is missing. Please set up your .env file.");
 }
 
+// Test Firebase connection
+if (db) {
+  console.log("🔥 Firestore database connected");
+} else {
+  console.error("❌ Firestore database not available");
+}
 
 export { auth, db, isFirebaseConfigured };
