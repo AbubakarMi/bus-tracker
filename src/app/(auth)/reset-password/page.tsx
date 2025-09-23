@@ -1,8 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -14,46 +13,81 @@ import { Logo } from '@/components/logo';
 import { RoadAnimation } from '@/components/auth/road-animation';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { requestPasswordReset } from '@/lib/auth-utils';
-import { Loader2, Mail, ArrowLeft, CheckCircle, Sparkles, Shield, KeyRound } from 'lucide-react';
+import { resetPasswordWithToken, validateResetToken } from '@/lib/auth-utils';
+import { Loader2, Lock, ArrowLeft, CheckCircle, AlertCircle, Eye, EyeOff, Shield, KeyRound } from 'lucide-react';
 
-const forgotPasswordSchema = z.object({
-  identifier: z.string().min(1, 'Please enter your email, registration number, or staff ID'),
+const resetPasswordSchema = z.object({
+  password: z.string().min(6, 'Password must be at least 6 characters long'),
+  confirmPassword: z.string().min(1, 'Please confirm your password'),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
 });
 
-export default function ForgotPasswordPage() {
+export default function ResetPasswordPage() {
   const [isLoading, setIsLoading] = React.useState(false);
-  const [emailSent, setEmailSent] = React.useState(false);
+  const [showPassword, setShowPassword] = React.useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
+  const [tokenValid, setTokenValid] = React.useState<boolean | null>(null);
+  const [tokenError, setTokenError] = React.useState<string>('');
+  const [resetComplete, setResetComplete] = React.useState(false);
   const { toast } = useToast();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const token = searchParams.get('token');
 
-  const form = useForm<z.infer<typeof forgotPasswordSchema>>({
-    resolver: zodResolver(forgotPasswordSchema),
+  const form = useForm<z.infer<typeof resetPasswordSchema>>({
+    resolver: zodResolver(resetPasswordSchema),
     defaultValues: {
-      identifier: '',
+      password: '',
+      confirmPassword: '',
     },
   });
 
-  async function onSubmit(values: z.infer<typeof forgotPasswordSchema>) {
+  // Validate token on mount
+  React.useEffect(() => {
+    if (!token) {
+      setTokenValid(false);
+      setTokenError('No reset token provided');
+      return;
+    }
+
+    const validation = validateResetToken(token);
+    setTokenValid(validation.valid);
+    if (!validation.valid) {
+      setTokenError(validation.error || 'Invalid token');
+    }
+  }, [token]);
+
+  async function onSubmit(values: z.infer<typeof resetPasswordSchema>) {
+    if (!token) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'No reset token provided',
+      });
+      return;
+    }
+
     setIsLoading(true);
 
     try {
       // Simulate network delay
       await new Promise(resolve => setTimeout(resolve, 1500));
 
-      const result = await requestPasswordReset(values.identifier);
+      const result = await resetPasswordWithToken(token, values.password);
 
       if (result.success) {
-        setEmailSent(true);
+        setResetComplete(true);
         toast({
-          title: 'Reset Email Sent!',
+          title: 'Password Reset Successful!',
           description: result.message,
           variant: 'default',
         });
       } else {
         toast({
           variant: 'destructive',
-          title: 'Error Sending Reset Email',
+          title: 'Error Resetting Password',
           description: result.message,
         });
       }
@@ -61,7 +95,7 @@ export default function ForgotPasswordPage() {
       console.error('Password Reset Error:', error);
       toast({
         variant: 'destructive',
-        title: 'Error Sending Reset Email',
+        title: 'Error Resetting Password',
         description: 'An unexpected error occurred. Please try again.',
       });
     } finally {
@@ -69,10 +103,99 @@ export default function ForgotPasswordPage() {
     }
   }
 
-  if (emailSent) {
+  // Show error state for invalid token
+  if (tokenValid === false) {
     return (
       <div className="container relative min-h-screen w-full lg:grid lg:grid-cols-2 xl:min-h-[800px]">
-        {/* Background gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5" />
+
+        <motion.div
+          className="flex items-center justify-center py-12 relative z-10"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6 }}
+        >
+          <div className="mx-auto grid w-[420px] gap-8 text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="space-y-6"
+            >
+              <motion.div
+                animate={{ scale: [1, 1.1, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                <AlertCircle className="h-16 w-16 text-red-500 mx-auto" />
+              </motion.div>
+
+              <div className="space-y-4">
+                <motion.h1
+                  className="font-headline text-3xl font-bold bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.4 }}
+                >
+                  Invalid Reset Link
+                </motion.h1>
+
+                <motion.p
+                  className="text-lg text-muted-foreground leading-relaxed"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.6 }}
+                >
+                  {tokenError}
+                </motion.p>
+
+                <motion.div
+                  className="bg-muted/30 rounded-lg p-4 text-sm text-muted-foreground"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.8 }}
+                >
+                  <Shield className="h-4 w-4 inline mr-2 text-primary" />
+                  Reset links expire after 24 hours for security purposes.
+                </motion.div>
+              </div>
+
+              <motion.div
+                className="space-y-3"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 1.0 }}
+              >
+                <Button
+                  onClick={() => router.push('/forgot-password')}
+                  className="w-full h-12 text-lg font-semibold gradient-bg-primary text-white hover:scale-105 transition-all duration-300"
+                >
+                  Request New Reset Link
+                </Button>
+
+                <Button
+                  variant="outline"
+                  onClick={() => router.push('/login')}
+                  className="w-full h-12 text-lg"
+                >
+                  <ArrowLeft className="mr-2 h-5 w-5" />
+                  Back to Login
+                </Button>
+              </motion.div>
+            </motion.div>
+          </div>
+        </motion.div>
+
+        <div className="hidden bg-muted lg:block relative">
+          <RoadAnimation />
+        </div>
+      </div>
+    );
+  }
+
+  // Show success state after password reset
+  if (resetComplete) {
+    return (
+      <div className="container relative min-h-screen w-full lg:grid lg:grid-cols-2 xl:min-h-[800px]">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5" />
 
         <motion.div
@@ -102,7 +225,7 @@ export default function ForgotPasswordPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.4 }}
                 >
-                  Email Sent Successfully!
+                  Password Reset Successful!
                 </motion.h1>
 
                 <motion.p
@@ -111,8 +234,7 @@ export default function ForgotPasswordPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.6 }}
                 >
-                  We've sent password reset instructions to your email address.
-                  Please check your inbox and follow the link to reset your password.
+                  Your password has been successfully updated. You can now log in with your new password.
                 </motion.p>
 
                 <motion.div
@@ -122,12 +244,11 @@ export default function ForgotPasswordPage() {
                   transition={{ duration: 0.6, delay: 0.8 }}
                 >
                   <Shield className="h-4 w-4 inline mr-2 text-primary" />
-                  Don't see the email? Check your spam folder or try again.
+                  For security, please log in with your new password now.
                 </motion.div>
               </div>
 
               <motion.div
-                className="space-y-3"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 1.0 }}
@@ -137,25 +258,13 @@ export default function ForgotPasswordPage() {
                   className="w-full h-12 text-lg font-semibold gradient-bg-primary text-white hover:scale-105 transition-all duration-300"
                 >
                   <ArrowLeft className="mr-2 h-5 w-5" />
-                  Back to Login
-                </Button>
-
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setEmailSent(false);
-                    form.reset();
-                  }}
-                  className="w-full h-12 text-lg"
-                >
-                  Try Different Email
+                  Continue to Login
                 </Button>
               </motion.div>
             </motion.div>
           </div>
         </motion.div>
 
-        {/* Enhanced Background with Road Animation */}
         <div className="hidden bg-muted lg:block relative">
           <RoadAnimation />
         </div>
@@ -163,9 +272,25 @@ export default function ForgotPasswordPage() {
     );
   }
 
+  // Show loading state while validating token
+  if (tokenValid === null) {
+    return (
+      <div className="container relative min-h-screen w-full lg:grid lg:grid-cols-2 xl:min-h-[800px]">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5" />
+        <div className="flex items-center justify-center py-12 relative z-10">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full"
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // Main reset password form
   return (
     <div className="container relative min-h-screen w-full lg:grid lg:grid-cols-2 xl:min-h-[800px]">
-      {/* Background gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5" />
 
       <motion.div
@@ -181,7 +306,7 @@ export default function ForgotPasswordPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            {/* Enhanced Logo Section */}
+            {/* Logo Section */}
             <motion.div
               className="mb-6 flex justify-center relative"
               whileHover={{ scale: 1.05 }}
@@ -200,7 +325,7 @@ export default function ForgotPasswordPage() {
               </div>
             </motion.div>
 
-            {/* Enhanced Welcome Message */}
+            {/* Title */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -210,7 +335,7 @@ export default function ForgotPasswordPage() {
               <motion.h1
                 className="font-headline text-4xl md:text-5xl font-bold tracking-tight relative"
               >
-                <span className="block">Reset Your</span>
+                <span className="block">Create New</span>
                 <span className="block bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                   Password
                 </span>
@@ -226,7 +351,7 @@ export default function ForgotPasswordPage() {
                     ease: "easeInOut"
                   }}
                 >
-                  🔒
+                  🔐
                 </motion.span>
               </motion.h1>
 
@@ -236,12 +361,12 @@ export default function ForgotPasswordPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.8 }}
               >
-                Enter your email address and we'll send you instructions to reset your password.
-                <span className="font-semibold text-primary"> Don't worry, it happens!</span>
+                Enter your new password to complete the reset process.
+                <span className="font-semibold text-primary"> Make it strong and secure!</span>
               </motion.p>
             </motion.div>
 
-            {/* Reset Stats */}
+            {/* Security indicators */}
             <motion.div
               className="grid grid-cols-2 gap-4 mt-6"
               initial={{ opacity: 0, y: 20 }}
@@ -270,12 +395,12 @@ export default function ForgotPasswordPage() {
                 >
                   <Shield className="h-5 w-5 text-green-500 mx-auto mb-1" />
                 </motion.div>
-                <p className="text-xs font-semibold">Email Protected</p>
+                <p className="text-xs font-semibold">Token Verified</p>
               </motion.div>
             </motion.div>
           </motion.div>
 
-          {/* Enhanced Form */}
+          {/* Form */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -283,7 +408,7 @@ export default function ForgotPasswordPage() {
           >
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-6">
-                {/* Enhanced Email Field */}
+                {/* Password Field */}
                 <motion.div
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -291,20 +416,31 @@ export default function ForgotPasswordPage() {
                 >
                   <FormField
                     control={form.control}
-                    name="identifier"
+                    name="password"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-base font-semibold flex items-center gap-2">
-                          <Mail className="h-4 w-4 text-primary" />
-                          Email / Registration Number / Staff ID
+                          <Lock className="h-4 w-4 text-primary" />
+                          New Password
                         </FormLabel>
                         <FormControl>
-                          <Input
-                            type="text"
-                            placeholder="Enter your email, UG20/COMS/1284, or Staff/Adustech/1022"
-                            {...field}
-                            className="h-12 text-lg border-2 focus:border-primary transition-all duration-300 bg-background/50 backdrop-blur-sm"
-                          />
+                          <div className="relative">
+                            <Input
+                              type={showPassword ? "text" : "password"}
+                              placeholder="Enter your new password (min 6 characters)"
+                              {...field}
+                              className="h-12 text-lg border-2 focus:border-primary transition-all duration-300 bg-background/50 backdrop-blur-sm pr-12"
+                            />
+                            <motion.button
+                              type="button"
+                              onClick={() => setShowPassword(!showPassword)}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary transition-colors duration-200"
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                            >
+                              {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                            </motion.button>
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -312,11 +448,51 @@ export default function ForgotPasswordPage() {
                   />
                 </motion.div>
 
-                {/* Enhanced Submit Button */}
+                {/* Confirm Password Field */}
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.6, delay: 1.6 }}
+                >
+                  <FormField
+                    control={form.control}
+                    name="confirmPassword"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-base font-semibold flex items-center gap-2">
+                          <Lock className="h-4 w-4 text-primary" />
+                          Confirm New Password
+                        </FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Input
+                              type={showConfirmPassword ? "text" : "password"}
+                              placeholder="Confirm your new password"
+                              {...field}
+                              className="h-12 text-lg border-2 focus:border-primary transition-all duration-300 bg-background/50 backdrop-blur-sm pr-12"
+                            />
+                            <motion.button
+                              type="button"
+                              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary transition-colors duration-200"
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                            >
+                              {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                            </motion.button>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </motion.div>
+
+                {/* Submit Button */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 1.6 }}
+                  transition={{ duration: 0.6, delay: 1.8 }}
                   className="pt-4"
                 >
                   <motion.div
@@ -331,12 +507,12 @@ export default function ForgotPasswordPage() {
                       {isLoading ? (
                         <span className="flex items-center justify-center">
                           <Loader2 className="mr-3 h-5 w-5 animate-spin" />
-                          Sending reset email...
+                          Updating password...
                         </span>
                       ) : (
                         <span className="flex items-center justify-center">
-                          <Mail className="mr-3 h-5 w-5" />
-                          Send Reset Instructions
+                          <Lock className="mr-3 h-5 w-5" />
+                          Update Password
                         </span>
                       )}
                     </Button>
@@ -347,50 +523,18 @@ export default function ForgotPasswordPage() {
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 1.8 }}
+                  transition={{ duration: 0.5, delay: 2.0 }}
                   className="text-center text-xs text-muted-foreground bg-muted/30 rounded-lg p-3"
                 >
                   <Shield className="h-4 w-4 inline mr-2 text-primary" />
-                  Reset links are valid for 24 hours and can only be used once
+                  Your password will be encrypted and securely stored
                 </motion.div>
               </form>
             </Form>
           </motion.div>
-
-          {/* Enhanced Footer */}
-          <motion.div
-            className="mt-6 text-center space-y-4"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 2.0 }}
-          >
-            <motion.div
-              className="text-sm text-muted-foreground"
-              whileHover={{ scale: 1.02 }}
-              transition={{ type: "spring", stiffness: 400, damping: 10 }}
-            >
-              Remember your password?{' '}
-              <Link
-                href="/login"
-                className="font-semibold text-primary hover:text-accent transition-colors duration-200 relative group"
-              >
-                <span className="relative z-10 flex items-center gap-1">
-                  <ArrowLeft className="h-3 w-3" />
-                  Back to Login
-                </span>
-                <motion.div
-                  className="absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-primary to-accent rounded-full"
-                  initial={{ width: 0 }}
-                  whileHover={{ width: "100%" }}
-                  transition={{ duration: 0.3 }}
-                />
-              </Link>
-            </motion.div>
-          </motion.div>
         </div>
       </motion.div>
 
-      {/* Enhanced Background with Road Animation */}
       <div className="hidden bg-muted lg:block relative">
         <RoadAnimation />
       </div>

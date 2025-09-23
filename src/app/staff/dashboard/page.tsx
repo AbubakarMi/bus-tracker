@@ -336,7 +336,7 @@ export default function StaffDashboard() {
   }
 
   return (
-    <>
+    <div className="min-h-screen bg-white relative">
     {/* Dashboard Header */}
     <DashboardHeader user={userData} title="Staff Dashboard" />
 
@@ -1035,6 +1035,6 @@ export default function StaffDashboard() {
         </div>
       </div>
     )}
-  </>
+    </div>
   );
 }

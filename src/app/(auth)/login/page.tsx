@@ -21,7 +21,8 @@ import { auth as staticAuth, isFirebaseConfigured } from '@/lib/firebase';
 import { Loader2, AlertTriangle, Mail, Shield, Eye, EyeOff, ArrowRight, CheckCircle, Sparkles, Lock, GraduationCap, Users, Crown } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { cn } from '@/lib/utils';
-import { authenticateUser, detectUserRole, getDashboardPath, formatDisplayName, type UserRole } from '@/lib/auth-utils';
+import { authenticateUser, detectUserRole, getDashboardPath, formatDisplayName, type UserRole, type UserData } from '@/lib/auth-utils';
+import { WorldClassWelcomePopup } from '@/components/world-class-welcome-popup';
 
 const loginFormSchema = z.object({
   identifier: z.string().min(1, 'Please enter your credentials'),
@@ -32,6 +33,8 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
   const [detectedRole, setDetectedRole] = React.useState<UserRole | null>(null);
+  const [showWelcomePopup, setShowWelcomePopup] = React.useState(false);
+  const [loggedInUser, setLoggedInUser] = React.useState<UserData | null>(null);
   const { toast } = useToast();
   const router = useRouter();
 
@@ -68,15 +71,15 @@ export default function LoginPage() {
         // Store auth state in localStorage
         localStorage.setItem('isLoggedIn', 'true');
         localStorage.setItem('userData', JSON.stringify(user));
-        
+
+        // Set user data and show welcome popup
+        setLoggedInUser(user);
+        setShowWelcomePopup(true);
+
         toast({
           title: 'Login Successful!',
           description: `Welcome back, ${formatDisplayName(user)}!`,
         });
-        
-        // Redirect to appropriate dashboard
-        const dashboardPath = getDashboardPath(user.role);
-        router.push(dashboardPath);
       } else {
         throw new Error('Invalid credentials. Please check your ID/email and password.');
       }
@@ -282,7 +285,7 @@ export default function LoginPage() {
                           <div className="relative">
                             <Input
                               type="text"
-                              placeholder="UG20/COMS/1284 or Staff/Adustech/1022 or admin@adustech.edu.ng"
+                              placeholder="Enter your login credentials"
                               {...field}
                               className="h-12 text-lg border-2 focus:border-primary transition-all duration-300 bg-background/50 backdrop-blur-sm pl-4 pr-16"
                             />
@@ -445,38 +448,6 @@ export default function LoginPage() {
               </Link>
             </motion.div>
 
-            {/* Quick login options */}
-            <motion.div
-              className="flex flex-wrap justify-center gap-2 pt-4"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6, delay: 2.6 }}
-            >
-              <motion.div
-                className="glass-card px-3 py-1.5 rounded-full text-xs font-medium"
-                whileHover={{ scale: 1.05 }}
-              >
-                🎓 Student
-              </motion.div>
-              <motion.div
-                className="glass-card px-3 py-1.5 rounded-full text-xs font-medium"
-                whileHover={{ scale: 1.05 }}
-              >
-                👨‍🏫 Staff
-              </motion.div>
-              <motion.div
-                className="glass-card px-3 py-1.5 rounded-full text-xs font-medium"
-                whileHover={{ scale: 1.05 }}
-              >
-                👑 Admin
-              </motion.div>
-              <motion.div
-                className="glass-card px-3 py-1.5 rounded-full text-xs font-medium"
-                whileHover={{ scale: 1.05 }}
-              >
-                🚌 Driver
-              </motion.div>
-            </motion.div>
           </motion.div>
         </div>
       </motion.div>
@@ -485,6 +456,22 @@ export default function LoginPage() {
       <div className="hidden bg-muted lg:block relative">
         <RoadAnimation />
       </div>
+
+      {/* Welcome Popup */}
+      {showWelcomePopup && loggedInUser && (
+        <WorldClassWelcomePopup
+          user={loggedInUser}
+          isVisible={showWelcomePopup}
+          onClose={() => {
+            setShowWelcomePopup(false);
+          }}
+          onContinue={() => {
+            setShowWelcomePopup(false);
+            // This will be handled by the popup component
+          }}
+          isNewUser={false}
+        />
+      )}
     </div>
   )
 }

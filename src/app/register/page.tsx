@@ -9,11 +9,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ArrowLeft, Eye, EyeOff, CheckCircle2, XCircle, User, GraduationCap, Users, BookOpen, Building, Lock, Sparkles, Shield, Globe, Zap } from 'lucide-react';
+import { ArrowLeft, Eye, EyeOff, CheckCircle2, XCircle, User, GraduationCap, Users, BookOpen, Building, Lock, Sparkles, Shield, Globe, Zap, Mail } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { registerStudent, registerStaff, isValidStudentRegNo, isValidStaffId, getDashboardPath } from '@/lib/auth-utils';
 import { Logo } from '@/components/logo';
-import { WelcomePopup } from '@/components/welcome-popup';
+import { WorldClassWelcomePopup } from '@/components/world-class-welcome-popup';
 import { cn } from '@/lib/utils';
 
 // Course mapping based on registration number prefix
@@ -58,6 +58,7 @@ export default function RegisterPage() {
   // Form state
   const [formData, setFormData] = useState({
     name: '',
+    email: '',
     course: '',
     department: '',
     password: '',
@@ -68,6 +69,7 @@ export default function RegisterPage() {
   const [validations, setValidations] = useState({
     regInput: false,
     name: false,
+    email: false,
     password: false,
     confirmPassword: false
   });
@@ -114,6 +116,13 @@ export default function RegisterPage() {
     return isValid;
   };
 
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const isValid = emailRegex.test(email);
+    setValidations(prev => ({ ...prev, email: isValid }));
+    return isValid;
+  };
+
   const validatePassword = (password: string) => {
     const isValid = password.length >= 6;
     setValidations(prev => ({ ...prev, password: isValid }));
@@ -140,6 +149,10 @@ export default function RegisterPage() {
 
     if (!formData.name.trim() || formData.name.trim().length < 2) {
       newErrors.name = "Name must be at least 2 characters long";
+    }
+
+    if (!formData.email.trim() || !validateEmail(formData.email)) {
+      newErrors.email = "Please enter a valid email address";
     }
 
     if (formData.password.length < 6) {
@@ -171,14 +184,16 @@ export default function RegisterPage() {
           regInput,
           formData.password,
           formData.name,
-          formData.course || detectedCourse
+          formData.course || detectedCourse,
+          formData.email
         );
       } else {
         result = await registerStaff(
           regInput,
           formData.password,
           formData.name,
-          formData.department
+          formData.department,
+          formData.email
         );
       }
 
@@ -429,7 +444,7 @@ export default function RegisterPage() {
                           <div className="relative">
                             <Input
                               id="regInput"
-                              placeholder="UG20/COMS/1284 or Staff/Adustech/1022"
+                              placeholder="Enter your reg no/staff id"
                               value={regInput}
                               onChange={(e) => setRegInput(e.target.value.toUpperCase())}
                               className={cn(
@@ -452,10 +467,6 @@ export default function RegisterPage() {
                               {errors.regInput}
                             </p>
                           )}
-
-                          <p className="text-xs text-gray-500">
-                            Format: UGYear/Course/Number (students) or Staff/Adustech/Number (staff)
-                          </p>
                         </div>
 
                         <AnimatePresence>
@@ -538,6 +549,38 @@ export default function RegisterPage() {
                             </div>
                             {errors.name && (
                               <p className="text-sm text-red-600">{errors.name}</p>
+                            )}
+                          </div>
+
+                          {/* Email Field */}
+                          <div className="space-y-2">
+                            <Label htmlFor="email" className="text-base font-medium flex items-center gap-2">
+                              <Mail className="h-4 w-4 text-blue-500" />
+                              Email Address
+                            </Label>
+                            <div className="relative">
+                              <Input
+                                id="email"
+                                type="email"
+                                placeholder="Enter your email address"
+                                value={formData.email}
+                                onChange={(e) => {
+                                  setFormData({...formData, email: e.target.value});
+                                  validateEmail(e.target.value);
+                                }}
+                                className={cn(
+                                  "h-12 text-lg transition-all duration-300 pr-12",
+                                  validations.email ? "border-green-500 bg-green-50/50" : "",
+                                  errors.email ? "border-red-500 bg-red-50/50" : ""
+                                )}
+                                required
+                              />
+                              {validations.email && (
+                                <CheckCircle2 className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-green-500" />
+                              )}
+                            </div>
+                            {errors.email && (
+                              <p className="text-sm text-red-600">{errors.email}</p>
                             )}
                           </div>
 
@@ -743,6 +786,22 @@ export default function RegisterPage() {
           </div>
         </motion.div>
       </div>
+
+      {/* Welcome Popup */}
+      {showWelcomePopup && registeredUser && (
+        <WorldClassWelcomePopup
+          user={registeredUser}
+          isVisible={showWelcomePopup}
+          onClose={() => {
+            setShowWelcomePopup(false);
+          }}
+          onContinue={() => {
+            setShowWelcomePopup(false);
+            // This will be handled by the popup component
+          }}
+          isNewUser={true}
+        />
+      )}
     </div>
   );
 }
