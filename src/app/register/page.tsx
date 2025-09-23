@@ -13,6 +13,7 @@ import { ArrowLeft, Eye, EyeOff, CheckCircle2, XCircle, User, GraduationCap, Use
 import { useToast } from '@/hooks/use-toast';
 import { registerStudent, registerStaff, isValidStudentRegNo, isValidStaffId, getDashboardPath } from '@/lib/auth-utils';
 import { Logo } from '@/components/logo';
+import { WelcomePopup } from '@/components/welcome-popup';
 import { cn } from '@/lib/utils';
 
 // Course mapping based on registration number prefix
@@ -44,6 +45,8 @@ export default function RegisterPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
+  const [showWelcomePopup, setShowWelcomePopup] = useState(false);
+  const [registeredUser, setRegisteredUser] = useState(null);
   const [userType, setUserType] = useState<'student' | 'staff' | null>(null);
   const [detectedCourse, setDetectedCourse] = useState('');
   const [regInput, setRegInput] = useState('');
@@ -184,18 +187,9 @@ export default function RegisterPage() {
         localStorage.setItem('isLoggedIn', 'true');
         localStorage.setItem('userData', JSON.stringify(result));
 
-        toast({
-          title: "🎉 Registration Successful!",
-          description: `Welcome to ADUSTECH! Redirecting you to your ${result.role} dashboard...`,
-          duration: 3000,
-        });
-
-        // Small delay to show the success message, then redirect
-        setTimeout(() => {
-          setIsRedirecting(true);
-          const dashboardPath = getDashboardPath(result.role);
-          router.push(dashboardPath);
-        }, 1500);
+        // Set user data for welcome popup and show it
+        setRegisteredUser(result);
+        setShowWelcomePopup(true);
       } else {
         throw new Error('Registration failed - user may already exist');
       }

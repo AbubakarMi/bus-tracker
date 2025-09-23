@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { DashboardHeader } from '@/components/dashboard-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -79,6 +80,39 @@ interface BookingData {
 
 export default function StudentDashboard() {
   const [currentTime, setCurrentTime] = useState(new Date());
+
+  // Get user data from localStorage
+  const [userData, setUserData] = useState(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedUserData = localStorage.getItem('userData');
+      if (storedUserData) {
+        try {
+          setUserData(JSON.parse(storedUserData));
+        } catch (error) {
+          console.error('Error parsing user data:', error);
+          // Fallback user data for demo
+          setUserData({
+            id: 'UG20/COMS/1284',
+            role: 'student',
+            name: 'John Doe',
+            regNumber: 'UG20/COMS/1284',
+            course: 'Computer Science'
+          });
+        }
+      } else {
+        // Fallback user data for demo
+        setUserData({
+          id: 'UG20/COMS/1284',
+          role: 'student',
+          name: 'John Doe',
+          regNumber: 'UG20/COMS/1284',
+          course: 'Computer Science'
+        });
+      }
+    }
+  }, []);
   const [availableBuses, setAvailableBuses] = useState<BusStatus[]>([]);
   const [myBookings, setMyBookings] = useState<BookingData[]>([]);
   const [stats, setStats] = useState({
@@ -280,9 +314,50 @@ export default function StudentDashboard() {
     document.body.removeChild(a);
   };
 
+  // Show loading state if user data isn't loaded yet
+  if (!userData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full"
+        />
+      </div>
+    );
+  }
+
   return (
     <>
-    <div className="space-y-6">
+    {/* Dashboard Header */}
+    <DashboardHeader user={userData} title="Student Dashboard" />
+
+    {/* Enhanced Dashboard with floating elements */}
+    <div className="relative">
+      {/* Floating Action Buttons */}
+      <motion.div
+        className="fixed bottom-8 right-8 z-50 flex flex-col gap-3"
+        initial={{ opacity: 0, x: 100 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.8, delay: 2 }}
+      >
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          className="w-14 h-14 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full shadow-lg flex items-center justify-center text-white hover:shadow-xl transition-all duration-300"
+        >
+          <Sparkles className="h-6 w-6" />
+        </motion.button>
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          className="w-14 h-14 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full shadow-lg flex items-center justify-center text-white hover:shadow-xl transition-all duration-300"
+        >
+          <Plus className="h-6 w-6" />
+        </motion.button>
+      </motion.div>
+
+      <div className="space-y-6">
       {/* Header Section */}
       <div className="mb-6">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
@@ -609,6 +684,7 @@ export default function StudentDashboard() {
           </Card>
         </div>
       </div>
+    </div>
     </div>
 
     {/* Quick Book Modal */}

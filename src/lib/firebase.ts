@@ -1,6 +1,6 @@
 
 import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
-import { getAuth, type Auth } from "firebase/auth";
+import { getAuth, type Auth, signOut, sendPasswordResetEmail } from "firebase/auth";
 import { getFirestore, type Firestore } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -44,6 +44,35 @@ if (db) {
   console.log("🔥 Firestore database connected");
 } else {
   console.error("❌ Firestore database not available");
+}
+
+// Auth utility functions
+export async function logoutUser(): Promise<void> {
+  try {
+    if (auth) {
+      await signOut(auth);
+    }
+    // Clear localStorage
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('userData');
+    console.log('User logged out successfully');
+  } catch (error) {
+    console.error('Error during logout:', error);
+    throw error;
+  }
+}
+
+export async function resetPassword(email: string): Promise<void> {
+  try {
+    if (!auth) {
+      throw new Error('Firebase auth not available');
+    }
+    await sendPasswordResetEmail(auth, email);
+    console.log('Password reset email sent to:', email);
+  } catch (error) {
+    console.error('Error sending password reset email:', error);
+    throw error;
+  }
 }
 
 export { auth, db, isFirebaseConfigured };

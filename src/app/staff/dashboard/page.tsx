@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { DashboardHeader } from '@/components/dashboard-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -84,6 +85,39 @@ interface TravelData {
 
 export default function StaffDashboard() {
   const [currentTime, setCurrentTime] = useState(new Date());
+
+  // Get user data from localStorage
+  const [userData, setUserData] = useState(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedUserData = localStorage.getItem('userData');
+      if (storedUserData) {
+        try {
+          setUserData(JSON.parse(storedUserData));
+        } catch (error) {
+          console.error('Error parsing user data:', error);
+          // Fallback user data for demo
+          setUserData({
+            id: 'Staff/Adustech/1001',
+            role: 'staff',
+            name: 'Dr. Sarah Johnson',
+            staffId: 'Staff/Adustech/1001',
+            department: 'Computer Science'
+          });
+        }
+      } else {
+        // Fallback user data for demo
+        setUserData({
+          id: 'Staff/Adustech/1001',
+          role: 'staff',
+          name: 'Dr. Sarah Johnson',
+          staffId: 'Staff/Adustech/1001',
+          department: 'Computer Science'
+        });
+      }
+    }
+  }, []);
   const [availableBuses, setAvailableBuses] = useState<BusStatus[]>([]);
   const [myTravels, setMyTravels] = useState<TravelData[]>([]);
   const [stats, setStats] = useState({
@@ -288,8 +322,24 @@ export default function StaffDashboard() {
     document.body.removeChild(a);
   };
 
+  // Show loading state if user data isn't loaded yet
+  if (!userData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full"
+        />
+      </div>
+    );
+  }
+
   return (
     <>
+    {/* Dashboard Header */}
+    <DashboardHeader user={userData} title="Staff Dashboard" />
+
     {/* Animated Background Elements */}
     <div className="fixed inset-0 -z-10 overflow-hidden">
       <motion.div
