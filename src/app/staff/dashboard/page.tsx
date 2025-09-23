@@ -336,9 +336,10 @@ export default function StaffDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-white relative">
-    {/* Dashboard Header */}
-    <DashboardHeader user={userData} title="Staff Dashboard" />
+    <>
+      <div className="min-h-screen bg-white relative">
+        {/* Dashboard Header */}
+        <DashboardHeader user={userData} title="Staff Dashboard" />
 
     {/* Animated Background Elements */}
     <div className="fixed inset-0 -z-10 overflow-hidden">
@@ -753,7 +754,7 @@ export default function StaffDashboard() {
           </Card>
         </div>
       </div>
-    </div>
+    </motion.div>
 
     {/* Travel Request Modal */}
     {showTravelRequestModal && (
@@ -1035,6 +1036,7 @@ export default function StaffDashboard() {
         </div>
       </div>
     )}
-    </div>
+      </div>
+    </>
   );
 }

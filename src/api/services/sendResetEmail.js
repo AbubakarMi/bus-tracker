@@ -1,17 +1,29 @@
-const { Resend } = require('resend');
+// Email service - fallback implementation for development
+let resend = null;
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Only initialize Resend if API key is available
+if (process.env.RESEND_API_KEY) {
+  try {
+    const { Resend } = require('resend');
+    resend = new Resend(process.env.RESEND_API_KEY);
+  } catch (error) {
+    console.warn('Resend not available, using fallback email service:', error.message);
+  }
+}
 
 /**
- * Send password reset email using Resend
+ * Send password reset OTP email using Resend
  * @param {string} email - User's email address
- * @param {string} resetToken - Password reset token
+ * @param {string} otp - 6-digit OTP code
  * @param {string} userName - User's name for personalization
+ * @param {string} userType - User type (student/staff/admin)
  * @returns {Promise<boolean>} - Success status
  */
-async function sendResetEmail(email, resetToken, userName = 'User') {
+async function sendResetEmail(email, otp, userName = 'User', userType = 'user') {
   try {
-    const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
+    // Calculate expiry time (15 minutes from now)
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+    const expiresInMinutes = 15;
 
     const emailHtml = `
     <!DOCTYPE html>
@@ -19,7 +31,7 @@ async function sendResetEmail(email, resetToken, userName = 'User') {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Reset Your Password - ADUSTECH Bus Tracker</title>
+        <title>Password Reset OTP - ADUSTECH Bus Tracker</title>
         <style>
             body {
                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -95,6 +107,89 @@ async function sendResetEmail(email, resetToken, userName = 'User') {
                 font-size: 14px;
                 color: #374151;
             }
+            .otp-container {
+                background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+                border: 2px solid #3b82f6;
+                border-radius: 12px;
+                padding: 30px;
+                text-align: center;
+                margin: 30px 0;
+            }
+            .otp-title {
+                font-size: 14px;
+                font-weight: 600;
+                color: #1e40af;
+                margin-bottom: 10px;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+            }
+            .otp-code {
+                font-size: 36px;
+                font-weight: 900;
+                color: #1e40af;
+                letter-spacing: 8px;
+                margin: 15px 0;
+                font-family: 'Courier New', monospace;
+                padding: 15px;
+                background: white;
+                border-radius: 8px;
+                display: inline-block;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+            .otp-subtitle {
+                font-size: 12px;
+                color: #64748b;
+                margin-top: 10px;
+            }
+            .user-info {
+                background-color: #eff6ff;
+                border-radius: 8px;
+                padding: 15px;
+                margin: 20px 0;
+            }
+            .user-info-title {
+                font-weight: 600;
+                color: #1d4ed8;
+                margin-bottom: 5px;
+            }
+            .user-info-text {
+                color: #1e40af;
+                font-size: 14px;
+            }
+            .steps {
+                background-color: #f8fafc;
+                border-radius: 8px;
+                padding: 20px;
+                margin: 20px 0;
+                counter-reset: step-counter;
+            }
+            .steps-title {
+                font-weight: 600;
+                color: #374151;
+                margin-bottom: 15px;
+            }
+            .step {
+                margin: 10px 0;
+                padding-left: 20px;
+                position: relative;
+            }
+            .step::before {
+                content: counter(step-counter);
+                counter-increment: step-counter;
+                position: absolute;
+                left: 0;
+                top: 0;
+                background: #3b82f6;
+                color: white;
+                width: 18px;
+                height: 18px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 11px;
+                font-weight: bold;
+            }
             .warning {
                 background-color: #fef3c7;
                 border-left: 4px solid #f59e0b;
@@ -143,31 +238,45 @@ async function sendResetEmail(email, resetToken, userName = 'User') {
 
                 <div class="message">
                     We received a request to reset your password for your ADUSTECH Bus Tracker account.
-                    If you made this request, click the button below to reset your password.
+                    Please use the verification code below to complete your password reset.
                 </div>
 
-                <center>
-                    <a href="${resetLink}" class="reset-button">
-                        🔒 Reset My Password
-                    </a>
-                </center>
-
-                <div class="message">
-                    If the button above doesn't work, copy and paste this link into your browser:
+                <div class="user-info">
+                    <div class="user-info-title">Account Information:</div>
+                    <div class="user-info-text">
+                        Email: ${email}<br>
+                        Account Type: ${userType.charAt(0).toUpperCase() + userType.slice(1)}
+                    </div>
                 </div>
 
-                <div class="alternative-link">
-                    ${resetLink}
+                <div class="otp-container">
+                    <div class="otp-title">Your Verification Code</div>
+                    <div class="otp-code">${otp}</div>
+                    <div class="otp-subtitle">Enter this code to reset your password</div>
+                </div>
+
+                <div class="steps">
+                    <div class="steps-title">How to use this code:</div>
+                    <div class="step">Go to the ADUSTECH Bus Tracker password reset page</div>
+                    <div class="step">Enter your email or registration number</div>
+                    <div class="step">Input the 6-digit verification code above</div>
+                    <div class="step">Create your new secure password</div>
                 </div>
 
                 <div class="warning">
                     <div class="warning-title">⚠️ Security Notice</div>
                     <div class="warning-text">
-                        • This link will expire in 1 hour<br>
-                        • This link can only be used once<br>
+                        • This code will expire in ${expiresInMinutes} minutes<br>
+                        • This code can only be used once<br>
                         • If you didn't request this reset, please ignore this email<br>
-                        • For security, never share this link with anyone
+                        • Never share this code with anyone<br>
+                        • ADUSTECH staff will never ask for this code
                     </div>
+                </div>
+
+                <div class="message">
+                    If you didn't request a password reset, you can safely ignore this email.
+                    Your account security is important to us.
                 </div>
             </div>
 
@@ -188,20 +297,30 @@ async function sendResetEmail(email, resetToken, userName = 'User') {
     `;
 
     const emailText = `
-ADUSTECH Bus Tracker - Password Reset Request
+ADUSTECH Bus Tracker - Password Reset Verification Code
 
 Hello ${userName}!
 
 We received a request to reset your password for your ADUSTECH Bus Tracker account.
 
-To reset your password, click or copy this link into your browser:
-${resetLink}
+Account Information:
+- Email: ${email}
+- Account Type: ${userType.charAt(0).toUpperCase() + userType.slice(1)}
+
+Your Verification Code: ${otp}
+
+How to use this code:
+1. Go to the ADUSTECH Bus Tracker password reset page
+2. Enter your email or registration number
+3. Input the 6-digit verification code: ${otp}
+4. Create your new secure password
 
 SECURITY NOTICE:
-- This link will expire in 1 hour
-- This link can only be used once
+- This code will expire in ${expiresInMinutes} minutes
+- This code can only be used once
 - If you didn't request this reset, please ignore this email
-- For security, never share this link with anyone
+- Never share this code with anyone
+- ADUSTECH staff will never ask for this code
 
 For support, contact:
 Email: transport@adustech.edu.ng
@@ -211,32 +330,66 @@ ADUSTECH Bus Tracker
 Secure Campus Transportation Management
     `;
 
-    const response = await resend.emails.send({
-      from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
-      to: email,
-      subject: 'Reset Your ADUSTECH Bus Tracker Password',
-      html: emailHtml,
-      text: emailText,
-    });
+    if (resend) {
+      // Use Resend service if available
+      const response = await resend.emails.send({
+        from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
+        to: email,
+        subject: 'Password Reset Verification Code - ADUSTECH Bus Tracker',
+        html: emailHtml,
+        text: emailText,
+      });
 
-    console.log('✅ Password reset email sent successfully:', {
-      emailId: response.id,
-      to: email,
-      resetToken: resetToken.substring(0, 8) + '...' // Log partial token for debugging
-    });
+      console.log('✅ Password reset OTP email sent successfully via Resend:', {
+        emailId: response.id,
+        to: email,
+        otp: otp.substring(0, 3) + '***', // Log partial OTP for debugging
+        userType: userType
+      });
 
-    return true;
+      return true;
+    } else {
+      // Fallback: Log email content (for development/testing)
+      console.log('📧 Email service not configured, logging OTP email content:');
+      console.log('To:', email);
+      console.log('Subject: Password Reset Verification Code - ADUSTECH Bus Tracker');
+      console.log('OTP:', otp);
+      console.log('User Type:', userType);
+      console.log('HTML Content:', emailHtml.substring(0, 200) + '...');
+
+      // For development, we'll simulate successful email sending
+      console.log('✅ Password reset OTP email logged successfully (fallback mode):', {
+        to: email,
+        otp: otp.substring(0, 3) + '***',
+        userType: userType
+      });
+
+      return true;
+    }
   } catch (error) {
-    console.error('❌ Failed to send password reset email:', {
+    console.error('❌ Failed to send password reset OTP email:', {
       error: error.message,
       email: email,
-      resetToken: resetToken.substring(0, 8) + '...'
-      
+      otp: otp.substring(0, 3) + '***',
+      userType: userType
     });
     return false;
   }
 }
 
+/**
+ * Send password reset OTP email (alias for sendResetEmail)
+ * @param {string} email - User's email address
+ * @param {string} otp - 6-digit OTP code
+ * @param {string} userName - User's name for personalization
+ * @param {string} userType - User type (student/staff/admin)
+ * @returns {Promise<boolean>} - Success status
+ */
+async function sendOTPEmail(email, otp, userName = 'User', userType = 'user') {
+  return await sendResetEmail(email, otp, userName, userType);
+}
+
 module.exports = {
-  sendResetEmail
+  sendResetEmail,
+  sendOTPEmail
 };

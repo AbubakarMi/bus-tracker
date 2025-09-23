@@ -115,8 +115,8 @@ export function Contact() {
     <section id="contact" className="relative py-24 sm:py-32 overflow-hidden" ref={ref}>
       {/* Enhanced Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-background via-muted/30 to-background" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_25%,theme(colors.primary/8),transparent_50%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_75%,theme(colors.accent/8),transparent_50%)]" />
+      <div className="absolute inset-0 bg-gradient-radial from-primary/8 via-transparent to-transparent" />
+      <div className="absolute inset-0 bg-gradient-radial from-accent/8 via-transparent to-transparent opacity-50" />
       
       {/* Floating Background Elements */}
       <div className="absolute inset-0 overflow-hidden">

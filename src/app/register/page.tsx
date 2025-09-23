@@ -305,7 +305,7 @@ export default function RegisterPage() {
                     whileHover={{ scale: 1.02, y: -2 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <feature.icon className={`h-5 w-5 ${feature.color}`} />
+                    <feature.icon className={cn("h-5 w-5", feature.color)} />
                     <span className="text-sm font-medium text-gray-700">{feature.label}</span>
                   </motion.div>
                 ))}
@@ -520,222 +520,465 @@ export default function RegisterPage() {
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -20 }}
                       >
-                        <form onSubmit={handleSubmit} className="space-y-6">
-                          {/* Name Field */}
-                          <div className="space-y-2">
-                            <Label htmlFor="name" className="text-base font-medium flex items-center gap-2">
-                              <User className="h-4 w-4 text-blue-500" />
-                              Full Name
-                            </Label>
-                            <div className="relative">
-                              <Input
-                                id="name"
-                                placeholder="Enter your full name"
-                                value={formData.name}
-                                onChange={(e) => {
-                                  setFormData({...formData, name: e.target.value});
-                                  validateName(e.target.value);
-                                }}
-                                className={cn(
-                                  "h-12 text-lg transition-all duration-300 pr-12",
-                                  validations.name ? "border-green-500 bg-green-50/50" : "",
-                                  errors.name ? "border-red-500 bg-red-50/50" : ""
-                                )}
-                                required
-                              />
-                              {validations.name && (
-                                <CheckCircle2 className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-green-500" />
-                              )}
+                        <form onSubmit={handleSubmit} className="space-y-5">
+                          {/* Personal Information Section */}
+                          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
+                            <div className="flex items-center gap-2 mb-4">
+                              <div className="p-2 bg-blue-500 rounded-lg">
+                                <User className="h-4 w-4 text-white" />
+                              </div>
+                              <h3 className="text-lg font-semibold text-gray-800">Personal Information</h3>
                             </div>
-                            {errors.name && (
-                              <p className="text-sm text-red-600">{errors.name}</p>
-                            )}
-                          </div>
 
-                          {/* Email Field */}
-                          <div className="space-y-2">
-                            <Label htmlFor="email" className="text-base font-medium flex items-center gap-2">
-                              <Mail className="h-4 w-4 text-blue-500" />
-                              Email Address
-                            </Label>
-                            <div className="relative">
-                              <Input
-                                id="email"
-                                type="email"
-                                placeholder="Enter your email address"
-                                value={formData.email}
-                                onChange={(e) => {
-                                  setFormData({...formData, email: e.target.value});
-                                  validateEmail(e.target.value);
-                                }}
-                                className={cn(
-                                  "h-12 text-lg transition-all duration-300 pr-12",
-                                  validations.email ? "border-green-500 bg-green-50/50" : "",
-                                  errors.email ? "border-red-500 bg-red-50/50" : ""
-                                )}
-                                required
-                              />
-                              {validations.email && (
-                                <CheckCircle2 className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-green-500" />
-                              )}
-                            </div>
-                            {errors.email && (
-                              <p className="text-sm text-red-600">{errors.email}</p>
-                            )}
-                          </div>
-
-                          {/* Course/Department Field */}
-                          {userType === 'student' && (
-                            <div className="space-y-2">
-                              <Label htmlFor="course" className="text-base font-medium flex items-center gap-2">
-                                <BookOpen className="h-4 w-4 text-blue-500" />
-                                Course
-                              </Label>
-                              <Input
-                                id="course"
-                                placeholder="Course name"
-                                value={formData.course || detectedCourse}
-                                onChange={(e) => setFormData({...formData, course: e.target.value})}
-                                readOnly={!!detectedCourse}
-                                className={cn(
-                                  "h-12 text-lg",
-                                  detectedCourse ? "bg-gray-50 text-gray-700" : ""
-                                )}
-                              />
-                              {detectedCourse && (
-                                <p className="text-xs text-gray-500">
-                                  Auto-detected from your registration number
-                                </p>
-                              )}
-                            </div>
-                          )}
-
-                          {userType === 'staff' && (
-                            <div className="space-y-2">
-                              <Label htmlFor="department" className="text-base font-medium flex items-center gap-2">
-                                <Building className="h-4 w-4 text-blue-500" />
-                                Department
-                              </Label>
-                              <select
-                                id="department"
-                                value={formData.department}
-                                onChange={(e) => setFormData({...formData, department: e.target.value})}
-                                className="w-full h-12 px-3 text-lg border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            <div className="grid gap-4">
+                              {/* Name Field */}
+                              <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.1 }}
+                                className="space-y-2"
                               >
-                                <option value="">Select your department (optional)</option>
-                                {departmentOptions.map(dept => (
-                                  <option key={dept} value={dept}>{dept}</option>
-                                ))}
-                              </select>
+                                <Label htmlFor="name" className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                                  <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                                  Full Name
+                                </Label>
+                                <div className="relative group">
+                                  <Input
+                                    id="name"
+                                    placeholder="e.g., John Doe"
+                                    value={formData.name}
+                                    onChange={(e) => {
+                                      setFormData({...formData, name: e.target.value});
+                                      validateName(e.target.value);
+                                    }}
+                                    className={cn(
+                                      "h-11 border-2 transition-all duration-300 pl-4 pr-12 bg-white/80 backdrop-blur-sm",
+                                      "focus:bg-white focus:border-blue-500 focus:ring-0 focus:ring-blue-200",
+                                      "group-hover:border-blue-300",
+                                      validations.name ? "border-green-500 bg-green-50/30" : "",
+                                      errors.name ? "border-red-500 bg-red-50/30" : ""
+                                    )}
+                                    required
+                                  />
+                                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                                    {validations.name && (
+                                      <motion.div
+                                        initial={{ scale: 0 }}
+                                        animate={{ scale: 1 }}
+                                        className="p-1 bg-green-100 rounded-full"
+                                      >
+                                        <CheckCircle2 className="h-4 w-4 text-green-600" />
+                                      </motion.div>
+                                    )}
+                                    {errors.name && (
+                                      <motion.div
+                                        initial={{ scale: 0 }}
+                                        animate={{ scale: 1 }}
+                                        className="p-1 bg-red-100 rounded-full"
+                                      >
+                                        <XCircle className="h-4 w-4 text-red-600" />
+                                      </motion.div>
+                                    )}
+                                  </div>
+                                </div>
+                                {errors.name && (
+                                  <motion.p
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="text-sm text-red-600 flex items-center gap-1"
+                                  >
+                                    <XCircle className="h-3 w-3" />
+                                    {errors.name}
+                                  </motion.p>
+                                )}
+                              </motion.div>
+
+                              {/* Email Field */}
+                              <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.2 }}
+                                className="space-y-2"
+                              >
+                                <Label htmlFor="email" className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                                  <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                                  Email Address
+                                </Label>
+                                <div className="relative group">
+                                  <Input
+                                    id="email"
+                                    type="email"
+                                    placeholder="e.g., john.doe@example.com"
+                                    value={formData.email}
+                                    onChange={(e) => {
+                                      setFormData({...formData, email: e.target.value});
+                                      validateEmail(e.target.value);
+                                    }}
+                                    className={cn(
+                                      "h-11 border-2 transition-all duration-300 pl-4 pr-12 bg-white/80 backdrop-blur-sm",
+                                      "focus:bg-white focus:border-blue-500 focus:ring-0 focus:ring-blue-200",
+                                      "group-hover:border-blue-300",
+                                      validations.email ? "border-green-500 bg-green-50/30" : "",
+                                      errors.email ? "border-red-500 bg-red-50/30" : ""
+                                    )}
+                                    required
+                                  />
+                                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                                    {validations.email && (
+                                      <motion.div
+                                        initial={{ scale: 0 }}
+                                        animate={{ scale: 1 }}
+                                        className="p-1 bg-green-100 rounded-full"
+                                      >
+                                        <CheckCircle2 className="h-4 w-4 text-green-600" />
+                                      </motion.div>
+                                    )}
+                                    {errors.email && (
+                                      <motion.div
+                                        initial={{ scale: 0 }}
+                                        animate={{ scale: 1 }}
+                                        className="p-1 bg-red-100 rounded-full"
+                                      >
+                                        <XCircle className="h-4 w-4 text-red-600" />
+                                      </motion.div>
+                                    )}
+                                  </div>
+                                </div>
+                                {errors.email && (
+                                  <motion.p
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="text-sm text-red-600 flex items-center gap-1"
+                                  >
+                                    <XCircle className="h-3 w-3" />
+                                    {errors.email}
+                                  </motion.p>
+                                )}
+                                <p className="text-xs text-gray-500 flex items-center gap-1">
+                                  <Mail className="h-3 w-3" />
+                                  Used for password reset and notifications
+                                </p>
+                              </motion.div>
                             </div>
+                          </div>
+
+                          {/* Academic/Work Information Section */}
+                          {userType && (
+                            <motion.div
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: 0.3 }}
+                              className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 border border-green-100"
+                            >
+                              <div className="flex items-center gap-2 mb-4">
+                                <div className="p-2 bg-green-500 rounded-lg">
+                                  {userType === 'student' ? (
+                                    <GraduationCap className="h-4 w-4 text-white" />
+                                  ) : (
+                                    <Building className="h-4 w-4 text-white" />
+                                  )}
+                                </div>
+                                <h3 className="text-lg font-semibold text-gray-800">
+                                  {userType === 'student' ? 'Academic Information' : 'Work Information'}
+                                </h3>
+                              </div>
+
+                              {userType === 'student' && (
+                                <div className="space-y-2">
+                                  <Label htmlFor="course" className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                                    <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                                    Course of Study
+                                  </Label>
+                                  <div className="relative group">
+                                    <Input
+                                      id="course"
+                                      placeholder="e.g., Computer Science"
+                                      value={formData.course || detectedCourse}
+                                      onChange={(e) => setFormData({...formData, course: e.target.value})}
+                                      readOnly={!!detectedCourse}
+                                      className={cn(
+                                        "h-11 border-2 transition-all duration-300 pl-4 bg-white/80 backdrop-blur-sm",
+                                        "focus:bg-white focus:border-green-500 focus:ring-0",
+                                        "group-hover:border-green-300",
+                                        detectedCourse ? "bg-green-50/50 text-green-800 border-green-300" : ""
+                                      )}
+                                    />
+                                    {detectedCourse && (
+                                      <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                                        <motion.div
+                                          initial={{ scale: 0 }}
+                                          animate={{ scale: 1 }}
+                                          className="p-1 bg-green-100 rounded-full"
+                                        >
+                                          <CheckCircle2 className="h-4 w-4 text-green-600" />
+                                        </motion.div>
+                                      </div>
+                                    )}
+                                  </div>
+                                  {detectedCourse && (
+                                    <motion.p
+                                      initial={{ opacity: 0, y: -10 }}
+                                      animate={{ opacity: 1, y: 0 }}
+                                      className="text-xs text-green-600 flex items-center gap-1"
+                                    >
+                                      <Sparkles className="h-3 w-3" />
+                                      Auto-detected from your registration number
+                                    </motion.p>
+                                  )}
+                                </div>
+                              )}
+
+                              {userType === 'staff' && (
+                                <div className="space-y-2">
+                                  <Label htmlFor="department" className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                                    <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                                    Department
+                                  </Label>
+                                  <div className="relative group">
+                                    <select
+                                      id="department"
+                                      value={formData.department}
+                                      onChange={(e) => setFormData({...formData, department: e.target.value})}
+                                      className={cn(
+                                        "w-full h-11 px-4 border-2 rounded-lg transition-all duration-300 bg-white/80 backdrop-blur-sm",
+                                        "focus:bg-white focus:border-green-500 focus:ring-0",
+                                        "group-hover:border-green-300 text-gray-700"
+                                      )}
+                                    >
+                                      <option value="">Select department (optional)</option>
+                                      {departmentOptions.map(dept => (
+                                        <option key={dept} value={dept}>{dept}</option>
+                                      ))}
+                                    </select>
+                                  </div>
+                                  <p className="text-xs text-gray-500 flex items-center gap-1">
+                                    <Building className="h-3 w-3" />
+                                    Optional - helps us organize staff by department
+                                  </p>
+                                </div>
+                              )}
+                            </motion.div>
                           )}
 
-                          {/* Password Field */}
-                          <div className="space-y-2">
-                            <Label htmlFor="password" className="text-base font-medium flex items-center gap-2">
-                              <Lock className="h-4 w-4 text-blue-500" />
-                              Password
-                            </Label>
-                            <div className="relative">
-                              <Input
-                                id="password"
-                                type={showPassword ? "text" : "password"}
-                                placeholder="Create a strong password (min 6 characters)"
-                                value={formData.password}
-                                onChange={(e) => {
-                                  setFormData({...formData, password: e.target.value});
-                                  validatePassword(e.target.value);
-                                  if (formData.confirmPassword) {
-                                    validateConfirmPassword(formData.confirmPassword, e.target.value);
-                                  }
-                                }}
-                                className={cn(
-                                  "h-12 text-lg transition-all duration-300 pr-20",
-                                  validations.password ? "border-green-500 bg-green-50/50" : "",
-                                  errors.password ? "border-red-500 bg-red-50/50" : ""
-                                )}
-                                required
-                              />
-                              <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                                {validations.password && (
-                                  <CheckCircle2 className="h-5 w-5 text-green-500" />
-                                )}
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => setShowPassword(!showPassword)}
-                                  className="h-8 w-8 p-0 hover:bg-transparent"
-                                >
-                                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                                </Button>
+                          {/* Security Section */}
+                          <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.4 }}
+                            className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-100"
+                          >
+                            <div className="flex items-center gap-2 mb-4">
+                              <div className="p-2 bg-purple-500 rounded-lg">
+                                <Lock className="h-4 w-4 text-white" />
                               </div>
+                              <h3 className="text-lg font-semibold text-gray-800">Security Setup</h3>
                             </div>
-                            {errors.password && (
-                              <p className="text-sm text-red-600">{errors.password}</p>
-                            )}
-                          </div>
 
-                          {/* Confirm Password Field */}
-                          <div className="space-y-2">
-                            <Label htmlFor="confirmPassword" className="text-base font-medium flex items-center gap-2">
-                              <Lock className="h-4 w-4 text-blue-500" />
-                              Confirm Password
-                            </Label>
-                            <div className="relative">
-                              <Input
-                                id="confirmPassword"
-                                type={showConfirmPassword ? "text" : "password"}
-                                placeholder="Confirm your password"
-                                value={formData.confirmPassword}
-                                onChange={(e) => {
-                                  setFormData({...formData, confirmPassword: e.target.value});
-                                  validateConfirmPassword(e.target.value, formData.password);
-                                }}
-                                className={cn(
-                                  "h-12 text-lg transition-all duration-300 pr-20",
-                                  validations.confirmPassword ? "border-green-500 bg-green-50/50" : "",
-                                  errors.confirmPassword ? "border-red-500 bg-red-50/50" : ""
+                            <div className="space-y-4">
+                              {/* Password Field */}
+                              <div className="space-y-2">
+                                <Label htmlFor="password" className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                                  <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+                                  Create Password
+                                </Label>
+                                <div className="relative group">
+                                  <Input
+                                    id="password"
+                                    type={showPassword ? "text" : "password"}
+                                    placeholder="Enter a strong password (min 6 characters)"
+                                    value={formData.password}
+                                    onChange={(e) => {
+                                      setFormData({...formData, password: e.target.value});
+                                      validatePassword(e.target.value);
+                                      if (formData.confirmPassword) {
+                                        validateConfirmPassword(formData.confirmPassword, e.target.value);
+                                      }
+                                    }}
+                                    className={cn(
+                                      "h-11 border-2 transition-all duration-300 pl-4 pr-20 bg-white/80 backdrop-blur-sm",
+                                      "focus:bg-white focus:border-purple-500 focus:ring-0",
+                                      "group-hover:border-purple-300",
+                                      validations.password ? "border-green-500 bg-green-50/30" : "",
+                                      errors.password ? "border-red-500 bg-red-50/30" : ""
+                                    )}
+                                    required
+                                  />
+                                  <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                                    {validations.password && (
+                                      <motion.div
+                                        initial={{ scale: 0 }}
+                                        animate={{ scale: 1 }}
+                                        className="p-1 bg-green-100 rounded-full"
+                                      >
+                                        <CheckCircle2 className="h-4 w-4 text-green-600" />
+                                      </motion.div>
+                                    )}
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => setShowPassword(!showPassword)}
+                                      className="h-8 w-8 p-0 hover:bg-purple-100 rounded-full transition-colors"
+                                    >
+                                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                    </Button>
+                                  </div>
+                                </div>
+                                {errors.password && (
+                                  <motion.p
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="text-sm text-red-600 flex items-center gap-1"
+                                  >
+                                    <XCircle className="h-3 w-3" />
+                                    {errors.password}
+                                  </motion.p>
                                 )}
-                                required
-                              />
-                              <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                                {validations.confirmPassword && (
-                                  <CheckCircle2 className="h-5 w-5 text-green-500" />
+                              </div>
+
+                              {/* Confirm Password Field */}
+                              <div className="space-y-2">
+                                <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                                  <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+                                  Confirm Password
+                                </Label>
+                                <div className="relative group">
+                                  <Input
+                                    id="confirmPassword"
+                                    type={showConfirmPassword ? "text" : "password"}
+                                    placeholder="Re-enter your password"
+                                    value={formData.confirmPassword}
+                                    onChange={(e) => {
+                                      setFormData({...formData, confirmPassword: e.target.value});
+                                      validateConfirmPassword(e.target.value, formData.password);
+                                    }}
+                                    className={cn(
+                                      "h-11 border-2 transition-all duration-300 pl-4 pr-20 bg-white/80 backdrop-blur-sm",
+                                      "focus:bg-white focus:border-purple-500 focus:ring-0",
+                                      "group-hover:border-purple-300",
+                                      validations.confirmPassword ? "border-green-500 bg-green-50/30" : "",
+                                      errors.confirmPassword ? "border-red-500 bg-red-50/30" : ""
+                                    )}
+                                    required
+                                  />
+                                  <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                                    {validations.confirmPassword && (
+                                      <motion.div
+                                        initial={{ scale: 0 }}
+                                        animate={{ scale: 1 }}
+                                        className="p-1 bg-green-100 rounded-full"
+                                      >
+                                        <CheckCircle2 className="h-4 w-4 text-green-600" />
+                                      </motion.div>
+                                    )}
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                      className="h-8 w-8 p-0 hover:bg-purple-100 rounded-full transition-colors"
+                                    >
+                                      {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                    </Button>
+                                  </div>
+                                </div>
+                                {errors.confirmPassword && (
+                                  <motion.p
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="text-sm text-red-600 flex items-center gap-1"
+                                  >
+                                    <XCircle className="h-3 w-3" />
+                                    {errors.confirmPassword}
+                                  </motion.p>
                                 )}
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                  className="h-8 w-8 p-0 hover:bg-transparent"
-                                >
-                                  {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                                </Button>
+
+                                {/* Password Strength Indicator */}
+                                {formData.password && (
+                                  <motion.div
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="mt-3 p-3 bg-white/60 rounded-lg border border-purple-200"
+                                  >
+                                    <div className="flex items-center gap-2 mb-2">
+                                      <Shield className="h-4 w-4 text-purple-600" />
+                                      <span className="text-sm font-medium text-gray-700">Password Security</span>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-2 text-xs">
+                                      <div className={cn(
+                                        "flex items-center gap-1",
+                                        formData.password.length >= 6 ? "text-green-600" : "text-gray-400"
+                                      )}>
+                                        {formData.password.length >= 6 ?
+                                          <CheckCircle2 className="h-3 w-3" /> :
+                                          <XCircle className="h-3 w-3" />
+                                        }
+                                        6+ characters
+                                      </div>
+                                      <div className={cn(
+                                        "flex items-center gap-1",
+                                        validations.confirmPassword ? "text-green-600" : "text-gray-400"
+                                      )}>
+                                        {validations.confirmPassword ?
+                                          <CheckCircle2 className="h-3 w-3" /> :
+                                          <XCircle className="h-3 w-3" />
+                                        }
+                                        Passwords match
+                                      </div>
+                                    </div>
+                                  </motion.div>
+                                )}
                               </div>
                             </div>
-                            {errors.confirmPassword && (
-                              <p className="text-sm text-red-600">{errors.confirmPassword}</p>
-                            )}
-                          </div>
+                          </motion.div>
 
                           {/* Action Buttons */}
-                          <div className="flex gap-3 pt-4">
-                            <Button
-                              type="button"
-                              onClick={handleBack}
-                              variant="outline"
-                              className="flex-1 h-12 text-lg font-semibold"
+                          <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.5 }}
+                            className="flex gap-4 pt-6"
+                          >
+                            <motion.div
+                              whileHover={{ scale: 1.02 }}
+                              whileTap={{ scale: 0.98 }}
+                              className="flex-1"
                             >
-                              <ArrowLeft className="mr-2 h-5 w-5" />
-                              Back
-                            </Button>
-                            <Button
-                              type="submit"
-                              disabled={isLoading || isRedirecting || !Object.values(validations).every(Boolean)}
-                              className="flex-2 h-12 text-lg font-semibold bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 disabled:opacity-50"
+                              <Button
+                                type="button"
+                                onClick={handleBack}
+                                variant="outline"
+                                className="w-full h-12 text-base font-semibold border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all duration-300"
+                              >
+                                <ArrowLeft className="mr-2 h-5 w-5" />
+                                Back
+                              </Button>
+                            </motion.div>
+
+                            <motion.div
+                              whileHover={{ scale: 1.02 }}
+                              whileTap={{ scale: 0.98 }}
+                              className="flex-2"
                             >
-                              {isLoading ? (
+                              <Button
+                                type="submit"
+                                disabled={isLoading || isRedirecting || !Object.values(validations).every(Boolean)}
+                                className={cn(
+                                  "w-full h-12 text-base font-semibold text-white shadow-xl relative overflow-hidden",
+                                  "bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600",
+                                  "hover:from-blue-700 hover:via-purple-700 hover:to-pink-700",
+                                  "disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100",
+                                  "transition-all duration-300"
+                                )}
+                              >
+                                <motion.div
+                                  className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent"
+                                  initial={{ x: '-100%' }}
+                                  whileHover={{ x: '100%' }}
+                                  transition={{ duration: 0.6 }}
+                                />
+                                <span className="relative z-10 flex items-center justify-center">
+                                  {isLoading ? (
                                 <motion.div
                                   className="flex items-center"
                                   initial={{ opacity: 0 }}
@@ -762,10 +1005,12 @@ export default function RegisterPage() {
                                   Redirecting to Dashboard...
                                 </motion.div>
                               ) : (
-                                `Complete Registration`
+                                "Complete Registration"
                               )}
+                                </span>
                             </Button>
-                          </div>
+                          </motion.div>
+                          </motion.div>
                         </form>
                       </motion.div>
                     )}

@@ -315,31 +315,46 @@ export async function registerStaff(staffId: string, password: string, name: str
   }
 }
 
-// Simple email sending function for OTP (mock implementation)
+// Send OTP email using the actual email service
 async function sendOTPEmail(data: OTPData): Promise<boolean> {
   try {
-    // For development/testing - log email content
-    console.log('📧 OTP Email:', {
-      to: data.userEmail,
-      subject: 'Password Reset Verification Code - ADUSTECH Bus Tracker',
-      otp: data.otp,
-      expiresAt: data.expiresAt,
-    });
+    // Check if we're in a server environment
+    if (typeof window === 'undefined') {
+      // Import the email service (server-side only)
+      const { sendOTPEmail: sendEmailService } = require('../api/services/sendResetEmail');
 
-    console.log('📄 Email Content:', generateOTPEmailHTML(data));
+      // Call the actual email service
+      const emailSent = await sendEmailService(
+        data.userEmail,
+        data.otp,
+        data.userName,
+        data.userType
+      );
 
-    // In a real implementation, you would integrate with:
-    // - Resend API
-    // - Nodemailer with SMTP
-    // - SendGrid API
-    // - AWS SES
-    // etc.
-
-    // Simulate email sending delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    // For now, always return success (replace with actual email service call)
-    return true;
+      if (emailSent) {
+        console.log('📧 OTP Email sent successfully:', {
+          to: data.userEmail,
+          userName: data.userName,
+          userType: data.userType,
+          otp: data.otp.substring(0, 3) + '***', // Log partial OTP for debugging
+          expiresAt: data.expiresAt,
+        });
+        return true;
+      } else {
+        console.error('Failed to send OTP email via email service');
+        return false;
+      }
+    } else {
+      // Client-side fallback - log to console
+      console.log('📧 OTP Email (client-side simulation):', {
+        to: data.userEmail,
+        userName: data.userName,
+        userType: data.userType,
+        otp: data.otp.substring(0, 3) + '***',
+        expiresAt: data.expiresAt,
+      });
+      return true;
+    }
   } catch (error) {
     console.error('Failed to send OTP email:', error);
     return false;

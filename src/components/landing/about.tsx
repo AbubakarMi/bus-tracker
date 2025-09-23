@@ -58,8 +58,8 @@ export function About() {
     <section id="about" className="relative py-20 sm:py-32 overflow-hidden">
       {/* Enhanced Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-background via-muted/50 to-background" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,theme(colors.primary/10),transparent_50%)] opacity-50" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,theme(colors.accent/8),transparent_50%)]" />
+      <div className="absolute inset-0 bg-gradient-radial from-primary/10 via-transparent to-transparent opacity-50" />
+      <div className="absolute inset-0 bg-gradient-radial from-accent/8 via-transparent to-transparent opacity-30" />
       
       {/* Floating Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
