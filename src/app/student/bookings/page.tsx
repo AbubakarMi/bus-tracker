@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { TicketModal } from '@/components/ticket-modal';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -33,6 +34,8 @@ interface Booking {
 }
 
 export default function StudentBookingsPage() {
+  const [selectedTicket, setSelectedTicket] = useState<Booking | null>(null);
+  const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
   const [bookings] = useState<Booking[]>([
     {
       id: 'BK-001',
@@ -94,42 +97,14 @@ export default function StudentBookingsPage() {
     }
   };
 
-  const downloadTicket = (booking: Booking) => {
-    const ticketData = `
-ADUSTECH BUS TICKET
-===================
+  const handleViewTicket = (booking: Booking) => {
+    setSelectedTicket(booking);
+    setIsTicketModalOpen(true);
+  };
 
-Booking ID: ${booking.id}
-Route: ${booking.route}
-Bus: ${booking.busNumber}
-
-Travel Details:
-Date: ${booking.date}
-Departure: ${booking.departureTime}
-Seat: ${booking.seat}
-Pickup: ${booking.pickupPoint}
-Dropoff: ${booking.dropoffPoint}
-
-Amount: ${booking.price}
-Status: ${booking.status}
-
-Please arrive at the boarding gate 15 minutes before departure time.
-Keep this ticket for verification during boarding.
-
-Contact: transport@adustech.edu.ng
-Phone: +234-800-ADUSTECH
-    `;
-
-    const blob = new Blob([ticketData], { type: 'text/plain' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.style.display = 'none';
-    a.href = url;
-    a.download = `ticket-${booking.id}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    window.URL.revokeObjectURL(url);
-    document.body.removeChild(a);
+  const handleCloseTicketModal = () => {
+    setIsTicketModalOpen(false);
+    setSelectedTicket(null);
   };
 
   const upcomingBookings = bookings.filter(b => b.status === 'confirmed' || b.status === 'pending');
@@ -264,10 +239,10 @@ Phone: +234-800-ADUSTECH
                       </TableCell>
                       <TableCell>
                         <div className="flex gap-2">
-                          <Button variant="outline" size="sm">
+                          <Button variant="outline" size="sm" onClick={() => handleViewTicket(booking)}>
                             <Eye className="h-4 w-4" />
                           </Button>
-                          <Button variant="outline" size="sm" onClick={() => downloadTicket(booking)}>
+                          <Button variant="outline" size="sm" onClick={() => handleViewTicket(booking)}>
                             <Download className="h-4 w-4" />
                           </Button>
                         </div>
@@ -340,11 +315,11 @@ Phone: +234-800-ADUSTECH
                       </TableCell>
                       <TableCell>
                         <div className="flex gap-2">
-                          <Button variant="outline" size="sm">
+                          <Button variant="outline" size="sm" onClick={() => handleViewTicket(booking)}>
                             <Eye className="h-4 w-4" />
                           </Button>
                           {booking.status === 'completed' && (
-                            <Button variant="outline" size="sm" onClick={() => downloadTicket(booking)}>
+                            <Button variant="outline" size="sm" onClick={() => handleViewTicket(booking)}>
                               <Download className="h-4 w-4" />
                             </Button>
                           )}
@@ -358,6 +333,14 @@ Phone: +234-800-ADUSTECH
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Ticket Modal */}
+      <TicketModal
+        booking={selectedTicket}
+        isOpen={isTicketModalOpen}
+        onClose={handleCloseTicketModal}
+        passengerName="Student User"
+      />
     </div>
   );
 }
