@@ -46,9 +46,9 @@ export function WorldClassWelcomePopup({
           title: isNewUser ? 'Welcome to ADUSTECH!' : 'Welcome Back!',
           subtitle: isNewUser ? 'Your Academic Journey Begins' : 'Ready for Another Day',
           description: isNewUser
-            ? 'You\'ve successfully joined our smart campus transportation system! Get ready to experience seamless bus tracking, easy booking, and stress-free campus travel.'
-            : 'Great to see you again! Your personalized dashboard is ready with real-time bus updates and travel information.',
-          features: ['📍 Real-time Bus Tracking', '🎫 Easy Seat Booking', '📱 Smart Notifications', '🕐 Schedule Management'],
+            ? 'Welcome! Smart bus tracking & booking awaits.'
+            : 'Welcome back! Your dashboard is ready.',
+          features: ['📍 Track Buses', '🎫 Book Seats', '📱 Get Alerts', '🕐 View Schedule'],
           primaryColor: 'from-blue-500 to-indigo-600',
           bgGradient: 'from-blue-50 to-indigo-50'
         };
@@ -58,9 +58,9 @@ export function WorldClassWelcomePopup({
           title: isNewUser ? 'Welcome, Faculty Member!' : 'Welcome Back, Staff!',
           subtitle: isNewUser ? 'Professional Excellence Awaits' : 'Your Workspace Awaits',
           description: isNewUser
-            ? 'You\'ve joined our advanced staff transportation system! Enjoy priority booking, detailed travel reports, and professional-grade campus mobility solutions.'
-            : 'Ready for another productive day! Your staff dashboard includes travel reports, booking history, and priority services.',
-          features: ['⭐ Priority Booking', '📊 Travel Reports', '💼 Business Travel', '🛡️ Staff Benefits'],
+            ? 'Welcome! Priority booking & reports ready.'
+            : 'Welcome back! Staff dashboard loaded.',
+          features: ['⭐ Priority Book', '📊 View Reports', '💼 Bus Travel', '🛡️ Staff Access'],
           primaryColor: 'from-green-500 to-emerald-600',
           bgGradient: 'from-green-50 to-emerald-50'
         };
@@ -70,9 +70,9 @@ export function WorldClassWelcomePopup({
           title: isNewUser ? 'Admin Access Granted!' : 'Welcome Back, Admin!',
           subtitle: isNewUser ? 'Full System Control' : 'Command Center Ready',
           description: isNewUser
-            ? 'You have complete administrative access to the ADUSTECH transportation system. Manage users, monitor operations, and ensure smooth campus mobility.'
-            : 'Your admin dashboard is loaded with real-time system insights, user management tools, and operational controls.',
-          features: ['🎛️ System Management', '👥 User Control', '📈 Analytics', '⚙️ Configuration'],
+            ? 'Welcome! Full admin access granted.'
+            : 'Welcome back! Control center ready.',
+          features: ['🎛️ Manage System', '👥 Control Users', '📈 View Stats', '⚙️ Configure'],
           primaryColor: 'from-purple-500 to-violet-600',
           bgGradient: 'from-purple-50 to-violet-50'
         };
@@ -82,9 +82,9 @@ export function WorldClassWelcomePopup({
           title: isNewUser ? 'Welcome, Driver!' : 'Welcome Back, Driver!',
           subtitle: isNewUser ? 'Your Route Awaits' : 'Ready to Drive',
           description: isNewUser
-            ? 'You\'re now part of our professional driver network! Access your routes, manage passenger information, and deliver exceptional campus transportation service.'
-            : 'Your driver dashboard is ready with today\'s routes, passenger information, and operational updates.',
-          features: ['🗺️ Route Management', '👥 Passenger Lists', '📍 GPS Tracking', '⏰ Schedule Updates'],
+            ? 'Welcome! Your routes & schedule ready.'
+            : 'Welcome back! Today\'s routes loaded.',
+          features: ['🗺️ Manage Routes', '👥 View Passengers', '📍 GPS Track', '⏰ Update Times'],
           primaryColor: 'from-orange-500 to-red-600',
           bgGradient: 'from-orange-50 to-red-50'
         };

@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { BusReviewModal } from '@/components/bus-review-modal';
 import {
   Bus,
   MapPin,
@@ -50,7 +51,8 @@ import {
   Coffee,
   Briefcase,
   UserCheck,
-  Plane
+  Plane,
+  MessageSquare
 } from 'lucide-react';
 
 interface BusStatus {
@@ -88,6 +90,7 @@ export default function StaffDashboard() {
 
   // Get user data from localStorage
   const [userData, setUserData] = useState(null);
+  const [showReviewModal, setShowReviewModal] = useState(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -380,6 +383,38 @@ export default function StaffDashboard() {
         }}
       />
     </div>
+
+    {/* Floating Action Buttons */}
+    <motion.div
+      className="fixed bottom-8 right-8 z-50 flex flex-col gap-3"
+      initial={{ opacity: 0, x: 100 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.8, delay: 2 }}
+    >
+      <motion.button
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        className="w-14 h-14 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full shadow-lg flex items-center justify-center text-white hover:shadow-xl transition-all duration-300"
+      >
+        <Sparkles className="h-6 w-6" />
+      </motion.button>
+      <motion.button
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        onClick={() => setShowReviewModal(true)}
+        className="w-14 h-14 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full shadow-lg flex items-center justify-center text-white hover:shadow-xl transition-all duration-300"
+        title="Rate Bus Service"
+      >
+        <MessageSquare className="h-6 w-6" />
+      </motion.button>
+      <motion.button
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        className="w-14 h-14 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full shadow-lg flex items-center justify-center text-white hover:shadow-xl transition-all duration-300"
+      >
+        <Plus className="h-6 w-6" />
+      </motion.button>
+    </motion.div>
 
     <motion.div
       initial={{ opacity: 0 }}
@@ -1036,6 +1071,14 @@ export default function StaffDashboard() {
         </div>
       </div>
     )}
+
+    {/* Bus Review Modal */}
+    <BusReviewModal
+      isVisible={showReviewModal}
+      onClose={() => setShowReviewModal(false)}
+      userName={userData?.name || 'Staff Member'}
+      userType="staff"
+    />
       </div>
     </>
   );

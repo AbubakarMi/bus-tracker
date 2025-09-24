@@ -5,7 +5,30 @@ import { motion } from 'framer-motion';
 import { Star, Quote } from 'lucide-react';
 import Image from 'next/image';
 
-const testimonials = [
+// Interface for reviews from localStorage
+interface StoredReview {
+  id: string;
+  rating: number;
+  review: string;
+  userName: string;
+  userType: 'student' | 'staff';
+  date: string;
+  approved: boolean;
+}
+
+// Transform stored review to testimonial format
+const transformReviewToTestimonial = (review: StoredReview, index: number) => ({
+  id: parseInt(review.id) + 1000, // Offset to avoid ID conflicts
+  name: review.userName,
+  role: review.userType === 'student' ? 'Student' : 'Staff Member',
+  department: 'ADUSTECH',
+  image: `https://picsum.photos/seed/user${review.id}/100/100`,
+  rating: review.rating,
+  content: review.review,
+});
+
+// Default testimonials
+const defaultTestimonials = [
   {
     id: 1,
     name: 'Amina Hassan',
@@ -62,7 +85,7 @@ const testimonials = [
   },
 ];
 
-const SpectacularTestimonialCard = ({ testimonial, index }: { testimonial: typeof testimonials[0], index: number }) => {
+const SpectacularTestimonialCard = ({ testimonial, index }: { testimonial: typeof defaultTestimonials[0], index: number }) => {
   const [isHovered, setIsHovered] = React.useState(false);
   
   const cardColors = [
@@ -295,6 +318,58 @@ const SpectacularTestimonialCard = ({ testimonial, index }: { testimonial: typeo
 };
 
 export function Testimonials() {
+  const [testimonials, setTestimonials] = React.useState(defaultTestimonials);
+
+  // Load reviews from localStorage and combine with default testimonials
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const storedReviews = localStorage.getItem('busReviews');
+        if (storedReviews) {
+          const reviews: StoredReview[] = JSON.parse(storedReviews);
+          // Filter only approved reviews and transform them
+          const approvedReviews = reviews
+            .filter(review => review.approved)
+            .map(transformReviewToTestimonial);
+
+          // Combine default testimonials with approved reviews
+          setTestimonials([...defaultTestimonials, ...approvedReviews]);
+        } else {
+          // Seed with sample approved reviews for demonstration
+          const sampleReviews: StoredReview[] = [
+            {
+              id: '1001',
+              rating: 5,
+              review: 'The bus tracking system is amazing! I can see exactly when my bus will arrive and plan accordingly.',
+              userName: 'Ahmed Suleiman',
+              userType: 'student',
+              date: new Date().toISOString(),
+              approved: true
+            },
+            {
+              id: '1002',
+              rating: 4,
+              review: 'Great service! As a staff member, the priority booking feature really helps with my daily commute.',
+              userName: 'Dr. Hauwa Ibrahim',
+              userType: 'staff',
+              date: new Date().toISOString(),
+              approved: true
+            }
+          ];
+
+          // Save sample reviews and use them
+          localStorage.setItem('busReviews', JSON.stringify(sampleReviews));
+          const approvedReviews = sampleReviews.map(transformReviewToTestimonial);
+          setTestimonials([...defaultTestimonials, ...approvedReviews]);
+        }
+      } catch (error) {
+        console.error('Error loading reviews from localStorage:', error);
+        // Fallback to default testimonials
+        setTestimonials(defaultTestimonials);
+      }
+    }
+  }, []);
+
   return (
     <section className="relative py-24 sm:py-32 overflow-hidden">
       {/* Background */}

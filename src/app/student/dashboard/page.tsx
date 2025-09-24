@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { RealTimeTracker } from '@/components/tracking/real-time-tracker';
+import { BusReviewModal } from '@/components/bus-review-modal';
 import {
   Bus,
   MapPin,
@@ -46,7 +47,8 @@ import {
   Lightning,
   Award,
   BookOpen,
-  Coffee
+  Coffee,
+  MessageSquare
 } from 'lucide-react';
 
 interface BusStatus {
@@ -83,6 +85,7 @@ export default function StudentDashboard() {
 
   // Get user data from localStorage
   const [userData, setUserData] = useState(null);
+  const [showReviewModal, setShowReviewModal] = useState(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -347,6 +350,15 @@ export default function StudentDashboard() {
           className="w-14 h-14 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full shadow-lg flex items-center justify-center text-white hover:shadow-xl transition-all duration-300"
         >
           <Sparkles className="h-6 w-6" />
+        </motion.button>
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={() => setShowReviewModal(true)}
+          className="w-14 h-14 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full shadow-lg flex items-center justify-center text-white hover:shadow-xl transition-all duration-300"
+          title="Rate Bus Service"
+        >
+          <MessageSquare className="h-6 w-6" />
         </motion.button>
         <motion.button
           whileHover={{ scale: 1.1 }}
@@ -872,6 +884,14 @@ export default function StudentDashboard() {
         </div>
       </div>
     )}
+
+    {/* Bus Review Modal */}
+    <BusReviewModal
+      isVisible={showReviewModal}
+      onClose={() => setShowReviewModal(false)}
+      userName={userData?.name || 'Student'}
+      userType="student"
+    />
   </>
   );
 }
