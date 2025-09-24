@@ -1,323 +1,512 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { RealTimeTracker } from '@/components/tracking/real-time-tracker';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
   MapPin,
-  Navigation,
   Clock,
-  Route,
-  Bus,
-  Search,
-  Eye,
+  Route as RouteIcon,
+  Users,
   AlertCircle,
+  Navigation,
+  Bus,
   CheckCircle,
-  Wifi,
-  Battery,
-  Zap
+  Timer,
+  Calendar,
+  ArrowRight,
+  Briefcase,
+  FileText
 } from 'lucide-react';
 
-interface LiveBus {
+interface BookedTravel {
   id: string;
-  number: string;
+  travelId: string;
+  busNumber: string;
   route: string;
-  status: 'on-time' | 'delayed' | 'boarding' | 'departed';
-  currentLocation: string;
-  nextStop: string;
-  eta: string;
-  speed: number;
-  passengers: number;
-  capacity: number;
-  driver: string;
-  amenities: string[];
+  departureTime: string;
+  boardingTime: string;
+  date: string;
+  seat: string;
+  gate: string;
+  purpose: string;
+  status: 'upcoming' | 'boarding' | 'on-route' | 'completed' | 'cancelled';
+  currentLocation?: string;
+  nextStop?: string;
+  eta?: string;
+  progress?: number;
+  driverName?: string;
+  driverPhone?: string;
+  isTrackable: boolean;
+  trackingReason?: string;
+  approvalStatus: 'approved' | 'pending' | 'rejected';
 }
 
 export default function StaffTrackingPage() {
-  const [liveBuses, setLiveBuses] = useState<LiveBus[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedRoute, setSelectedRoute] = useState('all');
+  const [bookedTravels, setBookedTravels] = useState<BookedTravel[]>([]);
+  const [selectedTravel, setSelectedTravel] = useState<BookedTravel | null>(null);
+  const [userData, setUserData] = useState(null);
 
   useEffect(() => {
-    // Simulate live bus data updates
-    const updateBuses = () => {
-      const buses: LiveBus[] = [
+    // Load user data
+    if (typeof window !== 'undefined') {
+      const storedUserData = localStorage.getItem('userData');
+      if (storedUserData) {
+        try {
+          setUserData(JSON.parse(storedUserData));
+        } catch (error) {
+          console.error('Error parsing user data:', error);
+        }
+      }
+    }
+
+    // Simulate booked travels with smart tracking logic
+    const generateBookedTravels = (): BookedTravel[] => {
+      const now = new Date();
+      const today = now.toISOString().split('T')[0];
+
+      return [
         {
-          id: 'BUS-001',
-          number: 'ADUS-001',
-          route: 'Lagos Express',
-          status: 'on-time',
+          id: 'TRV-001',
+          travelId: 'TRV-001',
+          busNumber: 'ADUS-001',
+          route: 'Lagos Conference Center',
+          departureTime: '9:00 AM',
+          boardingTime: '8:45 AM',
+          date: today,
+          seat: 'C15',
+          gate: 'Gate 2',
+          purpose: 'Official Conference',
+          status: 'on-route',
           currentLocation: 'Mile 2 Bridge',
-          nextStop: 'CMS Terminal',
-          eta: '8 mins',
-          speed: 45,
-          passengers: 28,
-          capacity: 36,
-          driver: 'Emeka Johnson',
-          amenities: ['wifi', 'ac', 'charging']
+          nextStop: 'Conference Center',
+          eta: '15 mins',
+          progress: 75,
+          driverName: 'Emeka Johnson',
+          driverPhone: '+234-801-234-5678',
+          isTrackable: true,
+          approvalStatus: 'approved'
         },
         {
-          id: 'BUS-003',
-          number: 'ADUS-003',
-          route: 'Campus Shuttle',
+          id: 'TRV-002',
+          travelId: 'TRV-002',
+          busNumber: 'ADUS-007',
+          route: 'Airport Link',
+          departureTime: '6:30 AM',
+          boardingTime: '6:15 AM',
+          date: new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString().split('T')[0], // Tomorrow
+          seat: 'A5',
+          gate: 'Gate 4',
+          purpose: 'Business Trip',
+          status: 'upcoming',
+          isTrackable: false,
+          trackingReason: 'Travel tracking will be available 1 hour before departure',
+          approvalStatus: 'approved'
+        },
+        {
+          id: 'TRV-003',
+          travelId: 'TRV-003',
+          busNumber: 'ADUS-003',
+          route: 'University Seminar',
+          departureTime: '2:15 PM',
+          boardingTime: '2:00 PM',
+          date: today,
+          seat: 'B8',
+          gate: 'Gate 1',
+          purpose: 'Academic Meeting',
           status: 'boarding',
           currentLocation: 'Main Gate',
-          nextStop: 'Library Complex',
-          eta: '3 mins',
-          speed: 0,
-          passengers: 15,
-          capacity: 32,
-          driver: 'Fatima Adebayo',
-          amenities: ['ac']
+          nextStop: 'University of Lagos',
+          eta: '5 mins',
+          progress: 25,
+          driverName: 'Fatima Adebayo',
+          driverPhone: '+234-802-345-6789',
+          isTrackable: true,
+          approvalStatus: 'approved'
         },
         {
-          id: 'BUS-007',
-          number: 'ADUS-007',
-          route: 'Airport Link',
-          status: 'delayed',
-          currentLocation: 'Ikeja Along',
-          nextStop: 'MM Airport T2',
-          eta: '25 mins',
-          speed: 38,
-          passengers: 33,
-          capacity: 36,
-          driver: 'Ibrahim Musa',
-          amenities: ['wifi', 'ac', 'charging', 'luggage']
+          id: 'TRV-004',
+          travelId: 'TRV-004',
+          busNumber: 'ADUS-012',
+          route: 'Training Workshop',
+          departureTime: '8:00 AM',
+          boardingTime: '7:45 AM',
+          date: new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString().split('T')[0], // Yesterday
+          seat: 'D12',
+          gate: 'Gate 3',
+          purpose: 'Professional Development',
+          status: 'completed',
+          isTrackable: false,
+          trackingReason: 'Travel completed - no longer trackable',
+          approvalStatus: 'approved'
         },
         {
-          id: 'BUS-012',
-          number: 'ADUS-012',
-          route: 'City Center',
-          status: 'departed',
-          currentLocation: 'Victoria Island',
-          nextStop: 'Ikoyi Link Bridge',
-          eta: '12 mins',
-          speed: 52,
-          passengers: 22,
-          capacity: 36,
-          driver: 'Adunni Olatunji',
-          amenities: ['wifi', 'ac', 'charging']
+          id: 'TRV-005',
+          travelId: 'TRV-005',
+          busNumber: 'ADUS-005',
+          route: 'Abuja Research Center',
+          departureTime: '7:00 AM',
+          boardingTime: '6:45 AM',
+          date: new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 3 days from now
+          seat: 'A1',
+          gate: 'Gate 5',
+          purpose: 'Research Collaboration',
+          status: 'upcoming',
+          isTrackable: false,
+          trackingReason: 'Tracking available from 3 hours before departure',
+          approvalStatus: 'pending'
         }
       ];
-      setLiveBuses(buses);
     };
 
-    updateBuses();
-    const interval = setInterval(updateBuses, 5000); // Update every 5 seconds
-
-    return () => clearInterval(interval);
+    setBookedTravels(generateBookedTravels());
   }, []);
 
-  const filteredBuses = liveBuses.filter(bus => {
-    const matchesSearch = bus.number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         bus.route.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         bus.currentLocation.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesRoute = selectedRoute === 'all' || bus.route.toLowerCase().includes(selectedRoute.toLowerCase());
-    return matchesSearch && matchesRoute;
-  });
+  const trackableTravels = bookedTravels.filter(travel => travel.isTrackable && travel.approvalStatus === 'approved');
+  const upcomingTravels = bookedTravels.filter(travel => !travel.isTrackable && travel.status === 'upcoming' && travel.approvalStatus === 'approved');
+  const pendingTravels = bookedTravels.filter(travel => travel.approvalStatus === 'pending');
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'on-time': return 'bg-green-100 text-green-700 border-green-200';
-      case 'delayed': return 'bg-red-100 text-red-700 border-red-200';
-      case 'boarding': return 'bg-yellow-100 text-yellow-700 border-yellow-200';
-      case 'departed': return 'bg-blue-100 text-blue-700 border-blue-200';
-      default: return 'bg-gray-100 text-gray-700 border-gray-200';
+      case 'on-route':
+        return 'bg-green-100 text-green-800 border-green-200';
+      case 'boarding':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'upcoming':
+        return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'completed':
+        return 'bg-gray-100 text-gray-800 border-gray-200';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
 
-  const getStatusIcon = (status: string) => {
+  const getApprovalColor = (status: string) => {
     switch (status) {
-      case 'on-time': return <CheckCircle className="h-4 w-4" />;
-      case 'delayed': return <AlertCircle className="h-4 w-4" />;
-      case 'boarding': return <Clock className="h-4 w-4" />;
-      case 'departed': return <Navigation className="h-4 w-4" />;
-      default: return <Bus className="h-4 w-4" />;
+      case 'approved':
+        return 'bg-green-100 text-green-800 border-green-200';
+      case 'pending':
+        return 'bg-orange-100 text-orange-800 border-orange-200';
+      case 'rejected':
+        return 'bg-red-100 text-red-800 border-red-200';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
+
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    const today = new Date().toDateString();
+    const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toDateString();
+    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toDateString();
+
+    if (date.toDateString() === today) return 'Today';
+    if (date.toDateString() === tomorrow) return 'Tomorrow';
+    if (date.toDateString() === yesterday) return 'Yesterday';
+    return date.toLocaleDateString();
+  };
+
+  if (selectedTravel && selectedTravel.isTrackable) {
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold font-headline">Live Travel Tracking</h1>
+            <p className="text-muted-foreground">
+              Tracking {selectedTravel.busNumber} - {selectedTravel.route} | {selectedTravel.purpose}
+            </p>
+          </div>
+          <Button variant="outline" onClick={() => setSelectedTravel(null)}>
+            Back to My Travels
+          </Button>
+        </div>
+
+        <RealTimeTracker
+          userInfo={{
+            userId: userData?.id || 'Staff/Adustech/1001',
+            routeId: 'route-1',
+            routeName: selectedTravel.route,
+            busId: selectedTravel.id,
+            busPlateNumber: selectedTravel.busNumber,
+            driverName: selectedTravel.driverName || 'Driver',
+            pickupPoint: selectedTravel.gate,
+            dropoffPoint: selectedTravel.route.split(' ')[0] + ' Terminal',
+            status: selectedTravel.status === 'on-route' ? 'on_route' : 'boarding'
+          }}
+          allowedRoutes={['route-1']}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
-            <MapPin className="h-8 w-8 text-blue-600" />
-            Live Bus Tracking
-          </h1>
-          <p className="text-gray-600 mt-2">Monitor all buses in real-time for official travel planning</p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-          <span className="text-sm font-medium text-green-600">Live Updates</span>
-        </div>
+      <div className="text-center">
+        <h1 className="text-3xl font-bold font-headline mb-2">Track Official Travels</h1>
+        <p className="text-muted-foreground">
+          Monitor your approved travel requests in real-time. Only travels currently on route can be tracked.
+        </p>
       </div>
 
-      {/* Filters */}
-      <Card className="bg-white/95 backdrop-blur-sm border-0 shadow-lg">
-        <CardContent className="p-6">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1">
-              <Label htmlFor="search" className="text-sm font-medium text-gray-700">Search Buses</Label>
-              <div className="relative mt-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                <Input
-                  id="search"
-                  placeholder="Bus number, route, or location..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-            </div>
-            <div className="md:w-48">
-              <Label htmlFor="route-filter" className="text-sm font-medium text-gray-700">Filter by Route</Label>
-              <select
-                id="route-filter"
-                value={selectedRoute}
-                onChange={(e) => setSelectedRoute(e.target.value)}
-                className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500"
-              >
-                <option value="all">All Routes</option>
-                <option value="lagos">Lagos Express</option>
-                <option value="campus">Campus Shuttle</option>
-                <option value="airport">Airport Link</option>
-                <option value="city">City Center</option>
-              </select>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Live Bus Grid */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        {filteredBuses.map((bus) => (
-          <Card key={bus.id} className="bg-white/95 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02] hover:-translate-y-1">
-            <CardHeader className="pb-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-full ${
-                    bus.status === 'on-time' ? 'bg-green-100' :
-                    bus.status === 'delayed' ? 'bg-red-100' :
-                    bus.status === 'boarding' ? 'bg-yellow-100' : 'bg-blue-100'
-                  }`}>
-                    <Bus className={`h-5 w-5 ${
-                      bus.status === 'on-time' ? 'text-green-600' :
-                      bus.status === 'delayed' ? 'text-red-600' :
-                      bus.status === 'boarding' ? 'text-yellow-600' : 'text-blue-600'
-                    }`} />
-                  </div>
-                  <div>
-                    <CardTitle className="text-xl">{bus.number}</CardTitle>
-                    <p className="text-gray-600 text-sm">{bus.route}</p>
-                  </div>
-                </div>
-
-                <div className="flex flex-col items-end gap-2">
-                  <Badge className={`${getStatusColor(bus.status)} flex items-center gap-1`}>
-                    {getStatusIcon(bus.status)}
-                    {bus.status.replace('-', ' ')}
-                  </Badge>
-                  <span className="text-sm text-gray-500">{bus.speed} km/h</span>
-                </div>
-              </div>
+      {/* Trackable Travels */}
+      {trackableTravels.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Navigation className="h-5 w-5 text-green-600" />
+                Live Tracking Available ({trackableTravels.length})
+              </CardTitle>
+              <CardDescription>
+                Your approved travels that are currently trackable
+              </CardDescription>
             </CardHeader>
-
-            <CardContent className="pt-0 space-y-4">
-              {/* Location Info */}
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-gray-500 flex items-center gap-1">
-                      <MapPin className="h-4 w-4" />
-                      Current:
-                    </span>
-                    <span className="font-medium text-right">{bus.currentLocation}</span>
+            <CardContent className="space-y-4">
+              {trackableTravels.map((travel) => (
+                <motion.div
+                  key={travel.id}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="border border-green-200 rounded-xl p-4 bg-green-50/50 hover:bg-green-50 transition-colors cursor-pointer"
+                  onClick={() => setSelectedTravel(travel)}
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="h-12 w-12 rounded-xl bg-indigo-100 border border-indigo-200 flex items-center justify-center">
+                        <Briefcase className="h-6 w-6 text-indigo-600" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900">{travel.busNumber}</h3>
+                        <p className="text-sm text-gray-600">{travel.route}</p>
+                        <p className="text-xs text-gray-500">{formatDate(travel.date)} • Seat {travel.seat}</p>
+                        <p className="text-xs text-indigo-600 font-medium">{travel.purpose}</p>
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <Badge className={getStatusColor(travel.status)}>
+                        {travel.status === 'on-route' ? 'On Route' : 'Boarding'}
+                      </Badge>
+                      <Badge variant="outline" className={getApprovalColor(travel.approvalStatus)}>
+                        {travel.approvalStatus}
+                      </Badge>
+                    </div>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-500 flex items-center gap-1">
-                      <Navigation className="h-4 w-4" />
-                      Next Stop:
-                    </span>
-                    <span className="font-medium text-right">{bus.nextStop}</span>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-gray-500 flex items-center gap-1">
-                      <Clock className="h-4 w-4" />
-                      ETA:
-                    </span>
-                    <span className={`font-bold ${
-                      bus.status === 'delayed' ? 'text-red-600' : 'text-blue-600'
-                    }`}>{bus.eta}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">Driver:</span>
-                    <span className="font-medium text-right">{bus.driver}</span>
-                  </div>
-                </div>
-              </div>
 
-              {/* Capacity */}
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Capacity ({Math.round((bus.passengers / bus.capacity) * 100)}%)</span>
-                  <span className={`font-medium ${
-                    (bus.capacity - bus.passengers) > 10 ? 'text-green-600' :
-                    (bus.capacity - bus.passengers) > 5 ? 'text-yellow-600' : 'text-red-600'
-                  }`}>
-                    {bus.capacity - bus.passengers} seats available
-                  </span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div
-                    className={`h-2 rounded-full transition-all ${
-                      (bus.passengers / bus.capacity) > 0.8 ? 'bg-red-500' :
-                      (bus.passengers / bus.capacity) > 0.6 ? 'bg-yellow-500' : 'bg-green-500'
-                    }`}
-                    style={{ width: `${(bus.passengers / bus.capacity) * 100}%` }}
-                  ></div>
-                </div>
-              </div>
+                  {travel.status === 'on-route' && (
+                    <div className="space-y-3">
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-gray-500">Current:</span>
+                          <span className="font-medium">{travel.currentLocation}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-500">ETA:</span>
+                          <span className="font-medium text-green-600">{travel.eta}</span>
+                        </div>
+                      </div>
 
-              {/* Amenities */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  {bus.amenities.includes('wifi') && <Wifi className="h-4 w-4 text-blue-500" />}
-                  {bus.amenities.includes('ac') && <Zap className="h-4 w-4 text-green-500" />}
-                  {bus.amenities.includes('charging') && <Battery className="h-4 w-4 text-yellow-500" />}
-                  {bus.amenities.length === 0 && <span className="text-xs text-gray-500">No amenities</span>}
-                </div>
-                <Button size="sm" className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700">
-                  <Eye className="h-4 w-4 mr-1" />
-                  View Details
-                </Button>
-              </div>
+                      <div>
+                        <div className="flex justify-between text-sm mb-1">
+                          <span className="text-gray-500">Journey Progress</span>
+                          <span className="text-sm font-medium">{travel.progress}%</span>
+                        </div>
+                        <Progress value={travel.progress} className="h-2" />
+                      </div>
+                    </div>
+                  )}
 
-              {/* Live indicator */}
-              <div className="absolute top-3 right-3 flex items-center gap-1">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-xs text-green-600 font-medium">LIVE</span>
-              </div>
+                  <div className="flex items-center justify-between mt-4">
+                    <div className="text-sm text-gray-600">
+                      <span className="flex items-center gap-1">
+                        <Users className="h-3 w-3" />
+                        {travel.driverName}
+                      </span>
+                    </div>
+                    <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700">
+                      <MapPin className="h-4 w-4 mr-1" />
+                      Track Live
+                    </Button>
+                  </div>
+                </motion.div>
+              ))}
             </CardContent>
           </Card>
-        ))}
-      </div>
+        </motion.div>
+      )}
 
-      {filteredBuses.length === 0 && (
-        <Card className="bg-white/95 backdrop-blur-sm border-0 shadow-lg">
-          <CardContent className="p-12 text-center">
-            <Bus className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No buses found</h3>
-            <p className="text-gray-600">Try adjusting your search or filter criteria</p>
+      {/* Pending Approvals */}
+      {pendingTravels.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5 text-orange-600" />
+                Pending Approvals ({pendingTravels.length})
+              </CardTitle>
+              <CardDescription>
+                Travel requests awaiting management approval
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {pendingTravels.map((travel) => (
+                <div
+                  key={travel.id}
+                  className="border border-orange-200 rounded-xl p-4 bg-orange-50/50"
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="h-12 w-12 rounded-xl bg-orange-100 border border-orange-200 flex items-center justify-center">
+                        <Clock className="h-6 w-6 text-orange-600" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900">{travel.busNumber}</h3>
+                        <p className="text-sm text-gray-600">{travel.route}</p>
+                        <p className="text-xs text-gray-500">{formatDate(travel.date)} • {travel.departureTime} • Seat {travel.seat}</p>
+                        <p className="text-xs text-orange-600 font-medium">{travel.purpose}</p>
+                      </div>
+                    </div>
+                    <Badge className={getApprovalColor(travel.approvalStatus)}>
+                      Pending Approval
+                    </Badge>
+                  </div>
+
+                  <Alert>
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription className="text-sm">
+                      Your travel request is pending management approval. Tracking will be available once approved.
+                    </AlertDescription>
+                  </Alert>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
+
+      {/* Upcoming Travels */}
+      {upcomingTravels.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Clock className="h-5 w-5 text-blue-600" />
+                Upcoming Travels ({upcomingTravels.length})
+              </CardTitle>
+              <CardDescription>
+                Tracking will be available closer to departure time
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {upcomingTravels.map((travel) => (
+                <div
+                  key={travel.id}
+                  className="border border-blue-200 rounded-xl p-4 bg-blue-50/50"
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="h-12 w-12 rounded-xl bg-blue-100 border border-blue-200 flex items-center justify-center">
+                        <Calendar className="h-6 w-6 text-blue-600" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900">{travel.busNumber}</h3>
+                        <p className="text-sm text-gray-600">{travel.route}</p>
+                        <p className="text-xs text-gray-500">{formatDate(travel.date)} • {travel.departureTime} • Seat {travel.seat}</p>
+                        <p className="text-xs text-blue-600 font-medium">{travel.purpose}</p>
+                      </div>
+                    </div>
+                    <Badge className={getStatusColor(travel.status)}>
+                      Upcoming
+                    </Badge>
+                  </div>
+
+                  <Alert>
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription className="text-sm">
+                      {travel.trackingReason}
+                    </AlertDescription>
+                  </Alert>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
+
+      {/* No Trackable Travels Message */}
+      {trackableTravels.length === 0 && upcomingTravels.length === 0 && pendingTravels.length === 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <Card>
+            <CardContent className="text-center py-12">
+              <Briefcase className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Travel Requests</h3>
+              <p className="text-gray-500 mb-6">
+                You don't have any travel requests currently available for tracking. Submit a travel request to start tracking!
+              </p>
+              <Button onClick={() => window.location.href = '/staff/book'}>
+                <Calendar className="h-4 w-4 mr-2" />
+                Request Travel
+              </Button>
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
+
+      {/* Information Card */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.4 }}
+      >
+        <Card>
+          <CardHeader>
+            <CardTitle>How Staff Travel Tracking Works</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+              <div>
+                <h4 className="font-medium mb-2">Travel Request Process:</h4>
+                <ul className="space-y-1 text-muted-foreground">
+                  <li>• Submit travel request with purpose</li>
+                  <li>• Wait for management approval</li>
+                  <li>• Tracking available after approval</li>
+                  <li>• Real-time monitoring during travel</li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-medium mb-2">Tracking Features:</h4>
+                <ul className="space-y-1 text-muted-foreground">
+                  <li>• Live bus location updates</li>
+                  <li>• Arrival time estimates</li>
+                  <li>• Journey progress tracking</li>
+                  <li>• Driver contact information</li>
+                </ul>
+              </div>
+            </div>
           </CardContent>
         </Card>
-      )}
+      </motion.div>
     </div>
   );
 }

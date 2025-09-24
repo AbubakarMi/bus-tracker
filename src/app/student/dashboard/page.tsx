@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { DashboardHeader } from '@/components/dashboard-header';
-import { SidebarNav } from '@/components/sidebar-nav';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -46,7 +45,7 @@ import {
   Target,
   TrendingDown,
   Heart,
-  Lightning,
+  Zap as Lightning,
   Award,
   BookOpen,
   Coffee,
@@ -282,11 +281,8 @@ export default function StudentDashboard() {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      <SidebarNav user={userData} />
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <DashboardHeader user={userData} title="Student Dashboard" />
-
+    <>
+      <DashboardHeader user={userData} title="Student Dashboard" />
       {/* World-Class Premium Dashboard */}
       <div className="flex-1 overflow-y-auto bg-gray-50/50">
         {/* Subtle Premium Background */}
@@ -420,11 +416,10 @@ export default function StudentDashboard() {
             })}
           </motion.div>
 
-          {/* Premium Main Content Grid - Adjusted Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-            {/* Available Buses - Takes more space */}
+          {/* Premium Main Content Grid - Single Column Layout for Dual Sidebar */}
+          <div className="space-y-6">
+            {/* Available Buses */}
             <motion.div
-              className="lg:col-span-3"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
@@ -551,9 +546,9 @@ export default function StudentDashboard() {
               </Card>
             </motion.div>
 
-            {/* Sidebar - Adjusted to 2 columns */}
+            {/* Recent Activity - Moved to main content since we have right sidebar now */}
             <motion.div
-              className="lg:col-span-2 space-y-6"
+              className="space-y-6"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.6 }}
@@ -926,7 +921,6 @@ export default function StudentDashboard() {
           </motion.div>
         )}
       </AnimatePresence>
-      </div>
-    </div>
+    </>
   );
 }
