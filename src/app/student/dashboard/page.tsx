@@ -48,7 +48,10 @@ import {
   Award,
   BookOpen,
   Coffee,
-  MessageSquare
+  MessageSquare,
+  ChevronRight,
+  MoreHorizontal,
+  Filter
 } from 'lucide-react';
 
 interface BusStatus {
@@ -82,8 +85,6 @@ interface BookingData {
 
 export default function StudentDashboard() {
   const [currentTime, setCurrentTime] = useState(new Date());
-
-  // Get user data from localStorage
   const [userData, setUserData] = useState(null);
   const [showReviewModal, setShowReviewModal] = useState(false);
 
@@ -95,7 +96,6 @@ export default function StudentDashboard() {
           setUserData(JSON.parse(storedUserData));
         } catch (error) {
           console.error('Error parsing user data:', error);
-          // Fallback user data for demo
           setUserData({
             id: 'UG20/COMS/1284',
             role: 'student',
@@ -105,7 +105,6 @@ export default function StudentDashboard() {
           });
         }
       } else {
-        // Fallback user data for demo
         setUserData({
           id: 'UG20/COMS/1284',
           role: 'student',
@@ -116,6 +115,7 @@ export default function StudentDashboard() {
       }
     }
   }, []);
+
   const [availableBuses, setAvailableBuses] = useState<BusStatus[]>([]);
   const [myBookings, setMyBookings] = useState<BookingData[]>([]);
   const [stats, setStats] = useState({
@@ -125,18 +125,16 @@ export default function StudentDashboard() {
     totalSpent: 0
   });
 
-  // Quick Access Modal States
+  // Modal states
   const [showBookSeatModal, setShowBookSeatModal] = useState(false);
   const [showTrackBusModal, setShowTrackBusModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [showTicketModal, setShowTicketModal] = useState(false);
 
   const [recentActivity, setRecentActivity] = useState([
-    { id: 1, type: 'booking', message: 'Seat confirmed for Lagos Express', time: '2 hours ago', status: 'success', icon: CheckCircle },
-    { id: 2, type: 'payment', message: 'Payment successful - ₦5,500', time: '2 hours ago', status: 'success', icon: DollarSign },
-    { id: 3, type: 'tracking', message: 'Bus BUS-001 departed on time', time: '5 hours ago', status: 'info', icon: Bus },
-    { id: 4, type: 'arrival', message: 'Trip completed: Campus Shuttle', time: '1 day ago', status: 'success', icon: CheckCircle },
-    { id: 5, type: 'booking', message: 'New route available: Airport Link', time: '2 days ago', status: 'info', icon: Route }
+    { id: 1, type: 'booking', message: 'Seat confirmed for Lagos Express', time: '2h ago', status: 'success', icon: CheckCircle },
+    { id: 2, type: 'payment', message: 'Payment successful - ₦5,500', time: '2h ago', status: 'success', icon: DollarSign },
+    { id: 3, type: 'tracking', message: 'Bus BUS-001 departed on time', time: '5h ago', status: 'info', icon: Bus },
+    { id: 4, type: 'arrival', message: 'Trip completed: Campus Shuttle', time: '1d ago', status: 'success', icon: CheckCircle },
   ]);
 
   useEffect(() => {
@@ -146,7 +144,7 @@ export default function StudentDashboard() {
 
   // Simulate real-time bus updates
   useEffect(() => {
-    const updateAvailableBuses = () => {
+    const updateData = () => {
       const buses: BusStatus[] = [
         {
           id: 'BUS-001',
@@ -195,9 +193,7 @@ export default function StudentDashboard() {
         }
       ];
       setAvailableBuses(buses);
-    };
 
-    const updateMyBookings = () => {
       const bookings: BookingData[] = [
         {
           id: 'BK-001',
@@ -225,9 +221,7 @@ export default function StudentDashboard() {
         }
       ];
       setMyBookings(bookings);
-    };
 
-    const updateStats = () => {
       setStats({
         totalTrips: 24,
         pendingBookings: 2,
@@ -236,14 +230,8 @@ export default function StudentDashboard() {
       });
     };
 
-    updateAvailableBuses();
-    updateMyBookings();
-    updateStats();
-
-    const interval = setInterval(() => {
-      updateAvailableBuses();
-    }, 10000);
-
+    updateData();
+    const interval = setInterval(updateData, 10000);
     return () => clearInterval(interval);
   }, []);
 
@@ -278,53 +266,13 @@ export default function StudentDashboard() {
     }
   ];
 
-  // PDF Download Function
-  const downloadTicketPDF = (booking: BookingData) => {
-    const ticketData = `
-      ADUSTECH BUS TICKET
-      ===================
-
-      Booking ID: ${booking.id}
-      Route: ${booking.route}
-      Bus: ${booking.busNumber}
-
-      Travel Details:
-      Date: ${booking.date}
-      Departure: ${booking.departureTime}
-      Boarding Time: ${booking.boardingTime}
-      Seat: ${booking.seat}
-      Gate: ${booking.gate}
-
-      Amount: ${booking.price}
-      Status: ${booking.status}
-
-      Please arrive at the boarding gate 15 minutes before departure time.
-      Keep this ticket for verification during boarding.
-
-      Contact: transport@adustech.edu.ng
-      Phone: +234-800-ADUSTECH
-    `;
-
-    const blob = new Blob([ticketData], { type: 'text/plain' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.style.display = 'none';
-    a.href = url;
-    a.download = `ticket-${booking.id}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    window.URL.revokeObjectURL(url);
-    document.body.removeChild(a);
-  };
-
-  // Show loading state if user data isn't loaded yet
   if (!userData) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-          className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full"
+          className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full"
         />
       </div>
     );
@@ -332,648 +280,647 @@ export default function StudentDashboard() {
 
   return (
     <>
-      {/* Dashboard Header */}
       <DashboardHeader user={userData} title="Student Dashboard" />
 
-      {/* Enhanced Dashboard with vibrant background */}
-      <div className="relative min-h-screen">
-        {/* Animated Background */}
-        <div className="fixed inset-0 -z-10 overflow-hidden">
-          <motion.div
-            className="absolute -top-1/2 -right-1/2 w-full h-full bg-gradient-to-br from-cyan-400/20 via-blue-500/15 to-purple-600/20 rounded-full blur-3xl"
-            animate={{ rotate: 360, scale: [1, 1.1, 1] }}
-            transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-          />
-          <motion.div
-            className="absolute -bottom-1/2 -left-1/2 w-3/4 h-3/4 bg-gradient-to-tr from-green-400/15 via-teal-500/10 to-blue-600/15 rounded-full blur-3xl"
-            animate={{ rotate: -360, scale: [1, 1.2, 1] }}
-            transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-          />
-          <motion.div
-            className="absolute top-1/4 left-1/4 w-1/2 h-1/2 bg-gradient-to-bl from-pink-400/10 via-purple-500/8 to-indigo-600/12 rounded-full blur-2xl"
-            animate={{ rotate: 180, scale: [1, 0.8, 1] }}
-            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-          />
-        </div>
+      {/* World-Class Premium Dashboard */}
+      <div className="min-h-screen bg-gray-50/50">
+        {/* Subtle Premium Background */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-50/50 via-transparent to-indigo-50/30" />
 
-        {/* Floating Action Buttons - Enhanced */}
+        {/* Premium Floating Actions */}
         <motion.div
-          className="fixed bottom-8 right-8 z-50 flex flex-col gap-4"
-          initial={{ opacity: 0, x: 100 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8, delay: 2 }}
+          className="fixed bottom-6 right-6 z-50 flex flex-col gap-3"
+          initial={{ opacity: 0, y: 100 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, type: "spring", stiffness: 200 }}
         >
           <motion.button
-            whileHover={{ scale: 1.15, rotate: 10 }}
-            whileTap={{ scale: 0.9 }}
-            className="w-16 h-16 bg-gradient-to-r from-cyan-400 to-blue-600 rounded-full shadow-2xl flex items-center justify-center text-white hover:shadow-cyan-500/25 transition-all duration-300 relative overflow-hidden group"
-          >
-            <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0"
-              animate={{ x: ['-100%', '100%'] }}
-              transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
-            />
-            <Sparkles className="h-7 w-7 relative z-10" />
-          </motion.button>
-          <motion.button
-            whileHover={{ scale: 1.15, rotate: -10 }}
-            whileTap={{ scale: 0.9 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => setShowReviewModal(true)}
-            className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full shadow-2xl flex items-center justify-center text-white hover:shadow-purple-500/25 transition-all duration-300 relative overflow-hidden group"
+            className="h-12 w-12 rounded-xl bg-white border border-gray-200/80 shadow-sm hover:shadow-md transition-all duration-200 flex items-center justify-center group backdrop-blur-sm"
             title="Rate Bus Service"
           >
-            <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0"
-              animate={{ x: ['-100%', '100%'] }}
-              transition={{ duration: 2, repeat: Infinity, repeatDelay: 1.5 }}
-            />
-            <MessageSquare className="h-7 w-7 relative z-10" />
+            <MessageSquare className="h-5 w-5 text-gray-600 group-hover:text-orange-500 transition-colors" />
           </motion.button>
           <motion.button
-            whileHover={{ scale: 1.15, rotate: 10 }}
-            whileTap={{ scale: 0.9 }}
-            className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full shadow-2xl flex items-center justify-center text-white hover:shadow-emerald-500/25 transition-all duration-300 relative overflow-hidden group"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.98 }}
+            className="h-12 w-12 rounded-xl bg-blue-600 border border-blue-600 shadow-sm hover:shadow-md hover:bg-blue-700 transition-all duration-200 flex items-center justify-center group"
           >
-            <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0"
-              animate={{ x: ['-100%', '100%'] }}
-              transition={{ duration: 2, repeat: Infinity, repeatDelay: 2 }}
-            />
-            <Plus className="h-7 w-7 relative z-10" />
+            <Plus className="h-5 w-5 text-white" />
           </motion.button>
         </motion.div>
 
-        <motion.div
-          className="space-y-8 relative z-10"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
-        >
-          {/* Enhanced Header Section */}
-          <div className="mb-8">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-              <motion.div
-                initial={{ opacity: 0, x: -50 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-              >
-                <motion.h1
-                  className="text-5xl font-black mb-4 relative"
-                  style={{
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%)',
-                    backgroundSize: '300% 300%',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text'
-                  }}
-                  animate={{
-                    backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
-                  }}
-                  transition={{
-                    duration: 5,
-                    repeat: Infinity,
-                    ease: 'linear'
-                  }}
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Premium Header */}
+          <motion.div
+            className="mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+              <div>
+                <h1 className="text-3xl font-semibold text-gray-900 mb-2 tracking-tight">
+                  Good {currentTime.getHours() < 12 ? 'morning' : currentTime.getHours() < 17 ? 'afternoon' : 'evening'}, {userData?.name?.split(' ')[0] || 'Student'}
+                </h1>
+                <p className="text-gray-600 text-base mb-4">
+                  {currentTime.toLocaleDateString('en-NG', {
+                    weekday: 'long',
+                    month: 'long',
+                    day: 'numeric',
+                    year: 'numeric'
+                  })}
+                </p>
+                <div className="flex items-center gap-2 text-sm text-gray-500">
+                  <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span>All systems operational</span>
+                </div>
+              </div>
+
+              {/* Premium Action Buttons */}
+              <div className="flex flex-wrap gap-3">
+                <Button
+                  onClick={() => setShowBookSeatModal(true)}
+                  className="bg-blue-600 hover:bg-blue-700 text-white border-0 px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow-md"
                 >
-                  <motion.span
-                    animate={{
-                      rotate: [0, 10, -10, 0],
-                      scale: [1, 1.1, 1]
-                    }}
-                    transition={{ duration: 2, repeat: Infinity, delay: 1 }}
-                    className="inline-block mr-4"
-                  >
-                    🎓
-                  </motion.span>
-                  Welcome back, Student!
-                </motion.h1>
-                <motion.p
-                  className="text-xl font-medium text-gray-700 flex items-center gap-4 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-2xl shadow-lg border border-white/20"
+                  <Calendar className="h-4 w-4 mr-2" />
+                  Book Seat
+                </Button>
+                <Button
+                  onClick={() => setShowTrackBusModal(true)}
+                  variant="outline"
+                  className="border-gray-200 hover:border-gray-300 hover:bg-gray-50 px-6 py-3 rounded-lg font-medium transition-all duration-200"
+                >
+                  <MapPin className="h-4 w-4 mr-2" />
+                  Track
+                </Button>
+                <Button
+                  onClick={() => setShowPaymentModal(true)}
+                  variant="outline"
+                  className="border-gray-200 hover:border-gray-300 hover:bg-gray-50 px-6 py-3 rounded-lg font-medium transition-all duration-200"
+                >
+                  <CreditCard className="h-4 w-4 mr-2" />
+                  Payments
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Premium Stats Grid */}
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            {quickStats.map((stat, index) => {
+              const colors = [
+                { icon: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-100' },
+                { icon: 'text-green-600', bg: 'bg-green-50', border: 'border-green-100' },
+                { icon: 'text-orange-600', bg: 'bg-orange-50', border: 'border-orange-100' },
+                { icon: 'text-purple-600', bg: 'bg-purple-50', border: 'border-purple-100' }
+              ];
+              const color = colors[index];
+              return (
+                <motion.div
+                  key={index}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: 0.4 }}
+                  transition={{ duration: 0.4, delay: 0.1 * index }}
                 >
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-                  >
-                    <Activity className="h-6 w-6 text-blue-600" />
-                  </motion.div>
-                  <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent font-bold">
-                    {currentTime.toLocaleDateString('en-NG', {
-                      weekday: 'long',
-                      month: 'long',
-                      day: 'numeric'
-                    })} • {currentTime.toLocaleTimeString('en-NG', {
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
-                  </span>
-                </motion.p>
-              </motion.div>
+                  <Card className="bg-white border-gray-100 hover:border-gray-200 transition-all duration-200 shadow-sm hover:shadow-md">
+                    <CardContent className="p-6">
+                      <div className="flex items-start justify-between">
+                        <div className={`p-3 rounded-xl ${color.bg} ${color.border} border`}>
+                          <stat.icon className={`h-5 w-5 ${color.icon}`} />
+                        </div>
+                        <div className="text-right">
+                          <p className="text-2xl font-semibold text-gray-900 mb-1">{stat.value}</p>
+                          <p className="text-sm text-gray-600 mb-2">{stat.label}</p>
+                          <span className={`text-xs font-medium px-2 py-1 rounded-md ${
+                            stat.changeType === 'positive'
+                              ? 'text-green-700 bg-green-50 border border-green-100'
+                              : 'text-gray-600 bg-gray-50 border border-gray-100'
+                          }`}>
+                            {stat.change}
+                          </span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              );
+            })}
+          </motion.div>
 
-          {/* Quick Access Buttons */}
-          <div className="flex flex-wrap gap-3">
-            <Button
-              onClick={() => setShowBookSeatModal(true)}
-              className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+          {/* Premium Main Content Grid - Adjusted Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+            {/* Available Buses - Takes more space */}
+            <motion.div
+              className="lg:col-span-3"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
             >
-              <Calendar className="h-4 w-4 mr-2" />
-              Quick Book
-            </Button>
-            <Button
-              onClick={() => setShowTrackBusModal(true)}
-              variant="outline"
-              className="border-green-200 hover:border-green-500 hover:bg-green-50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+              <Card className="bg-white border-gray-100 shadow-sm">
+                <CardHeader className="border-b border-gray-50 pb-4">
+                  <CardTitle className="flex items-center justify-between text-xl font-semibold">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-lg bg-blue-50 border border-blue-100">
+                        <Bus className="h-5 w-5 text-blue-600" />
+                      </div>
+                      <span className="text-gray-900">Available Buses</span>
+                      <span className="inline-flex items-center gap-1.5 bg-green-50 text-green-700 text-sm font-medium px-2.5 py-1 rounded-full border border-green-100">
+                        <div className="h-1.5 w-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                        {availableBuses.length} Live
+                      </span>
+                    </div>
+                    <Button variant="outline" size="sm" className="border-gray-200 hover:border-gray-300">
+                      <Filter className="h-4 w-4 mr-2" />
+                      Filter
+                    </Button>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-6 space-y-4">
+                  {availableBuses.map((bus) => (
+                    <div key={bus.id} className="border border-gray-100 rounded-xl p-4 hover:border-gray-200 transition-colors">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          <div className={`p-2 rounded-lg ${
+                            bus.status === 'on-time' ? 'bg-green-50 border-green-100' :
+                            bus.status === 'delayed' ? 'bg-red-50 border-red-100' : 'bg-yellow-50 border-yellow-100'
+                          } border`}>
+                            <Bus className={`h-4 w-4 ${
+                              bus.status === 'on-time' ? 'text-green-600' :
+                              bus.status === 'delayed' ? 'text-red-600' : 'text-yellow-600'
+                            }`} />
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-gray-900">{bus.number}</h4>
+                            <p className="text-sm text-gray-600">{bus.route}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge variant={bus.status === 'on-time' ? 'default' : bus.status === 'delayed' ? 'destructive' : 'secondary'} className="text-xs">
+                            {bus.status === 'delayed' ? 'Delayed' : bus.status === 'boarding' ? 'Boarding' : 'On Time'}
+                          </Badge>
+                          <span className="text-xs text-gray-500">{bus.speed} km/h</span>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4 text-sm mb-4">
+                        <div className="space-y-2">
+                          <div className="flex justify-between">
+                            <span className="text-gray-500">Current:</span>
+                            <span className="font-medium text-gray-900">{bus.currentLocation}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-500">Next Stop:</span>
+                            <span className="font-medium text-gray-900">{bus.nextStop}</span>
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <div className="flex justify-between">
+                            <span className="text-gray-500">ETA:</span>
+                            <span className="font-semibold text-blue-600">{bus.eta}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-500">Distance:</span>
+                            <span className="font-medium text-blue-600">{bus.distanceLeft}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="mb-4">
+                        <div className="flex justify-between text-sm mb-2">
+                          <span className="text-gray-500">Occupancy ({bus.occupancy}%)</span>
+                          <span className={`font-medium ${
+                            bus.availableSeats > 10 ? 'text-green-600' :
+                            bus.availableSeats > 5 ? 'text-yellow-600' : 'text-red-600'
+                          }`}>
+                            {bus.availableSeats} seats available
+                          </span>
+                        </div>
+                        <Progress value={bus.occupancy} className="h-2" />
+                      </div>
+
+                      <div className="flex justify-between items-center mb-4">
+                        <div className="text-sm">
+                          <span className="text-gray-500">Driver: </span>
+                          <span className="font-medium text-gray-900">{bus.driver}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {bus.amenities.includes('wifi') && <Wifi className="h-4 w-4 text-blue-500" />}
+                          {bus.amenities.includes('ac') && <Zap className="h-4 w-4 text-green-500" />}
+                          {bus.amenities.includes('charging') && <Battery className="h-4 w-4 text-yellow-500" />}
+                        </div>
+                      </div>
+
+                      <div className="flex gap-3">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 border-gray-200 hover:border-blue-300 hover:bg-blue-50"
+                          onClick={() => setShowTrackBusModal(true)}
+                        >
+                          <MapPin className="h-4 w-4 mr-2" />
+                          Track Live
+                        </Button>
+                        <Button
+                          size="sm"
+                          className={`flex-1 bg-blue-600 text-white hover:bg-blue-700 ${
+                            bus.availableSeats === 0 ? 'opacity-50 cursor-not-allowed' : ''
+                          }`}
+                          disabled={bus.availableSeats === 0}
+                          onClick={() => bus.availableSeats > 0 && setShowBookSeatModal(true)}
+                        >
+                          <Calendar className="h-4 w-4 mr-2" />
+                          {bus.availableSeats > 0 ? 'Book Seat' : 'Full'}
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            {/* Sidebar - Adjusted to 2 columns */}
+            <motion.div
+              className="lg:col-span-2 space-y-6"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.6 }}
             >
-              <MapPin className="h-4 w-4 mr-2" />
-              Track Bus
-            </Button>
-            <Button
-              onClick={() => setShowPaymentModal(true)}
-              variant="outline"
-              className="border-purple-200 hover:border-purple-500 hover:bg-purple-50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-            >
-              <CreditCard className="h-4 w-4 mr-2" />
-              Payments
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {quickStats.map((stat, index) => (
-          <Card key={index} className="bg-white/95 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] hover:-translate-y-1 relative overflow-hidden">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg">
-                  <stat.icon className="h-6 w-6 text-white" />
-                </div>
-                <div className="text-right">
-                  <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-                  <p className="text-sm text-gray-600">{stat.label}</p>
-                  <span className={`text-xs font-medium px-2 py-1 rounded-full ${
-                    stat.changeType === 'positive'
-                      ? 'text-green-700 bg-green-100 border border-green-200'
-                      : 'text-blue-700 bg-blue-100 border border-blue-200'
-                  }`}>
-                    {stat.change}
-                  </span>
-                </div>
-              </div>
-              <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-600" />
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-
-        {/* Available Buses */}
-        <Card className="xl:col-span-2 bg-white/95 backdrop-blur-sm border-0 shadow-xl">
-          <CardHeader className="bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 text-white">
-            <CardTitle className="flex items-center justify-between text-xl">
-              <div className="flex items-center gap-2">
-                <Bus className="h-6 w-6" />
-                Available Buses
-                <Badge className="bg-white/20 text-white border border-white/30">
-                  {availableBuses.length} Live
-                </Badge>
-              </div>
-              <Button variant="secondary" size="sm" className="bg-white/20 hover:bg-white/30 text-white border border-white/30">
-                View All Routes
-              </Button>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-6 space-y-4">
-            {availableBuses.map((bus, index) => (
-              <div key={bus.id} className="p-4 bg-white/95 backdrop-blur-sm border border-gray-200/50 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] hover:-translate-y-1 border-l-4 border-blue-500 relative overflow-hidden">
-
-                {/* Bus Header */}
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-full ${
-                      bus.status === 'on-time' ? 'bg-green-100' :
-                      bus.status === 'delayed' ? 'bg-red-100' : 'bg-yellow-100'
-                    }`}>
-                      <Bus className={`h-5 w-5 ${
-                        bus.status === 'on-time' ? 'text-green-600' :
-                        bus.status === 'delayed' ? 'text-red-600' : 'text-yellow-600'
-                      }`} />
+              {/* My Bookings */}
+              <Card className="bg-white border-gray-100 shadow-sm">
+                <CardHeader className="border-b border-gray-50 pb-4">
+                  <CardTitle className="flex items-center justify-between text-lg font-semibold">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-lg bg-green-50 border border-green-100">
+                        <Calendar className="h-4 w-4 text-green-600" />
+                      </div>
+                      <span className="text-gray-900">My Bookings</span>
                     </div>
-                    <div>
-                      <h4 className="font-bold text-lg text-gray-900">{bus.number}</h4>
-                      <p className="text-sm text-gray-600">{bus.route}</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <Badge variant={bus.status === 'on-time' ? 'default' : bus.status === 'delayed' ? 'destructive' : 'secondary'}>
-                      {bus.status === 'delayed' ? 'Delayed' : bus.status === 'boarding' ? 'Boarding' : 'On Time'}
-                    </Badge>
-                    <div className="text-sm text-gray-500 mt-1">{bus.speed} km/h</div>
-                  </div>
-                </div>
-
-                {/* Location & ETA */}
-                <div className="grid grid-cols-2 gap-4 text-sm mb-4">
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span className="text-gray-500 flex items-center gap-1">
-                        <MapPin className="h-4 w-4" />
-                        Current:
-                      </span>
-                      <span className="font-medium text-gray-900">{bus.currentLocation}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-500 flex items-center gap-1">
-                        <Navigation className="h-4 w-4" />
-                        Next Stop:
-                      </span>
-                      <span className="font-medium text-gray-900">{bus.nextStop}</span>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span className="text-gray-500 flex items-center gap-1">
-                        <Clock className="h-4 w-4" />
-                        ETA:
-                      </span>
-                      <span className="font-bold text-blue-600">{bus.eta}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-500 flex items-center gap-1">
-                        <Route className="h-4 w-4" />
-                        Distance:
-                      </span>
-                      <span className="font-medium text-blue-600">{bus.distanceLeft}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Occupancy */}
-                <div className="mb-4">
-                  <div className="flex justify-between text-sm mb-2">
-                    <span className="text-gray-500">Occupancy ({bus.occupancy}%)</span>
-                    <span className={`font-medium ${
-                      bus.availableSeats > 10 ? 'text-green-600' :
-                      bus.availableSeats > 5 ? 'text-yellow-600' : 'text-red-600'
-                    }`}>
-                      {bus.availableSeats} seats available
+                    <span className="bg-gray-50 text-gray-600 text-sm font-medium px-2 py-1 rounded-full border border-gray-100">
+                      {myBookings.length}
                     </span>
-                  </div>
-                  <Progress
-                    value={bus.occupancy}
-                    className="h-2"
-                  />
-                </div>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-4 space-y-3">
+                  {myBookings.map((booking) => (
+                    <div key={booking.id} className="border border-gray-100 rounded-lg p-3 hover:border-gray-200 transition-colors">
+                      <div className="flex justify-between items-start mb-3">
+                        <div>
+                          <h4 className="font-semibold text-gray-900 text-sm">{booking.route}</h4>
+                          <p className="text-xs text-gray-600">{booking.busNumber} • {booking.date}</p>
+                        </div>
+                        <Badge variant="default" className="bg-green-50 text-green-700 border-green-100 text-xs">
+                          {booking.status}
+                        </Badge>
+                      </div>
 
-                {/* Driver & Amenities */}
-                <div className="flex justify-between items-center mb-4">
-                  <div className="text-sm">
-                    <span className="text-gray-500">Driver: </span>
-                    <span className="font-medium text-gray-900">{bus.driver}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {bus.amenities.includes('wifi') && <Wifi className="h-4 w-4 text-blue-500" />}
-                    {bus.amenities.includes('ac') && <Zap className="h-4 w-4 text-green-500" />}
-                    {bus.amenities.includes('charging') && <Battery className="h-4 w-4 text-yellow-500" />}
-                  </div>
-                </div>
+                      <div className="grid grid-cols-2 gap-2 text-xs mb-3">
+                        <div className="flex justify-between">
+                          <span className="text-gray-500">Departure:</span>
+                          <span className="font-medium">{booking.departureTime}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-500">Seat:</span>
+                          <span className="font-medium">{booking.seat}</span>
+                        </div>
+                      </div>
 
-                {/* Action Buttons */}
-                <div className="flex gap-3">
-                  <Button
-                    variant="outline"
-                    className="flex-1 border-blue-200 hover:border-blue-500 hover:bg-blue-50"
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-semibold text-green-600">{booking.price}</span>
+                        <div className="flex gap-1">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-7 px-2 text-xs border-gray-200 hover:border-green-300 hover:bg-green-50"
+                            onClick={() => setShowTrackBusModal(true)}
+                          >
+                            <Navigation className="h-3 w-3 mr-1" />
+                            Track
+                          </Button>
+                          <Button
+                            size="sm"
+                            className="h-7 px-2 text-xs bg-blue-600 hover:bg-blue-700 text-white"
+                            onClick={() => {
+                              const ticketData = {
+                                booking: booking.id,
+                                route: booking.route,
+                                seat: booking.seat,
+                                date: booking.date,
+                                time: booking.departureTime
+                              };
+                              localStorage.setItem('downloadTicket', JSON.stringify(ticketData));
+                              alert('Ticket downloaded successfully!');
+                            }}
+                          >
+                            <Download className="h-3 w-3 mr-1" />
+                            Ticket
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+
+              {/* Recent Activity */}
+              <Card className="bg-white border-gray-100 shadow-sm">
+                <CardHeader className="border-b border-gray-50 pb-4">
+                  <CardTitle className="flex items-center gap-3 text-lg font-semibold">
+                    <div className="p-2 rounded-lg bg-gray-50 border border-gray-100">
+                      <Activity className="h-4 w-4 text-gray-600" />
+                    </div>
+                    <span className="text-gray-900">Recent Activity</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-4 space-y-3">
+                  {recentActivity.map((activity) => (
+                    <div key={activity.id} className="flex items-start gap-3 p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                      <div className={`p-1.5 rounded-lg ${
+                        activity.status === 'success' ? 'bg-green-50 border-green-100' :
+                        activity.status === 'info' ? 'bg-blue-50 border-blue-100' : 'bg-yellow-50 border-yellow-100'
+                      } border`}>
+                        <activity.icon className={`h-3 w-3 ${
+                          activity.status === 'success' ? 'text-green-600' :
+                          activity.status === 'info' ? 'text-blue-600' : 'text-yellow-600'
+                        }`} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900">{activity.message}</p>
+                        <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            </motion.div>
+          </div>
+        </div>
+      </div>
+
+      {/* Review Modal */}
+      <BusReviewModal
+        isVisible={showReviewModal}
+        onClose={() => setShowReviewModal(false)}
+        userName={userData?.name || 'Student'}
+        userType="student"
+      />
+
+      {/* Book Seat Modal */}
+      <AnimatePresence>
+        {showBookSeatModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto"
+            >
+              <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6 rounded-t-xl">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h3 className="text-xl font-bold">Book Your Seat</h3>
+                    <p className="text-blue-100 text-sm">Choose your preferred bus and seat</p>
+                  </div>
+                  <button
+                    onClick={() => setShowBookSeatModal(false)}
+                    className="text-white/80 hover:text-white transition-colors"
                   >
-                    <MapPin className="h-4 w-4 mr-2" />
-                    Track Live
+                    <X className="w-6 h-6" />
+                  </button>
+                </div>
+              </div>
+
+              <div className="p-6 space-y-6">
+                <div>
+                  <Label className="text-sm font-medium">Select Route</Label>
+                  <Select>
+                    <SelectTrigger className="mt-2">
+                      <SelectValue placeholder="Choose a route" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableBuses.map((bus) => (
+                        <SelectItem key={bus.id} value={bus.id}>
+                          {bus.route} - {bus.number} ({bus.availableSeats} seats)
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-sm font-medium">Departure Date</Label>
+                    <Input type="date" className="mt-2" />
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium">Time</Label>
+                    <Input type="time" className="mt-2" />
+                  </div>
+                </div>
+
+                <div>
+                  <Label className="text-sm font-medium">Seat Preference</Label>
+                  <Select>
+                    <SelectTrigger className="mt-2">
+                      <SelectValue placeholder="Any available seat" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="window">Window Seat</SelectItem>
+                      <SelectItem value="aisle">Aisle Seat</SelectItem>
+                      <SelectItem value="front">Front Section</SelectItem>
+                      <SelectItem value="middle">Middle Section</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex gap-3 pt-4">
+                  <Button variant="outline" onClick={() => setShowBookSeatModal(false)} className="flex-1">
+                    Cancel
                   </Button>
-                  <Button
-                    className={`flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 ${
-                      bus.availableSeats === 0 ? 'opacity-50 cursor-not-allowed' : ''
-                    }`}
-                    disabled={bus.availableSeats === 0}
+                  <Button className="flex-1 bg-blue-600 hover:bg-blue-700">
+                    Book Seat - ₦2,500
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Track Bus Modal */}
+      <AnimatePresence>
+        {showTrackBusModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+            >
+              <div className="bg-gradient-to-r from-green-600 to-emerald-600 text-white p-6 rounded-t-xl">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h3 className="text-xl font-bold">Live Bus Tracking</h3>
+                    <p className="text-green-100 text-sm">Real-time location and status</p>
+                  </div>
+                  <button
+                    onClick={() => setShowTrackBusModal(false)}
+                    className="text-white/80 hover:text-white transition-colors"
                   >
-                    <Calendar className="h-4 w-4 mr-2" />
-                    {bus.availableSeats > 0 ? 'Book Seat' : 'Full'}
+                    <X className="w-6 h-6" />
+                  </button>
+                </div>
+              </div>
+
+              <div className="p-6 space-y-4">
+                {availableBuses.map((bus) => (
+                  <div key={bus.id} className="border border-gray-200 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <div className={`p-2 rounded-lg ${
+                          bus.status === 'on-time' ? 'bg-green-50 border-green-200' :
+                          bus.status === 'delayed' ? 'bg-red-50 border-red-200' : 'bg-yellow-50 border-yellow-200'
+                        } border`}>
+                          <Bus className={`h-4 w-4 ${
+                            bus.status === 'on-time' ? 'text-green-600' :
+                            bus.status === 'delayed' ? 'text-red-600' : 'text-yellow-600'
+                          }`} />
+                        </div>
+                        <div>
+                          <h4 className="font-semibold">{bus.number}</h4>
+                          <p className="text-sm text-gray-600">{bus.route}</p>
+                        </div>
+                      </div>
+                      <Badge variant={bus.status === 'on-time' ? 'default' : bus.status === 'delayed' ? 'destructive' : 'secondary'}>
+                        {bus.status === 'delayed' ? 'Delayed' : bus.status === 'boarding' ? 'Boarding' : 'On Time'}
+                      </Badge>
+                    </div>
+
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-gray-500">Current Location:</span>
+                        <span className="font-medium">{bus.currentLocation}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-500">Next Stop:</span>
+                        <span className="font-medium">{bus.nextStop}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-500">ETA:</span>
+                        <span className="font-semibold text-green-600">{bus.eta}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-500">Speed:</span>
+                        <span className="font-medium">{bus.speed} km/h</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                <Button onClick={() => setShowTrackBusModal(false)} className="w-full mt-4">
+                  Close Tracking
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Payment Modal */}
+      <AnimatePresence>
+        {showPaymentModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto"
+            >
+              <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-6 rounded-t-xl">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h3 className="text-xl font-bold">Payment Methods</h3>
+                    <p className="text-purple-100 text-sm">Manage your payment options</p>
+                  </div>
+                  <button
+                    onClick={() => setShowPaymentModal(false)}
+                    className="text-white/80 hover:text-white transition-colors"
+                  >
+                    <X className="w-6 h-6" />
+                  </button>
+                </div>
+              </div>
+
+              <div className="p-6 space-y-6">
+                <div className="space-y-4">
+                  <h4 className="font-semibold text-gray-900">Saved Cards</h4>
+                  <div className="border border-gray-200 rounded-lg p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <CreditCard className="h-5 w-5 text-gray-400" />
+                        <div>
+                          <p className="font-medium">•••• •••• •••• 4242</p>
+                          <p className="text-sm text-gray-500">Expires 12/26</p>
+                        </div>
+                      </div>
+                      <Badge variant="outline">Default</Badge>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h4 className="font-semibold text-gray-900">Recent Transactions</h4>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm">Lagos Express - Seat A12</span>
+                      <span className="text-sm font-medium">₦5,500</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm">Campus Shuttle - Seat B8</span>
+                      <span className="text-sm font-medium">₦300</span>
+                    </div>
+                    <div className="flex justify-between items-center border-t pt-2">
+                      <span className="font-medium">Total This Month</span>
+                      <span className="font-semibold">₦5,800</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 pt-4">
+                  <Button variant="outline" onClick={() => setShowPaymentModal(false)} className="flex-1">
+                    Close
+                  </Button>
+                  <Button className="flex-1 bg-purple-600 hover:bg-purple-700">
+                    Add New Card
                   </Button>
                 </div>
-
-                {/* Live indicator */}
-                <div className="absolute top-3 right-3 flex items-center gap-1">
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-xs text-green-600 font-medium">LIVE</span>
-                </div>
               </div>
-            ))}
-          </CardContent>
-        </Card>
-
-        {/* My Bookings & Activity */}
-        <div className="space-y-6">
-
-          {/* My Bookings */}
-          <Card className="bg-white/95 backdrop-blur-sm border-0 shadow-xl">
-            <CardHeader className="bg-gradient-to-r from-green-600 to-emerald-600 text-white">
-              <CardTitle className="flex items-center gap-2 text-xl">
-                <Calendar className="h-6 w-6" />
-                My Bookings
-                <Badge className="bg-white/20 text-white border border-white/30 ml-auto">
-                  {myBookings.length} Active
-                </Badge>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-4 space-y-3">
-              {myBookings.map((booking, index) => (
-                <div key={booking.id} className="p-4 bg-white/95 backdrop-blur-sm border border-gray-200/50 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] hover:-translate-y-1 border-l-4 border-green-500 relative overflow-hidden">
-                  <div className="flex justify-between items-start mb-3">
-                    <div>
-                      <h4 className="font-bold text-lg text-gray-900">{booking.route}</h4>
-                      <p className="text-sm text-gray-600">{booking.busNumber} • {booking.date}</p>
-                    </div>
-                    <Badge variant="default" className="bg-green-100 text-green-700">
-                      {booking.status}
-                    </Badge>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2 text-sm mb-3">
-                    <div className="flex justify-between">
-                      <span className="text-gray-500">Departure:</span>
-                      <span className="font-medium">{booking.departureTime}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-500">Seat:</span>
-                      <span className="font-medium">{booking.seat}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-500">Boarding:</span>
-                      <span className="font-medium">{booking.boardingTime}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-500">Gate:</span>
-                      <span className="font-medium">{booking.gate}</span>
-                    </div>
-                  </div>
-
-                  <div className="flex justify-between items-center">
-                    <span className="text-lg font-bold text-green-600">{booking.price}</span>
-                    <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="border-green-200 hover:border-green-500 hover:bg-green-50"
-                        onClick={() => setShowTrackBusModal(true)}
-                      >
-                        <Navigation className="h-4 w-4 mr-1" />
-                        Track
-                      </Button>
-                      <Button
-                        size="sm"
-                        onClick={() => downloadTicketPDF(booking)}
-                        className="bg-blue-600 hover:bg-blue-700 text-white"
-                      >
-                        <Download className="h-4 w-4 mr-1" />
-                        Ticket
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-
-          {/* Recent Activity */}
-          <Card className="bg-white/95 backdrop-blur-sm border-0 shadow-xl">
-            <CardHeader className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
-              <CardTitle className="flex items-center gap-2 text-xl">
-                <Activity className="h-6 w-6" />
-                Recent Activity
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-4 space-y-3">
-              {recentActivity.map((activity, index) => (
-                <div key={activity.id} className="flex items-start gap-4 p-3 rounded-lg hover:bg-gray-50 transition-all">
-                  <div className={`p-2 rounded-full ${
-                    activity.status === 'success' ? 'bg-green-100' :
-                    activity.status === 'info' ? 'bg-blue-100' : 'bg-yellow-100'
-                  }`}>
-                    <activity.icon className={`h-4 w-4 ${
-                      activity.status === 'success' ? 'text-green-600' :
-                      activity.status === 'info' ? 'text-blue-600' : 'text-yellow-600'
-                    }`} />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">{activity.message}</p>
-                    <p className="text-xs text-gray-500 mt-1 flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
-                      {activity.time}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    </motion.div>
-    </div>
-
-    {/* Quick Book Modal */}
-    {showBookSeatModal && (
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
-          <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6 rounded-t-xl">
-            <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold flex items-center gap-2">
-                <Calendar className="h-6 w-6" />
-                Quick Book Seat
-              </h2>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowBookSeatModal(false)}
-                className="text-white hover:bg-white/20"
-              >
-                <X className="h-5 w-5" />
-              </Button>
-            </div>
-          </div>
-
-          <div className="p-6 space-y-6">
-            <div className="grid grid-cols-1 gap-4">
-              <div>
-                <Label htmlFor="route" className="text-sm font-medium text-gray-700">Select Route</Label>
-                <Select>
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Choose your destination" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="lagos">Lagos Express</SelectItem>
-                    <SelectItem value="campus">Campus Shuttle</SelectItem>
-                    <SelectItem value="airport">Airport Link</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label htmlFor="date" className="text-sm font-medium text-gray-700">Travel Date</Label>
-                <Input type="date" className="mt-1" />
-              </div>
-
-              <div>
-                <Label htmlFor="time" className="text-sm font-medium text-gray-700">Departure Time</Label>
-                <Select>
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Select departure time" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="6:00">6:00 AM</SelectItem>
-                    <SelectItem value="8:30">8:30 AM</SelectItem>
-                    <SelectItem value="2:15">2:15 PM</SelectItem>
-                    <SelectItem value="5:45">5:45 PM</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label htmlFor="passengers" className="text-sm font-medium text-gray-700">Number of Passengers</Label>
-                <Select>
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Select passengers" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="1">1 Passenger</SelectItem>
-                    <SelectItem value="2">2 Passengers</SelectItem>
-                    <SelectItem value="3">3 Passengers</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="flex gap-3">
-              <Button
-                variant="outline"
-                className="flex-1"
-                onClick={() => setShowBookSeatModal(false)}
-              >
-                Cancel
-              </Button>
-              <Button className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700">
-                <Ticket className="h-4 w-4 mr-2" />
-                Book Now
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-    )}
-
-    {/* Track Bus Modal */}
-    {showTrackBusModal && (
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-          <div className="sticky top-0 bg-gradient-to-r from-green-600 to-emerald-600 text-white p-6 rounded-t-xl">
-            <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold flex items-center gap-2">
-                <MapPin className="h-6 w-6" />
-                Real-Time Bus Tracking
-              </h2>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowTrackBusModal(false)}
-                className="text-white hover:bg-white/20"
-              >
-                <X className="h-5 w-5" />
-              </Button>
-            </div>
-          </div>
-
-          <div className="p-6">
-            <RealTimeTracker
-              userInfo={{
-                userId: 'UG20/COMS/1284',
-                routeId: 'route-1',
-                routeName: 'Campus to City Center',
-                busId: 'BUS-001',
-                busPlateNumber: 'ADUS-001',
-                driverName: 'Mohammed Ali',
-                pickupPoint: 'ADU Campus Gate',
-                dropoffPoint: 'Kano City Center',
-                status: 'waiting'
-              }}
-              allowedRoutes={['route-1']}
-            />
-          </div>
-        </div>
-      </div>
-    )}
-
-    {/* Payment Modal */}
-    {showPaymentModal && (
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
-          <div className="sticky top-0 bg-gradient-to-r from-purple-600 to-violet-600 text-white p-6 rounded-t-xl">
-            <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold flex items-center gap-2">
-                <CreditCard className="h-6 w-6" />
-                Payment Center
-              </h2>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowPaymentModal(false)}
-                className="text-white hover:bg-white/20"
-              >
-                <X className="h-5 w-5" />
-              </Button>
-            </div>
-          </div>
-
-          <div className="p-6 space-y-6">
-            <div className="bg-gray-50 rounded-lg p-4">
-              <h3 className="font-bold text-gray-900 mb-3">Payment Summary</h3>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Total Spent:</span>
-                  <span className="font-bold text-green-600">₦45,600</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">This Month:</span>
-                  <span className="font-medium">₦5,800</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Pending:</span>
-                  <span className="font-medium text-orange-600">₦5,500</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <Button className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700">
-                <CreditCard className="h-4 w-4 mr-2" />
-                Add Payment Method
-              </Button>
-              <Button variant="outline" className="w-full">
-                <DollarSign className="h-4 w-4 mr-2" />
-                View Payment History
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-    )}
-
-    {/* Bus Review Modal */}
-    <BusReviewModal
-      isVisible={showReviewModal}
-      onClose={() => setShowReviewModal(false)}
-      userName={userData?.name || 'Student'}
-      userType="student"
-    />
-  </>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
