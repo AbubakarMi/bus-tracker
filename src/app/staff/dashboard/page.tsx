@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 import { DashboardHeader } from '@/components/dashboard-header';
+import { SidebarNav } from '@/components/sidebar-nav';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -94,6 +96,7 @@ interface TravelData {
 }
 
 export default function StaffDashboard() {
+  const router = useRouter();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [userData, setUserData] = useState(null);
   const [showReviewModal, setShowReviewModal] = useState(false);
@@ -292,11 +295,13 @@ export default function StaffDashboard() {
   }
 
   return (
-    <>
-      <DashboardHeader user={userData} title="Staff Dashboard" />
+    <div className="flex h-screen bg-slate-50">
+      <SidebarNav user={userData} />
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <DashboardHeader user={userData} title="Staff Dashboard" />
 
       {/* World-Class Premium Staff Dashboard */}
-      <div className="min-h-screen bg-slate-50/30">
+      <div className="flex-1 overflow-y-auto bg-slate-50/30">
         {/* Subtle Enterprise Background */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-50/40 via-transparent to-purple-50/20" />
 
@@ -366,14 +371,14 @@ export default function StaffDashboard() {
               {/* Premium Action Buttons */}
               <div className="flex flex-wrap gap-3">
                 <Button
-                  onClick={() => setShowTravelRequestModal(true)}
+                  onClick={() => router.push('/staff/book')}
                   className="bg-indigo-600 hover:bg-indigo-700 text-white border-0 px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow-md"
                 >
                   <Calendar className="h-4 w-4 mr-2" />
                   Request Travel
                 </Button>
                 <Button
-                  onClick={() => setShowTrackBusModal(true)}
+                  onClick={() => router.push('/staff/tracking')}
                   variant="outline"
                   className="border-slate-200 hover:border-slate-300 hover:bg-slate-50 px-6 py-3 rounded-lg font-medium transition-all duration-200"
                 >
@@ -381,7 +386,7 @@ export default function StaffDashboard() {
                   Track Bus
                 </Button>
                 <Button
-                  onClick={() => setShowReportsModal(true)}
+                  onClick={() => router.push('/staff/reports')}
                   variant="outline"
                   className="border-slate-200 hover:border-slate-300 hover:bg-slate-50 px-6 py-3 rounded-lg font-medium transition-all duration-200"
                 >
@@ -389,7 +394,7 @@ export default function StaffDashboard() {
                   Reports
                 </Button>
                 <Button
-                  onClick={() => setShowExpenseModal(true)}
+                  onClick={() => router.push('/staff/settings')}
                   variant="outline"
                   className="border-slate-200 hover:border-slate-300 hover:bg-slate-50 px-6 py-3 rounded-lg font-medium transition-all duration-200"
                 >
@@ -555,7 +560,7 @@ export default function StaffDashboard() {
                           variant="outline"
                           size="sm"
                           className="flex-1 border-slate-200 hover:border-indigo-300 hover:bg-indigo-50"
-                          onClick={() => setShowTrackBusModal(true)}
+                          onClick={() => router.push('/staff/tracking')}
                         >
                           <MapPin className="h-4 w-4 mr-2" />
                           Track Live
@@ -566,7 +571,7 @@ export default function StaffDashboard() {
                             bus.availableSeats === 0 ? 'opacity-50 cursor-not-allowed' : ''
                           }`}
                           disabled={bus.availableSeats === 0}
-                          onClick={() => bus.availableSeats > 0 && setShowTravelRequestModal(true)}
+                          onClick={() => bus.availableSeats > 0 && router.push('/staff/book')}
                         >
                           <Calendar className="h-4 w-4 mr-2" />
                           {bus.availableSeats > 0 ? 'Request Travel' : 'Full'}
@@ -632,7 +637,7 @@ export default function StaffDashboard() {
                             size="sm"
                             variant="outline"
                             className="h-7 px-2 text-xs border-slate-200 hover:border-violet-300 hover:bg-violet-50"
-                            onClick={() => setShowTrackBusModal(true)}
+                            onClick={() => router.push('/staff/tracking')}
                           >
                             <Navigation className="h-3 w-3 mr-1" />
                             Track
@@ -1107,6 +1112,7 @@ export default function StaffDashboard() {
           </motion.div>
         )}
       </AnimatePresence>
-    </>
+      </div>
+    </div>
   );
 }

@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 import { DashboardHeader } from '@/components/dashboard-header';
+import { SidebarNav } from '@/components/sidebar-nav';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -84,6 +86,7 @@ interface BookingData {
 }
 
 export default function StudentDashboard() {
+  const router = useRouter();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [userData, setUserData] = useState(null);
   const [showReviewModal, setShowReviewModal] = useState(false);
@@ -279,11 +282,13 @@ export default function StudentDashboard() {
   }
 
   return (
-    <>
-      <DashboardHeader user={userData} title="Student Dashboard" />
+    <div className="flex h-screen bg-gray-50">
+      <SidebarNav user={userData} />
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <DashboardHeader user={userData} title="Student Dashboard" />
 
       {/* World-Class Premium Dashboard */}
-      <div className="min-h-screen bg-gray-50/50">
+      <div className="flex-1 overflow-y-auto bg-gray-50/50">
         {/* Subtle Premium Background */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-50/50 via-transparent to-indigo-50/30" />
 
@@ -342,14 +347,14 @@ export default function StudentDashboard() {
               {/* Premium Action Buttons */}
               <div className="flex flex-wrap gap-3">
                 <Button
-                  onClick={() => setShowBookSeatModal(true)}
+                  onClick={() => router.push('/student/book')}
                   className="bg-blue-600 hover:bg-blue-700 text-white border-0 px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow-md"
                 >
                   <Calendar className="h-4 w-4 mr-2" />
                   Book Seat
                 </Button>
                 <Button
-                  onClick={() => setShowTrackBusModal(true)}
+                  onClick={() => router.push('/student/tracking')}
                   variant="outline"
                   className="border-gray-200 hover:border-gray-300 hover:bg-gray-50 px-6 py-3 rounded-lg font-medium transition-all duration-200"
                 >
@@ -357,7 +362,7 @@ export default function StudentDashboard() {
                   Track
                 </Button>
                 <Button
-                  onClick={() => setShowPaymentModal(true)}
+                  onClick={() => router.push('/student/settings')}
                   variant="outline"
                   className="border-gray-200 hover:border-gray-300 hover:bg-gray-50 px-6 py-3 rounded-lg font-medium transition-all duration-200"
                 >
@@ -523,7 +528,7 @@ export default function StudentDashboard() {
                           variant="outline"
                           size="sm"
                           className="flex-1 border-gray-200 hover:border-blue-300 hover:bg-blue-50"
-                          onClick={() => setShowTrackBusModal(true)}
+                          onClick={() => router.push('/student/tracking')}
                         >
                           <MapPin className="h-4 w-4 mr-2" />
                           Track Live
@@ -534,7 +539,7 @@ export default function StudentDashboard() {
                             bus.availableSeats === 0 ? 'opacity-50 cursor-not-allowed' : ''
                           }`}
                           disabled={bus.availableSeats === 0}
-                          onClick={() => bus.availableSeats > 0 && setShowBookSeatModal(true)}
+                          onClick={() => bus.availableSeats > 0 && router.push('/student/book')}
                         >
                           <Calendar className="h-4 w-4 mr-2" />
                           {bus.availableSeats > 0 ? 'Book Seat' : 'Full'}
@@ -599,7 +604,7 @@ export default function StudentDashboard() {
                             size="sm"
                             variant="outline"
                             className="h-7 px-2 text-xs border-gray-200 hover:border-green-300 hover:bg-green-50"
-                            onClick={() => setShowTrackBusModal(true)}
+                            onClick={() => router.push('/student/tracking')}
                           >
                             <Navigation className="h-3 w-3 mr-1" />
                             Track
@@ -921,6 +926,7 @@ export default function StudentDashboard() {
           </motion.div>
         )}
       </AnimatePresence>
-    </>
+      </div>
+    </div>
   );
 }
