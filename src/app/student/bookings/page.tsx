@@ -340,6 +340,7 @@ export default function StudentBookingsPage() {
         isOpen={isTicketModalOpen}
         onClose={handleCloseTicketModal}
         passengerName="Student User"
+        userType="Student"
       />
     </div>
   );

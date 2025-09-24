@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { TicketModal } from '@/components/ticket-modal';
 import {
   Bus,
   Calendar,
@@ -36,6 +37,10 @@ interface Booking {
   price: string;
   bookedDate: string;
   approvedBy?: string;
+  // Adding fields for ticket compatibility
+  pickupPoint?: string;
+  dropoffPoint?: string;
+  paymentStatus?: 'paid' | 'pending' | 'failed';
 }
 
 export default function StaffBookingsPage() {
@@ -43,6 +48,8 @@ export default function StaffBookingsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState('all');
+  const [selectedTicket, setSelectedTicket] = useState<Booking | null>(null);
+  const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
 
   useEffect(() => {
     // Simulate booking data
@@ -60,7 +67,10 @@ export default function StaffBookingsPage() {
         status: 'confirmed',
         price: '₦8,500',
         bookedDate: '2024-01-15',
-        approvedBy: 'Dr. Adebayo Samuel'
+        approvedBy: 'Dr. Adebayo Samuel',
+        pickupPoint: 'ADUSTECH Campus',
+        dropoffPoint: 'Lagos Conference Center',
+        paymentStatus: 'paid'
       },
       {
         id: 'TRV-002',
@@ -75,7 +85,10 @@ export default function StaffBookingsPage() {
         status: 'confirmed',
         price: '₦12,000',
         bookedDate: '2024-01-18',
-        approvedBy: 'Prof. Fatima Yusuf'
+        approvedBy: 'Prof. Fatima Yusuf',
+        pickupPoint: 'ADUSTECH Campus',
+        dropoffPoint: 'Kano Airport',
+        paymentStatus: 'paid'
       },
       {
         id: 'TRV-003',
@@ -90,7 +103,10 @@ export default function StaffBookingsPage() {
         status: 'completed',
         price: '₦300',
         bookedDate: '2024-01-16',
-        approvedBy: 'Dr. Ahmed Bello'
+        approvedBy: 'Dr. Ahmed Bello',
+        pickupPoint: 'ADUSTECH Campus',
+        dropoffPoint: 'Student Hostel',
+        paymentStatus: 'paid'
       },
       {
         id: 'TRV-004',
@@ -104,7 +120,10 @@ export default function StaffBookingsPage() {
         gate: 'Gate 3',
         status: 'pending',
         price: '₦4,500',
-        bookedDate: '2024-01-19'
+        bookedDate: '2024-01-19',
+        pickupPoint: 'ADUSTECH Campus',
+        dropoffPoint: 'City Center',
+        paymentStatus: 'pending'
       },
       {
         id: 'TRV-005',
@@ -118,7 +137,10 @@ export default function StaffBookingsPage() {
         gate: 'Gate 2',
         status: 'cancelled',
         price: '₦6,800',
-        bookedDate: '2024-01-08'
+        bookedDate: '2024-01-08',
+        pickupPoint: 'ADUSTECH Campus',
+        dropoffPoint: 'Lagos Express Terminal',
+        paymentStatus: 'paid'
       }
     ];
 
@@ -230,6 +252,16 @@ export default function StaffBookingsPage() {
     confirmed: bookings.filter(b => b.status === 'confirmed').length,
     pending: bookings.filter(b => b.status === 'pending').length,
     completed: bookings.filter(b => b.status === 'completed').length
+  };
+
+  const handleViewTicket = (booking: Booking) => {
+    setSelectedTicket(booking);
+    setIsTicketModalOpen(true);
+  };
+
+  const handleCloseTicketModal = () => {
+    setIsTicketModalOpen(false);
+    setSelectedTicket(null);
   };
 
   return (
@@ -426,15 +458,20 @@ export default function StaffBookingsPage() {
                 <Button
                   size="sm"
                   variant="outline"
-                  onClick={() => downloadBookingReceipt(booking)}
+                  onClick={() => handleViewTicket(booking)}
                   className="border-blue-200 hover:border-blue-500 hover:bg-blue-50"
                 >
                   <Download className="h-4 w-4 mr-1" />
-                  Receipt
+                  Ticket
                 </Button>
-                <Button size="sm" variant="outline" className="border-gray-200 hover:border-gray-500 hover:bg-gray-50">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleViewTicket(booking)}
+                  className="border-gray-200 hover:border-gray-500 hover:bg-gray-50"
+                >
                   <Eye className="h-4 w-4 mr-1" />
-                  Details
+                  View Ticket
                 </Button>
               </div>
             </CardContent>
@@ -451,6 +488,15 @@ export default function StaffBookingsPage() {
           </CardContent>
         </Card>
       )}
+
+      {/* Ticket Modal */}
+      <TicketModal
+        booking={selectedTicket}
+        isOpen={isTicketModalOpen}
+        onClose={handleCloseTicketModal}
+        passengerName="Staff User"
+        userType="Staff"
+      />
     </div>
   );
 }

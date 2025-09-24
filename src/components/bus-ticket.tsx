@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { QrCode, MapPin, Clock, Calendar, User, Ticket } from 'lucide-react';
+import { QrCode } from 'lucide-react';
 
 interface Booking {
   id: string;
@@ -12,129 +12,112 @@ interface Booking {
   seat: string;
   status: 'confirmed' | 'pending' | 'cancelled' | 'completed';
   price: string;
-  pickupPoint: string;
-  dropoffPoint: string;
-  paymentStatus: 'paid' | 'pending' | 'failed';
+  pickupPoint?: string;
+  dropoffPoint?: string;
+  paymentStatus?: 'paid' | 'pending' | 'failed';
+  // Staff booking additional fields
+  purpose?: string;
+  boardingTime?: string;
+  gate?: string;
+  bookedDate?: string;
+  approvedBy?: string;
 }
 
 interface BusTicketProps {
   booking: Booking;
   passengerName?: string;
+  userType?: string;
+  gate?: string;
+  boardingTime?: string;
 }
 
 export const BusTicket: React.FC<BusTicketProps> = ({
   booking,
-  passengerName = "Student User"
+  passengerName = "Student User",
+  userType = "Student",
+  gate,
+  boardingTime
 }) => {
+  const displayGate = gate || booking.gate || "Gate 1";
+  const displayBoardingTime = boardingTime || booking.boardingTime || "15 mins before";
   return (
-    <div className="bg-white w-[400px] h-[250px] relative overflow-hidden shadow-2xl border border-gray-200 rounded-xl">
-      {/* Header Background */}
-      <div className="absolute top-0 left-0 w-full h-20 bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 opacity-90"></div>
-
-      {/* Header Content */}
-      <div className="relative z-10 p-4">
-        <div className="flex justify-between items-start mb-3">
-          <div>
-            <h1 className="text-white font-bold text-lg">ADUSTECH</h1>
-            <p className="text-blue-100 text-xs">Bus Transport Ticket</p>
-          </div>
-          <div className="text-right">
-            <p className="text-white text-xs">Booking ID</p>
-            <p className="text-white font-bold text-sm">{booking.id}</p>
-          </div>
+    <div
+      className="bg-white relative border-2 border-gray-300 print:border-gray-400"
+      style={{
+        width: '320px',
+        height: '200px',
+        fontSize: '11px',
+        fontFamily: 'Arial, sans-serif'
+      }}
+    >
+      {/* Header */}
+      <div
+        className="text-white text-center py-2"
+        style={{
+          background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
+          height: '40px'
+        }}
+      >
+        <div className="font-bold text-sm">DIGITAL BUS TICKET</div>
+        <div className="text-xs">
+          {booking.status === 'confirmed' ? 'CONFIRMED' : booking.status.toUpperCase()}
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="px-4 py-2 space-y-3">
-        {/* Passenger Info */}
-        <div className="flex justify-between items-center border-b border-gray-100 pb-2">
-          <div className="flex items-center space-x-2">
-            <User className="h-4 w-4 text-gray-500" />
-            <span className="text-sm font-medium text-gray-900">{passengerName}</span>
+      <div className="p-3 space-y-2">
+        {/* User Info */}
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <div className="text-gray-600">User Type:</div>
+            <div className="font-semibold">{userType}</div>
           </div>
-          <div className="text-right">
-            <p className="text-xs text-gray-500">Seat</p>
-            <p className="text-sm font-bold text-gray-900">{booking.seat}</p>
+          <div>
+            <div className="text-gray-600">Route:</div>
+            <div className="font-semibold text-xs">{booking.route}</div>
           </div>
         </div>
 
         {/* Trip Details */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <div className="flex items-center space-x-2">
-              <Calendar className="h-3 w-3 text-gray-400" />
-              <div>
-                <p className="text-xs text-gray-500">Date</p>
-                <p className="text-sm font-medium text-gray-900">{booking.date}</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Clock className="h-3 w-3 text-gray-400" />
-              <div>
-                <p className="text-xs text-gray-500">Departure</p>
-                <p className="text-sm font-medium text-gray-900">{booking.departureTime}</p>
-              </div>
-            </div>
+        <div className="grid grid-cols-3 gap-3">
+          <div>
+            <div className="text-gray-600">Bus ID:</div>
+            <div className="font-semibold">{booking.busNumber}</div>
           </div>
-
-          <div className="space-y-2">
-            <div>
-              <p className="text-xs text-gray-500">Bus</p>
-              <p className="text-sm font-bold text-gray-900">{booking.busNumber}</p>
-            </div>
-            <div>
-              <p className="text-xs text-gray-500">Fare</p>
-              <p className="text-sm font-bold text-green-600">{booking.price}</p>
-            </div>
+          <div>
+            <div className="text-gray-600">Date:</div>
+            <div className="font-semibold">{booking.date}</div>
+          </div>
+          <div>
+            <div className="text-gray-600">Departure:</div>
+            <div className="font-semibold">{booking.departureTime}</div>
           </div>
         </div>
 
-        {/* Route Info */}
-        <div className="flex items-center space-x-2 bg-gray-50 rounded-lg p-2">
-          <MapPin className="h-3 w-3 text-gray-400 flex-shrink-0" />
-          <div className="flex-1 min-w-0">
-            <p className="text-xs text-gray-500 truncate">{booking.pickupPoint}</p>
-            <div className="flex items-center space-x-1">
-              <div className="h-px bg-gray-300 flex-1"></div>
-              <span className="text-xs text-gray-400">to</span>
-              <div className="h-px bg-gray-300 flex-1"></div>
-            </div>
-            <p className="text-xs text-gray-500 truncate">{booking.dropoffPoint}</p>
+        {/* Bottom Row */}
+        <div className="grid grid-cols-4 gap-2">
+          <div>
+            <div className="text-gray-600">Seat:</div>
+            <div className="font-semibold">{booking.seat}</div>
+          </div>
+          <div>
+            <div className="text-gray-600">Gate:</div>
+            <div className="font-semibold">{displayGate}</div>
+          </div>
+          <div>
+            <div className="text-gray-600">Boarding:</div>
+            <div className="font-semibold text-xs">{displayBoardingTime}</div>
+          </div>
+          <div>
+            <div className="text-gray-600">Price:</div>
+            <div className="font-semibold text-blue-600">{booking.price}</div>
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="flex justify-between items-center pt-2 border-t border-gray-100">
-          <div className="flex items-center space-x-1">
-            <Ticket className="h-3 w-3 text-blue-500" />
-            <span className="text-xs text-gray-600">Valid Ticket</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <QrCode className="h-6 w-6 text-gray-400" />
-            <div className="text-right">
-              <p className="text-xs text-gray-400">Scan to verify</p>
-            </div>
-          </div>
+        {/* QR Code */}
+        <div className="absolute bottom-2 right-3">
+          <QrCode className="h-12 w-12 text-gray-800" />
         </div>
       </div>
-
-      {/* Status Badge */}
-      <div className="absolute top-4 right-4">
-        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-          booking.status === 'confirmed' ? 'bg-green-100 text-green-800' :
-          booking.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-          booking.status === 'completed' ? 'bg-blue-100 text-blue-800' :
-          'bg-red-100 text-red-800'
-        }`}>
-          {booking.status.toUpperCase()}
-        </span>
-      </div>
-
-      {/* Decorative Elements */}
-      <div className="absolute bottom-0 right-0 w-16 h-16 bg-gradient-to-tl from-blue-100 to-transparent rounded-tl-full opacity-50"></div>
-      <div className="absolute top-1/2 left-0 w-3 h-3 bg-white rounded-full transform -translate-x-1/2"></div>
-      <div className="absolute top-1/2 right-0 w-3 h-3 bg-white rounded-full transform translate-x-1/2"></div>
     </div>
   );
 };

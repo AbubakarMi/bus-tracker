@@ -31,13 +31,19 @@ interface TicketModalProps {
   isOpen: boolean;
   onClose: () => void;
   passengerName?: string;
+  userType?: string;
+  gate?: string;
+  boardingTime?: string;
 }
 
 export const TicketModal: React.FC<TicketModalProps> = ({
   booking,
   isOpen,
   onClose,
-  passengerName = "Student User"
+  passengerName = "Student User",
+  userType = "Student",
+  gate = "Gate 1",
+  boardingTime = "15 mins before"
 }) => {
   const ticketRef = useRef<HTMLDivElement>(null);
 
@@ -118,14 +124,31 @@ Phone: +234-800-ADUSTECH
         <head>
           <title>Bus Ticket - ${booking?.id}</title>
           <style>
-            body { margin: 0; padding: 20px; font-family: system-ui, -apple-system, sans-serif; }
-            .ticket-container { display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body {
+              font-family: Arial, sans-serif;
+              padding: 10mm;
+              background: white;
+            }
+            .ticket-container {
+              display: flex;
+              justify-content: flex-start;
+              align-items: flex-start;
+            }
             @media print {
-              .ticket-container { min-height: auto; }
-              body { padding: 0; }
+              body {
+                padding: 0;
+                margin: 0;
+              }
+              .ticket-container {
+                padding: 5mm;
+              }
+              @page {
+                size: 320px 200px;
+                margin: 0;
+              }
             }
           </style>
-          <script src="https://cdn.tailwindcss.com"></script>
         </head>
         <body>
           <div class="ticket-container">
@@ -166,7 +189,13 @@ Phone: +234-800-ADUSTECH
           {/* Ticket Preview */}
           <div className="flex justify-center">
             <div ref={ticketRef}>
-              <BusTicket booking={booking} passengerName={passengerName} />
+              <BusTicket
+                booking={booking}
+                passengerName={passengerName}
+                userType={userType}
+                gate={gate}
+                boardingTime={boardingTime}
+              />
             </div>
           </div>
 
