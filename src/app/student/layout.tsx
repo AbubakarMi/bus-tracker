@@ -84,10 +84,10 @@ export default function StudentLayout({
       <div className="relative z-10 flex h-screen">
         {/* Professional Sidebar */}
         <div className={cn(
-          "fixed inset-y-0 left-0 z-50 w-64 xs:w-72 sm:w-80 md:w-72 lg:w-80 xl:w-72 transform transition-all duration-300 ease-in-out lg:translate-x-0 lg:relative lg:z-auto",
+          "fixed inset-y-0 left-0 z-50 w-64 xs:w-72 sm:w-80 md:w-72 lg:w-80 xl:w-72 transform transition-all duration-300 ease-in-out lg:translate-x-0 lg:relative lg:z-10",
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}>
-          <div className="h-full bg-white/95 backdrop-blur-sm border-r border-blue-200/50 shadow-xl shadow-blue-500/5 overflow-hidden">
+          <div className="h-full bg-white/95 backdrop-blur-sm border-r border-blue-200/50 shadow-xl shadow-blue-500/5 overflow-hidden pointer-events-auto">
 
             {/* Sidebar Header */}
             <div className="flex items-center justify-between h-14 sm:h-16 px-3 xs:px-4 sm:px-6 border-b border-blue-200/50">
@@ -133,7 +133,7 @@ export default function StudentLayout({
                       <Link
                         href={item.href}
                         className={cn(
-                          "group flex items-center px-2 py-2 xs:px-2 xs:py-2 sm:px-3 sm:py-3 text-xs xs:text-sm font-medium rounded-lg xs:rounded-xl transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg",
+                          "group flex items-center px-2 py-2 xs:px-2 xs:py-2 sm:px-3 sm:py-3 text-xs xs:text-sm font-medium rounded-lg xs:rounded-xl transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg cursor-pointer",
                           isActive
                             ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/25"
                             : "text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:text-blue-700 hover:shadow-md"
