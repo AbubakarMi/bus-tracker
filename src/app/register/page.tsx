@@ -212,7 +212,7 @@ export default function RegisterPage() {
       console.error('Registration error:', error);
       toast({
         title: "Registration Failed",
-        description: error.message || "This user might already be registered. Please try logging in instead.",
+        description: error.message || "User already exists. Try logging in.",
         variant: "destructive"
       });
     } finally {

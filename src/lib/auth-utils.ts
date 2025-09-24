@@ -205,6 +205,82 @@ export function isValidStaffId(staffId: string): boolean {
   return STAFF_ID_PATTERN.test(staffId);
 }
 
+// Helper function to check for existing users by email or ID with enhanced validation
+async function checkForDuplicateUser(identifier: string, email: string, expectedRole: 'student' | 'staff'): Promise<{ exists: boolean; message: string }> {
+  if (!db) {
+    return { exists: false, message: '' };
+  }
+
+  try {
+    // Check by ID/registration number
+    const userDocById = await getDoc(doc(db, 'users', identifier));
+    if (userDocById.exists()) {
+      const existingUser = userDocById.data() as UserData;
+
+      if (existingUser.role === expectedRole) {
+        // Same role, same ID - duplicate account
+        return {
+          exists: true,
+          message: `${identifier} already exists. Please login instead.`
+        };
+      } else {
+        // Different role, same ID - prevent cross-role usage
+        const existingRole = existingUser.role === 'student' ? 'student' : 'staff';
+        return {
+          exists: true,
+          message: `${identifier} is registered as ${existingRole}. Cannot reuse ID.`
+        };
+      }
+    }
+
+    // Check by email across all users
+    const usersRef = collection(db, 'users');
+    const emailQuery = query(usersRef, where('email', '==', email.toLowerCase()));
+    const emailSnapshot = await getDocs(emailQuery);
+
+    if (!emailSnapshot.empty) {
+      const existingUser = emailSnapshot.docs[0].data() as UserData;
+      const userType = existingUser.role === 'student' ? 'student' : 'staff member';
+      const userIdentifier = existingUser.regNumber || existingUser.staffId || existingUser.id;
+
+      if (existingUser.role === expectedRole) {
+        return {
+          exists: true,
+          message: `Email ${email} already exists. Try logging in.`
+        };
+      } else {
+        return {
+          exists: true,
+          message: `Email used by ${userType}. Use different email.`
+        };
+      }
+    }
+
+    // Additional check: Look for similar identifiers that might be confused
+    // This helps prevent registration number/staff ID conflicts
+    const usersCollection = collection(db, 'users');
+    const allUsersSnapshot = await getDocs(usersCollection);
+
+    for (const userDoc of allUsersSnapshot.docs) {
+      const userData = userDoc.data() as UserData;
+      const existingId = userData.regNumber || userData.staffId || userData.id;
+
+      // Check if identifier is very similar (case-insensitive)
+      if (existingId && existingId.toLowerCase() === identifier.toLowerCase() && existingId !== identifier) {
+        return {
+          exists: true,
+          message: `Similar ID "${existingId}" exists. Check your ${expectedRole === 'student' ? 'reg number' : 'staff ID'}.`
+        };
+      }
+    }
+
+    return { exists: false, message: '' };
+  } catch (error) {
+    console.error('Error checking for duplicate user:', error);
+    return { exists: false, message: '' };
+  }
+}
+
 // Registration functions
 export async function registerStudent(regNo: string, password: string, name: string, course?: string, email?: string): Promise<UserData | null> {
   console.log('Registering student:', { regNo, name, course, dbStatus: !!db });
@@ -214,20 +290,28 @@ export async function registerStudent(regNo: string, password: string, name: str
   }
 
   if (!password || password.length < 6) {
-    throw new Error('Password must be at least 6 characters long');
+    throw new Error('Password too short (min 6 chars)');
   }
 
   if (!name || name.trim().length < 2) {
-    throw new Error('Name must be at least 2 characters long');
+    throw new Error('Name too short (min 2 chars)');
   }
 
   if (!db) {
-    throw new Error('Database connection not available. Please check your internet connection.');
+    throw new Error('No internet connection');
   }
 
   const parsedRegNo = parseStudentRegNo(regNo);
   if (!parsedRegNo) {
-    throw new Error('Unable to parse registration number');
+    throw new Error('Invalid reg number format');
+  }
+
+  const studentEmail = email || `${name.toLowerCase().replace(/\s+/g, '.')}@student.adustech.edu.ng`;
+
+  // Check for duplicate users (by ID and email)
+  const duplicateCheck = await checkForDuplicateUser(regNo, studentEmail, 'student');
+  if (duplicateCheck.exists) {
+    throw new Error(duplicateCheck.message);
   }
 
   const student: UserData = {
@@ -237,16 +321,11 @@ export async function registerStudent(regNo: string, password: string, name: str
     name: name,
     course: course || parsedRegNo.course,
     admissionYear: `20${parsedRegNo.year}`,
-    email: email || `${name.toLowerCase().replace(/\s+/g, '.')}@student.adustech.edu.ng`,
+    email: studentEmail,
     password: password
   };
 
   try {
-    // Check if user already exists
-    const userDoc = await getDoc(doc(db, 'users', regNo));
-    if (userDoc.exists()) {
-      throw new Error('A student with this registration number is already registered');
-    }
 
     // Save to Firestore
     await setDoc(doc(db, 'users', regNo), student);
@@ -257,7 +336,7 @@ export async function registerStudent(regNo: string, password: string, name: str
     if (error.message) {
       throw error; // Re-throw with original message
     }
-    throw new Error('Failed to register student. Please try again.');
+    throw new Error('Registration failed. Try again.');
   }
 }
 
@@ -269,20 +348,28 @@ export async function registerStaff(staffId: string, password: string, name: str
   }
 
   if (!password || password.length < 6) {
-    throw new Error('Password must be at least 6 characters long');
+    throw new Error('Password too short (min 6 chars)');
   }
 
   if (!name || name.trim().length < 2) {
-    throw new Error('Name must be at least 2 characters long');
+    throw new Error('Name too short (min 2 chars)');
   }
 
   if (!db) {
-    throw new Error('Database connection not available. Please check your internet connection.');
+    throw new Error('No internet connection');
   }
 
   const parsedStaffId = parseStaffId(staffId);
   if (!parsedStaffId) {
-    throw new Error('Unable to parse staff ID');
+    throw new Error('Invalid staff ID format');
+  }
+
+  const staffEmail = email || `${name.toLowerCase().replace(/\s+/g, '.')}@adustech.edu.ng`;
+
+  // Check for duplicate users (by ID and email)
+  const duplicateCheck = await checkForDuplicateUser(staffId, staffEmail, 'staff');
+  if (duplicateCheck.exists) {
+    throw new Error(duplicateCheck.message);
   }
 
   const staff: UserData = {
@@ -291,16 +378,11 @@ export async function registerStaff(staffId: string, password: string, name: str
     staffId: staffId,
     name: name,
     department: department || 'General',
-    email: email || `${name.toLowerCase().replace(/\s+/g, '.')}@adustech.edu.ng`,
+    email: staffEmail,
     password: password
   };
 
   try {
-    // Check if user already exists
-    const userDoc = await getDoc(doc(db, 'users', staffId));
-    if (userDoc.exists()) {
-      throw new Error('A staff member with this ID is already registered');
-    }
 
     // Save to Firestore
     await setDoc(doc(db, 'users', staffId), staff);
@@ -311,7 +393,7 @@ export async function registerStaff(staffId: string, password: string, name: str
     if (error.message) {
       throw error; // Re-throw with original message
     }
-    throw new Error('Failed to register staff member. Please try again.');
+    throw new Error('Registration failed. Try again.');
   }
 }
 
@@ -364,11 +446,11 @@ async function sendOTPEmail(data: OTPData): Promise<boolean> {
 // Password Reset Functions (OTP-based)
 export async function requestPasswordReset(identifier: string): Promise<{ success: boolean; message: string }> {
   if (!identifier || !identifier.trim()) {
-    return { success: false, message: 'Please enter your email address, registration number, or staff ID' };
+    return { success: false, message: 'Enter email, reg number, or staff ID' };
   }
 
   if (!db) {
-    return { success: false, message: 'Database connection not available. Please check your internet connection.' };
+    return { success: false, message: 'No internet connection' };
   }
 
   try {
@@ -405,7 +487,7 @@ export async function requestPasswordReset(identifier: string): Promise<{ succes
     if (!userData || !userEmail) {
       return {
         success: false,
-        message: 'No account found with that email address, registration number, or staff ID'
+        message: 'Account not found'
       };
     }
 
@@ -413,7 +495,7 @@ export async function requestPasswordReset(identifier: string): Promise<{ succes
     if (!canRequestNewOTP(userEmail)) {
       return {
         success: false,
-        message: 'A verification code was already sent to your email. Please check your inbox or wait before requesting a new code.'
+        message: 'Code already sent. Check email or wait.'
       };
     }
 
@@ -440,12 +522,12 @@ export async function requestPasswordReset(identifier: string): Promise<{ succes
       console.log(`Password reset OTP sent to: ${userEmail}`);
       return {
         success: true,
-        message: 'A 6-digit verification code has been sent to your email address. Please check your inbox.'
+        message: '6-digit code sent to your email.'
       };
     } else {
       return {
         success: false,
-        message: 'Failed to send reset email. Please try again later.'
+        message: 'Email failed. Try again.'
       };
     }
 
@@ -453,28 +535,28 @@ export async function requestPasswordReset(identifier: string): Promise<{ succes
     console.error('Error in password reset request:', error);
     return {
       success: false,
-      message: 'An error occurred while processing your request. Please try again.'
+      message: 'Error occurred. Try again.'
     };
   }
 }
 
 export async function resetPasswordWithOTP(email: string, otp: string, newPassword: string): Promise<{ success: boolean; message: string }> {
   if (!email || !otp || !newPassword) {
-    return { success: false, message: 'Email, verification code, and new password are required' };
+    return { success: false, message: 'All fields required' };
   }
 
   if (newPassword.length < 6) {
-    return { success: false, message: 'Password must be at least 6 characters long' };
+    return { success: false, message: 'Password too short (min 6 chars)' };
   }
 
   if (!db) {
-    return { success: false, message: 'Database connection not available' };
+    return { success: false, message: 'No internet connection' };
   }
 
   // Validate OTP
   const otpValidation = validateOTP(email.toLowerCase(), otp);
   if (!otpValidation.valid) {
-    return { success: false, message: otpValidation.error || 'Invalid verification code' };
+    return { success: false, message: otpValidation.error || 'Invalid code' };
   }
 
   try {
@@ -517,14 +599,14 @@ export async function resetPasswordWithOTP(email: string, otp: string, newPasswo
     console.log(`Password reset successful for user: ${userId}`);
     return {
       success: true,
-      message: 'Your password has been reset successfully. You can now log in with your new password.'
+      message: 'Password reset successful. You can now login.'
     };
 
   } catch (error) {
     console.error('Error resetting password:', error);
     return {
       success: false,
-      message: 'An error occurred while resetting your password. Please try again.'
+      message: 'Reset failed. Try again.'
     };
   }
 }
