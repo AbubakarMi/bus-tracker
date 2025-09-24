@@ -429,134 +429,372 @@ export default function StaffDashboard() {
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent mb-2 flex items-center gap-3"
+              className="text-5xl font-black mb-4 relative"
+              style={{
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%)',
+                backgroundSize: '300% 300%',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text'
+              }}
+              animate={{
+                backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
+              }}
+              transition={{
+                duration: 5,
+                repeat: Infinity,
+                ease: 'linear'
+              }}
             >
               <motion.span
-                animate={{ rotate: [0, 10, -10, 0] }}
-                transition={{ duration: 2, repeat: Infinity, delay: 1 }}
+                animate={{ rotate: [0, 15, -15, 0], scale: [1, 1.2, 1] }}
+                transition={{ duration: 3, repeat: Infinity, delay: 1 }}
+                className="inline-block mr-4"
               >
-                👨‍💼
+                👨‍🏫
               </motion.span>
               Welcome back, Staff Member!
               <motion.div
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
+                animate={{
+                  rotate: [0, 360],
+                  scale: [1, 1.3, 1],
+                  filter: ['hue-rotate(0deg)', 'hue-rotate(360deg)']
+                }}
+                transition={{ duration: 3, repeat: Infinity, delay: 0.5 }}
+                className="inline-block ml-4"
               >
-                <Sparkles className="h-8 w-8 text-yellow-500" />
+                <Sparkles className="h-10 w-10 text-yellow-500" />
               </motion.div>
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="text-lg text-gray-700 flex items-center gap-3 font-medium"
+              className="text-xl font-bold text-gray-700 flex items-center gap-4 bg-white/90 backdrop-blur-lg px-8 py-4 rounded-2xl shadow-2xl border border-white/30"
             >
               <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                animate={{
+                  rotate: 360,
+                  scale: [1, 1.2, 1]
+                }}
+                transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                className="p-2 rounded-full bg-gradient-to-r from-emerald-400 to-teal-500 shadow-lg"
               >
-                <Globe className="h-5 w-5 text-emerald-600" />
+                <Globe className="h-6 w-6 text-white" />
               </motion.div>
-              {currentTime.toLocaleDateString('en-NG', {
-                weekday: 'long',
-                month: 'long',
-                day: 'numeric'
-              })} • {currentTime.toLocaleTimeString('en-NG', {
-                hour: '2-digit',
-                minute: '2-digit'
-              })}
+              <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-green-600 bg-clip-text text-transparent font-black">
+                {currentTime.toLocaleDateString('en-NG', {
+                  weekday: 'long',
+                  month: 'long',
+                  day: 'numeric'
+                })} • {currentTime.toLocaleTimeString('en-NG', {
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}
+              </span>
               <motion.div
-                animate={{ scale: [1, 1.3, 1] }}
-                transition={{ duration: 1.5, repeat: Infinity }}
+                animate={{
+                  scale: [1, 1.4, 1],
+                  filter: ['hue-rotate(0deg)', 'hue-rotate(360deg)']
+                }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="p-1 rounded-full bg-gradient-to-r from-pink-400 to-red-500"
               >
-                <Heart className="h-4 w-4 text-red-500" />
+                <Heart className="h-5 w-5 text-white" />
               </motion.div>
             </motion.p>
           </div>
 
-          {/* Quick Access Buttons */}
-          <div className="flex flex-wrap gap-3">
-            <Button
-              onClick={() => setShowTravelRequestModal(true)}
-              className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-            >
-              <Calendar className="h-4 w-4 mr-2" />
-              Request Travel
-            </Button>
-            <Button
-              onClick={() => setShowTrackBusModal(true)}
-              variant="outline"
-              className="border-green-200 hover:border-green-500 hover:bg-green-50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-            >
-              <MapPin className="h-4 w-4 mr-2" />
-              Track Bus
-            </Button>
-            <Button
-              onClick={() => setShowReportsModal(true)}
-              variant="outline"
-              className="border-purple-200 hover:border-purple-500 hover:bg-purple-50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-            >
-              <ClipboardList className="h-4 w-4 mr-2" />
-              Reports
-            </Button>
-            <Button
-              onClick={() => setShowExpenseModal(true)}
-              variant="outline"
-              className="border-orange-200 hover:border-orange-500 hover:bg-orange-50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-            >
-              <DollarSign className="h-4 w-4 mr-2" />
-              Expenses
-            </Button>
-          </div>
+          {/* Enhanced Quick Access Buttons */}
+          <motion.div
+            className="flex flex-wrap gap-5"
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+          >
+            <motion.div whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.95 }}>
+              <Button
+                onClick={() => setShowTravelRequestModal(true)}
+                className="bg-gradient-to-r from-blue-500 via-purple-600 to-indigo-700 text-white shadow-2xl hover:shadow-blue-500/30 transition-all duration-500 transform border-0 px-8 py-6 text-lg font-bold rounded-2xl relative overflow-hidden group"
+              >
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/25 to-white/0"
+                  animate={{ x: ['-200%', '200%'] }}
+                  transition={{ duration: 2.5, repeat: Infinity, repeatDelay: 2 }}
+                />
+                <Calendar className="h-5 w-5 mr-3" />
+                Request Travel
+              </Button>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.95 }}>
+              <Button
+                onClick={() => setShowTrackBusModal(true)}
+                className="bg-gradient-to-r from-emerald-500 via-teal-600 to-green-700 text-white shadow-2xl hover:shadow-emerald-500/30 transition-all duration-500 transform border-0 px-8 py-6 text-lg font-bold rounded-2xl relative overflow-hidden group"
+              >
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/25 to-white/0"
+                  animate={{ x: ['-200%', '200%'] }}
+                  transition={{ duration: 2.5, repeat: Infinity, repeatDelay: 2.5 }}
+                />
+                <MapPin className="h-5 w-5 mr-3" />
+                Track Bus
+              </Button>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.95 }}>
+              <Button
+                onClick={() => setShowReportsModal(true)}
+                className="bg-gradient-to-r from-purple-500 via-pink-600 to-violet-700 text-white shadow-2xl hover:shadow-purple-500/30 transition-all duration-500 transform border-0 px-8 py-6 text-lg font-bold rounded-2xl relative overflow-hidden group"
+              >
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/25 to-white/0"
+                  animate={{ x: ['-200%', '200%'] }}
+                  transition={{ duration: 2.5, repeat: Infinity, repeatDelay: 3 }}
+                />
+                <ClipboardList className="h-5 w-5 mr-3" />
+                Reports
+              </Button>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.95 }}>
+              <Button
+                onClick={() => setShowExpenseModal(true)}
+                className="bg-gradient-to-r from-orange-500 via-red-600 to-pink-700 text-white shadow-2xl hover:shadow-orange-500/30 transition-all duration-500 transform border-0 px-8 py-6 text-lg font-bold rounded-2xl relative overflow-hidden group"
+              >
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/25 to-white/0"
+                  animate={{ x: ['-200%', '200%'] }}
+                  transition={{ duration: 2.5, repeat: Infinity, repeatDelay: 3.5 }}
+                />
+                <DollarSign className="h-5 w-5 mr-3" />
+                Expenses
+              </Button>
+            </motion.div>
+          </motion.div>
         </div>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {quickStats.map((stat, index) => (
-          <Card key={index} className="bg-white/95 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] hover:-translate-y-1 relative overflow-hidden">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg">
-                  <stat.icon className="h-6 w-6 text-white" />
+      {/* Enhanced Vibrant Stats Grid */}
+      <motion.div
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.8 }}
+      >
+        {quickStats.map((stat, index) => {
+          const gradients = [
+            'from-blue-500 via-purple-600 to-indigo-700',
+            'from-emerald-500 via-teal-600 to-green-700',
+            'from-purple-500 via-pink-600 to-violet-700',
+            'from-orange-500 via-red-600 to-pink-700'
+          ];
+          const shadowColors = [
+            'hover:shadow-blue-500/25',
+            'hover:shadow-emerald-500/25',
+            'hover:shadow-purple-500/25',
+            'hover:shadow-orange-500/25'
+          ];
+          const bgGlows = [
+            'from-blue-400/10 to-purple-600/10',
+            'from-emerald-400/10 to-teal-600/10',
+            'from-purple-400/10 to-pink-600/10',
+            'from-orange-400/10 to-red-600/10'
+          ];
+          return (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 50, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.6, delay: 0.9 + index * 0.15 }}
+              whileHover={{ scale: 1.1, y: -12, rotateY: 5 }}
+              className="group perspective-1000"
+            >
+              <Card className={`bg-white/95 backdrop-blur-xl border-0 shadow-2xl ${shadowColors[index]} transition-all duration-700 transform relative overflow-hidden rounded-3xl group-hover:bg-white/100`}>
+                {/* Dynamic background gradient */}
+                <motion.div
+                  className={`absolute inset-0 bg-gradient-to-br ${bgGlows[index]} opacity-50 group-hover:opacity-70`}
+                  animate={{
+                    opacity: [0.3, 0.6, 0.3],
+                    scale: [1, 1.05, 1]
+                  }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                />
+
+                {/* Floating particles */}
+                <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                  {[...Array(3)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      className={`absolute w-1 h-1 rounded-full bg-gradient-to-r ${gradients[index]} opacity-40`}
+                      style={{
+                        top: `${20 + i * 25}%`,
+                        right: `${15 + i * 10}%`,
+                      }}
+                      animate={{
+                        y: [0, -20, 0],
+                        opacity: [0.4, 0.8, 0.4],
+                        scale: [0.5, 1.2, 0.5]
+                      }}
+                      transition={{
+                        duration: 3,
+                        delay: i * 0.7,
+                        repeat: Infinity
+                      }}
+                    />
+                  ))}
                 </div>
-                <div className="text-right">
-                  <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-                  <p className="text-sm text-gray-600">{stat.label}</p>
-                  <span className={`text-xs font-medium px-2 py-1 rounded-full ${
-                    stat.changeType === 'positive'
-                      ? 'text-green-700 bg-green-100 border border-green-200'
-                      : 'text-blue-700 bg-blue-100 border border-blue-200'
-                  }`}>
-                    {stat.change}
-                  </span>
-                </div>
-              </div>
-              <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-600" />
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+
+                <CardContent className="p-8 relative z-10">
+                  <div className="flex items-center justify-between mb-6">
+                    <motion.div
+                      className={`p-5 rounded-3xl bg-gradient-to-br ${gradients[index]} shadow-2xl relative`}
+                      whileHover={{ rotate: 360, scale: 1.15 }}
+                      transition={{ duration: 0.8, type: "spring", stiffness: 200 }}
+                    >
+                      {/* Glow effect behind icon */}
+                      <motion.div
+                        className={`absolute inset-0 bg-gradient-to-br ${gradients[index]} rounded-3xl blur-xl opacity-50`}
+                        animate={{ scale: [1, 1.2, 1] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                      />
+                      <stat.icon className="h-8 w-8 text-white relative z-10" />
+                    </motion.div>
+
+                    <motion.div
+                      className="text-right"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 1 + index * 0.1 }}
+                    >
+                      <motion.p
+                        className={`text-4xl font-black mb-2 bg-gradient-to-r ${gradients[index]} bg-clip-text text-transparent`}
+                        animate={{ scale: [1, 1.05, 1] }}
+                        transition={{ duration: 2, repeat: Infinity, delay: index * 0.5 }}
+                      >
+                        {stat.value}
+                      </motion.p>
+                      <p className="text-sm font-bold text-gray-700 mb-3">{stat.label}</p>
+                      <motion.span
+                        className={`text-xs font-bold px-4 py-2 rounded-full shadow-lg ${
+                          stat.changeType === 'positive'
+                            ? 'text-emerald-700 bg-emerald-100 border-2 border-emerald-200'
+                            : 'text-blue-700 bg-blue-100 border-2 border-blue-200'
+                        }`}
+                        whileHover={{ scale: 1.1, y: -2 }}
+                      >
+                        {stat.change}
+                      </motion.span>
+                    </motion.div>
+                  </div>
+
+                  {/* Animated bottom accent with ripple effect */}
+                  <motion.div
+                    className={`absolute bottom-0 left-0 h-3 bg-gradient-to-r ${gradients[index]} rounded-b-3xl`}
+                    initial={{ width: 0 }}
+                    animate={{ width: '100%' }}
+                    transition={{ duration: 1.2, delay: 1.2 + index * 0.15 }}
+                  />
+
+                  {/* Ripple effect on hover */}
+                  <motion.div
+                    className={`absolute inset-0 bg-gradient-to-r ${gradients[index]} rounded-3xl opacity-0 group-hover:opacity-5`}
+                    animate={{
+                      scale: [1, 1.05, 1],
+                      opacity: [0, 0.05, 0]
+                    }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                  />
+                </CardContent>
+              </Card>
+            </motion.div>
+          );
+        })}
+      </motion.div>
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
 
-        {/* Available Transport */}
-        <Card className="xl:col-span-2 bg-white/95 backdrop-blur-sm border-0 shadow-xl">
-          <CardHeader className="bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 text-white">
-            <CardTitle className="flex items-center justify-between text-xl">
-              <div className="flex items-center gap-2">
-                <Bus className="h-6 w-6" />
-                Available Transport
-                <Badge className="bg-white/20 text-white border border-white/30">
-                  {availableBuses.length} Live
-                </Badge>
-              </div>
-              <Button variant="secondary" size="sm" className="bg-white/20 hover:bg-white/30 text-white border border-white/30">
-                Request Travel
-              </Button>
-            </CardTitle>
-          </CardHeader>
+        {/* Enhanced Available Transport */}
+        <motion.div
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, delay: 1.2 }}
+        >
+          <Card className="xl:col-span-2 bg-white/95 backdrop-blur-xl border-0 shadow-2xl rounded-3xl overflow-hidden relative group">
+            {/* Dynamic header background with multiple gradients */}
+            <motion.div
+              className="absolute top-0 left-0 w-full h-24 opacity-95"
+              animate={{
+                background: [
+                  'linear-gradient(135deg, #3b82f6, #8b5cf6, #06b6d4)',
+                  'linear-gradient(135deg, #8b5cf6, #06b6d4, #3b82f6)',
+                  'linear-gradient(135deg, #06b6d4, #3b82f6, #8b5cf6)',
+                  'linear-gradient(135deg, #3b82f6, #8b5cf6, #06b6d4)'
+                ]
+              }}
+              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+            />
+
+            {/* Floating elements in header */}
+            <div className="absolute top-0 left-0 w-full h-24 pointer-events-none">
+              {[...Array(5)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute w-2 h-2 bg-white/20 rounded-full"
+                  style={{
+                    left: `${10 + i * 20}%`,
+                    top: `${30 + (i % 2) * 40}%`,
+                  }}
+                  animate={{
+                    y: [0, -10, 0],
+                    opacity: [0.2, 0.8, 0.2],
+                    scale: [0.5, 1.2, 0.5]
+                  }}
+                  transition={{
+                    duration: 3,
+                    delay: i * 0.5,
+                    repeat: Infinity
+                  }}
+                />
+              ))}
+            </div>
+
+            <CardHeader className="relative z-10 text-white pb-8">
+              <CardTitle className="flex items-center justify-between text-2xl font-black">
+                <div className="flex items-center gap-5">
+                  <motion.div
+                    animate={{
+                      rotate: [0, 15, -15, 0],
+                      scale: [1, 1.1, 1]
+                    }}
+                    transition={{ duration: 3, repeat: Infinity }}
+                    className="p-2 rounded-2xl bg-white/20 backdrop-blur-sm"
+                  >
+                    <Bus className="h-8 w-8" />
+                  </motion.div>
+                  <span className="bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
+                    Available Transport
+                  </span>
+                  <motion.div
+                    whileHover={{ scale: 1.15, rotate: 5 }}
+                    className="bg-white/25 backdrop-blur-sm text-white border border-white/40 px-5 py-2 rounded-full font-bold text-sm shadow-2xl"
+                  >
+                    <motion.span
+                      animate={{
+                        color: ['#ffffff', '#fbbf24', '#10b981', '#ffffff'],
+                        textShadow: ['0 0 0px rgba(255,255,255,0)', '0 0 10px rgba(251,191,36,0.5)', '0 0 10px rgba(16,185,129,0.5)', '0 0 0px rgba(255,255,255,0)']
+                      }}
+                      transition={{ duration: 3, repeat: Infinity }}
+                    >
+                      {availableBuses.length} Live
+                    </motion.span>
+                  </motion.div>
+                </div>
+                <motion.div whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.95 }}>
+                  <Button className="bg-white/25 hover:bg-white/35 text-white border border-white/40 font-bold px-6 py-3 rounded-2xl shadow-2xl backdrop-blur-sm transition-all duration-300">
+                    Request Travel
+                  </Button>
+                </motion.div>
+              </CardTitle>
+            </CardHeader>
           <CardContent className="p-6 space-y-4">
             {availableBuses.map((bus, index) => (
               <div key={bus.id} className="p-4 bg-white/95 backdrop-blur-sm border border-gray-200/50 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] hover:-translate-y-1 border-l-4 border-blue-500 relative overflow-hidden">
@@ -685,15 +923,51 @@ export default function StaffDashboard() {
         {/* My Travels & Activity */}
         <div className="space-y-6">
 
-          {/* My Official Travels */}
-          <Card className="bg-white/95 backdrop-blur-sm border-0 shadow-xl">
-            <CardHeader className="bg-gradient-to-r from-purple-600 to-violet-600 text-white">
-              <CardTitle className="flex items-center gap-2 text-xl">
-                <ClipboardList className="h-6 w-6" />
-                Official Travels
-                <Badge className="bg-white/20 text-white border border-white/30 ml-auto">
-                  {myTravels.length} Active
-                </Badge>
+          {/* Enhanced My Official Travels */}
+          <Card className="bg-white/95 backdrop-blur-xl border-0 shadow-2xl rounded-3xl overflow-hidden relative">
+            {/* Animated header background */}
+            <motion.div
+              className="absolute top-0 left-0 w-full h-20 opacity-95"
+              animate={{
+                background: [
+                  'linear-gradient(90deg, #9333ea, #c084fc, #a855f7)',
+                  'linear-gradient(90deg, #a855f7, #9333ea, #c084fc)',
+                  'linear-gradient(90deg, #c084fc, #a855f7, #9333ea)',
+                  'linear-gradient(90deg, #9333ea, #c084fc, #a855f7)'
+                ]
+              }}
+              transition={{ duration: 5, repeat: Infinity }}
+            />
+
+            <CardHeader className="relative z-10 text-white">
+              <CardTitle className="flex items-center gap-4 text-2xl font-black">
+                <motion.div
+                  animate={{
+                    rotate: [0, 360],
+                    scale: [1, 1.2, 1]
+                  }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                  className="p-2 rounded-2xl bg-white/20 backdrop-blur-sm"
+                >
+                  <ClipboardList className="h-8 w-8" />
+                </motion.div>
+                <span className="bg-gradient-to-r from-white to-purple-100 bg-clip-text text-transparent">
+                  Official Travels
+                </span>
+                <motion.div
+                  whileHover={{ scale: 1.15, rotate: -5 }}
+                  className="bg-white/25 backdrop-blur-sm text-white border border-white/40 px-5 py-2 rounded-full font-bold text-sm shadow-lg ml-auto"
+                >
+                  <motion.span
+                    animate={{
+                      scale: [1, 1.1, 1],
+                      textShadow: ['0 0 0px rgba(255,255,255,0)', '0 0 8px rgba(255,255,255,0.3)', '0 0 0px rgba(255,255,255,0)']
+                    }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
+                    {myTravels.length} Active
+                  </motion.span>
+                </motion.div>
               </CardTitle>
             </CardHeader>
             <CardContent className="p-4 space-y-3">
@@ -756,12 +1030,37 @@ export default function StaffDashboard() {
             </CardContent>
           </Card>
 
-          {/* Recent Activity */}
-          <Card className="bg-white/95 backdrop-blur-sm border-0 shadow-xl">
-            <CardHeader className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
-              <CardTitle className="flex items-center gap-2 text-xl">
-                <Activity className="h-6 w-6" />
-                Travel Activity
+          {/* Enhanced Recent Activity */}
+          <Card className="bg-white/95 backdrop-blur-xl border-0 shadow-2xl rounded-3xl overflow-hidden relative">
+            {/* Animated header background */}
+            <motion.div
+              className="absolute top-0 left-0 w-full h-20 opacity-95"
+              animate={{
+                background: [
+                  'linear-gradient(90deg, #6366f1, #8b5cf6, #ec4899)',
+                  'linear-gradient(90deg, #ec4899, #6366f1, #8b5cf6)',
+                  'linear-gradient(90deg, #8b5cf6, #ec4899, #6366f1)',
+                  'linear-gradient(90deg, #6366f1, #8b5cf6, #ec4899)'
+                ]
+              }}
+              transition={{ duration: 4.5, repeat: Infinity }}
+            />
+
+            <CardHeader className="relative z-10 text-white">
+              <CardTitle className="flex items-center gap-4 text-2xl font-black">
+                <motion.div
+                  animate={{
+                    scale: [1, 1.3, 1],
+                    rotate: [0, 180, 360]
+                  }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                  className="p-2 rounded-2xl bg-white/20 backdrop-blur-sm"
+                >
+                  <Activity className="h-8 w-8" />
+                </motion.div>
+                <span className="bg-gradient-to-r from-white to-pink-100 bg-clip-text text-transparent">
+                  Travel Activity
+                </span>
               </CardTitle>
             </CardHeader>
             <CardContent className="p-4 space-y-3">

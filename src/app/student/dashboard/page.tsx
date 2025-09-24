@@ -332,63 +332,145 @@ export default function StudentDashboard() {
 
   return (
     <>
-    {/* Dashboard Header */}
-    <DashboardHeader user={userData} title="Student Dashboard" />
+      {/* Dashboard Header */}
+      <DashboardHeader user={userData} title="Student Dashboard" />
 
-    {/* Enhanced Dashboard with floating elements */}
-    <div className="relative">
-      {/* Floating Action Buttons */}
-      <motion.div
-        className="fixed bottom-8 right-8 z-50 flex flex-col gap-3"
-        initial={{ opacity: 0, x: 100 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.8, delay: 2 }}
-      >
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          className="w-14 h-14 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full shadow-lg flex items-center justify-center text-white hover:shadow-xl transition-all duration-300"
-        >
-          <Sparkles className="h-6 w-6" />
-        </motion.button>
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          onClick={() => setShowReviewModal(true)}
-          className="w-14 h-14 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full shadow-lg flex items-center justify-center text-white hover:shadow-xl transition-all duration-300"
-          title="Rate Bus Service"
-        >
-          <MessageSquare className="h-6 w-6" />
-        </motion.button>
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          className="w-14 h-14 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full shadow-lg flex items-center justify-center text-white hover:shadow-xl transition-all duration-300"
-        >
-          <Plus className="h-6 w-6" />
-        </motion.button>
-      </motion.div>
+      {/* Enhanced Dashboard with vibrant background */}
+      <div className="relative min-h-screen">
+        {/* Animated Background */}
+        <div className="fixed inset-0 -z-10 overflow-hidden">
+          <motion.div
+            className="absolute -top-1/2 -right-1/2 w-full h-full bg-gradient-to-br from-cyan-400/20 via-blue-500/15 to-purple-600/20 rounded-full blur-3xl"
+            animate={{ rotate: 360, scale: [1, 1.1, 1] }}
+            transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+          />
+          <motion.div
+            className="absolute -bottom-1/2 -left-1/2 w-3/4 h-3/4 bg-gradient-to-tr from-green-400/15 via-teal-500/10 to-blue-600/15 rounded-full blur-3xl"
+            animate={{ rotate: -360, scale: [1, 1.2, 1] }}
+            transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+          />
+          <motion.div
+            className="absolute top-1/4 left-1/4 w-1/2 h-1/2 bg-gradient-to-bl from-pink-400/10 via-purple-500/8 to-indigo-600/12 rounded-full blur-2xl"
+            animate={{ rotate: 180, scale: [1, 0.8, 1] }}
+            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+          />
+        </div>
 
-      <div className="space-y-6">
-      {/* Header Section */}
-      <div className="mb-6">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Welcome back, Student! 👋
-            </h1>
-            <p className="text-lg text-gray-600 flex items-center gap-3">
-              <Activity className="h-5 w-5 text-blue-600" />
-              {currentTime.toLocaleDateString('en-NG', {
-                weekday: 'long',
-                month: 'long',
-                day: 'numeric'
-              })} • {currentTime.toLocaleTimeString('en-NG', {
-                hour: '2-digit',
-                minute: '2-digit'
-              })}
-            </p>
-          </div>
+        {/* Floating Action Buttons - Enhanced */}
+        <motion.div
+          className="fixed bottom-8 right-8 z-50 flex flex-col gap-4"
+          initial={{ opacity: 0, x: 100 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, delay: 2 }}
+        >
+          <motion.button
+            whileHover={{ scale: 1.15, rotate: 10 }}
+            whileTap={{ scale: 0.9 }}
+            className="w-16 h-16 bg-gradient-to-r from-cyan-400 to-blue-600 rounded-full shadow-2xl flex items-center justify-center text-white hover:shadow-cyan-500/25 transition-all duration-300 relative overflow-hidden group"
+          >
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0"
+              animate={{ x: ['-100%', '100%'] }}
+              transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
+            />
+            <Sparkles className="h-7 w-7 relative z-10" />
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.15, rotate: -10 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={() => setShowReviewModal(true)}
+            className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full shadow-2xl flex items-center justify-center text-white hover:shadow-purple-500/25 transition-all duration-300 relative overflow-hidden group"
+            title="Rate Bus Service"
+          >
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0"
+              animate={{ x: ['-100%', '100%'] }}
+              transition={{ duration: 2, repeat: Infinity, repeatDelay: 1.5 }}
+            />
+            <MessageSquare className="h-7 w-7 relative z-10" />
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.15, rotate: 10 }}
+            whileTap={{ scale: 0.9 }}
+            className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full shadow-2xl flex items-center justify-center text-white hover:shadow-emerald-500/25 transition-all duration-300 relative overflow-hidden group"
+          >
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0"
+              animate={{ x: ['-100%', '100%'] }}
+              transition={{ duration: 2, repeat: Infinity, repeatDelay: 2 }}
+            />
+            <Plus className="h-7 w-7 relative z-10" />
+          </motion.button>
+        </motion.div>
+
+        <motion.div
+          className="space-y-8 relative z-10"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
+        >
+          {/* Enhanced Header Section */}
+          <div className="mb-8">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+              <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+              >
+                <motion.h1
+                  className="text-5xl font-black mb-4 relative"
+                  style={{
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%)',
+                    backgroundSize: '300% 300%',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text'
+                  }}
+                  animate={{
+                    backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
+                  }}
+                  transition={{
+                    duration: 5,
+                    repeat: Infinity,
+                    ease: 'linear'
+                  }}
+                >
+                  <motion.span
+                    animate={{
+                      rotate: [0, 10, -10, 0],
+                      scale: [1, 1.1, 1]
+                    }}
+                    transition={{ duration: 2, repeat: Infinity, delay: 1 }}
+                    className="inline-block mr-4"
+                  >
+                    🎓
+                  </motion.span>
+                  Welcome back, Student!
+                </motion.h1>
+                <motion.p
+                  className="text-xl font-medium text-gray-700 flex items-center gap-4 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-2xl shadow-lg border border-white/20"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.4 }}
+                >
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                  >
+                    <Activity className="h-6 w-6 text-blue-600" />
+                  </motion.div>
+                  <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent font-bold">
+                    {currentTime.toLocaleDateString('en-NG', {
+                      weekday: 'long',
+                      month: 'long',
+                      day: 'numeric'
+                    })} • {currentTime.toLocaleTimeString('en-NG', {
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </span>
+                </motion.p>
+              </motion.div>
 
           {/* Quick Access Buttons */}
           <div className="flex flex-wrap gap-3">
@@ -696,7 +778,7 @@ export default function StudentDashboard() {
           </Card>
         </div>
       </div>
-    </div>
+    </motion.div>
     </div>
 
     {/* Quick Book Modal */}
