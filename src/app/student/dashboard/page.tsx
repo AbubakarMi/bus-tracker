@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
+import { getAllBuses, getAllRoutes, type Bus as BusType, type Route as RouteType } from '@/lib/bus-service';
 import { DashboardHeader } from '@/components/dashboard-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -119,6 +120,8 @@ export default function StudentDashboard() {
   }, []);
 
   const [availableBuses, setAvailableBuses] = useState<BusStatus[]>([]);
+  const [actualBuses, setActualBuses] = useState<BusType[]>([]);
+  const [routes, setRoutes] = useState<RouteType[]>([]);
   const [myBookings, setMyBookings] = useState<BookingData[]>([]);
   const [stats, setStats] = useState({
     totalTrips: 0,
@@ -142,6 +145,23 @@ export default function StudentDashboard() {
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
+  }, []);
+
+  // Load actual buses and routes from admin data
+  useEffect(() => {
+    const loadRealData = async () => {
+      try {
+        const [busesData, routesData] = await Promise.all([
+          getAllBuses(),
+          getAllRoutes()
+        ]);
+        setActualBuses(busesData);
+        setRoutes(routesData);
+      } catch (error) {
+        console.error('Error loading bus data:', error);
+      }
+    };
+    loadRealData();
   }, []);
 
   // Simulate real-time bus updates

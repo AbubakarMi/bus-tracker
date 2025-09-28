@@ -175,9 +175,6 @@ export default function RegisterPage() {
     }
 
     try {
-      // Simulate network delay for better UX
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
       let result;
       if (userType === 'student') {
         result = await registerStudent(

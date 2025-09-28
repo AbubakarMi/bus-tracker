@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { createBus, getAllBuses, updateBus, deleteBus, createRoute, getAllRoutes, initializeDefaultData, type Bus as BusType, type Route as RouteType } from '@/lib/bus-service';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -46,25 +47,6 @@ interface Driver {
   createdAt: string;
 }
 
-interface Route {
-  id: string;
-  name: string;
-  startPoint: string;
-  endPoint: string;
-  estimatedTime: string;
-  distance: string;
-  status: 'active' | 'inactive';
-}
-
-interface Bus {
-  id: string;
-  plateNumber: string;
-  capacity: number;
-  driverId?: string;
-  routeId?: string;
-  status: 'available' | 'in-service' | 'maintenance';
-}
-
 export default function AdminPage() {
   const { toast } = useToast();
   const [drivers, setDrivers] = useState<Driver[]>([
@@ -80,28 +62,26 @@ export default function AdminPage() {
     }
   ]);
 
-  const [routes] = useState<Route[]>([
-    {
-      id: '1',
-      name: 'Campus to City Center',
-      startPoint: 'ADU Campus Gate',
-      endPoint: 'Kano City Center',
-      estimatedTime: '45 mins',
-      distance: '25 km',
-      status: 'active'
-    }
-  ]);
-
-  const [buses] = useState<Bus[]>([
-    {
-      id: '1',
-      plateNumber: 'BUS-001',
-      capacity: 45,
-      driverId: '1',
-      routeId: '1',
-      status: 'in-service'
-    }
-  ]);
+  const [routes, setRoutes] = useState<RouteType[]>([]);
+  const [buses, setBuses] = useState<BusType[]>([]);
+  const [isBusDialogOpen, setIsBusDialogOpen] = useState(false);
+  const [isRouteDialogOpen, setIsRouteDialogOpen] = useState(false);
+  const [newBus, setNewBus] = useState({
+    plateNumber: '',
+    capacity: 45,
+    model: '',
+    year: '',
+    status: 'available' as const
+  });
+  const [newRoute, setNewRoute] = useState({
+    name: '',
+    startPoint: '',
+    endPoint: '',
+    estimatedTime: '',
+    distance: '',
+    status: 'active' as const,
+    description: ''
+  });
 
   const [isDriverDialogOpen, setIsDriverDialogOpen] = useState(false);
   const [newDriver, setNewDriver] = useState({
@@ -110,6 +90,29 @@ export default function AdminPage() {
     phone: '',
     licenseNumber: ''
   });
+
+  // Load data on component mount
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        await initializeDefaultData();
+        const [busesData, routesData] = await Promise.all([
+          getAllBuses(),
+          getAllRoutes()
+        ]);
+        setBuses(busesData);
+        setRoutes(routesData);
+      } catch (error) {
+        console.error('Error loading data:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load bus and route data",
+          variant: "destructive"
+        });
+      }
+    };
+    loadData();
+  }, []);
 
   const DEFAULT_PASSWORD = 'pass123';
 
@@ -211,6 +214,111 @@ export default function AdminPage() {
       title: "Success",
       description: "Driver deleted successfully",
     });
+  };
+
+  const handleCreateBus = async () => {
+    if (!newBus.plateNumber || !newBus.capacity) {
+      toast({
+        title: "Error",
+        description: "Please fill all required fields",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const createdBus = await createBus({
+        plateNumber: newBus.plateNumber,
+        capacity: newBus.capacity,
+        model: newBus.model,
+        year: newBus.year,
+        status: newBus.status
+      });
+
+      setBuses(prev => [...prev, createdBus]);
+      setNewBus({
+        plateNumber: '',
+        capacity: 45,
+        model: '',
+        year: '',
+        status: 'available'
+      });
+      setIsBusDialogOpen(false);
+
+      toast({
+        title: "Bus Created Successfully",
+        description: `Bus ${newBus.plateNumber} has been added to the fleet.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create bus. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleCreateRoute = async () => {
+    if (!newRoute.name || !newRoute.startPoint || !newRoute.endPoint) {
+      toast({
+        title: "Error",
+        description: "Please fill all required fields",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const createdRoute = await createRoute({
+        name: newRoute.name,
+        startPoint: newRoute.startPoint,
+        endPoint: newRoute.endPoint,
+        estimatedTime: newRoute.estimatedTime,
+        distance: newRoute.distance,
+        status: newRoute.status,
+        description: newRoute.description
+      });
+
+      setRoutes(prev => [...prev, createdRoute]);
+      setNewRoute({
+        name: '',
+        startPoint: '',
+        endPoint: '',
+        estimatedTime: '',
+        distance: '',
+        status: 'active',
+        description: ''
+      });
+      setIsRouteDialogOpen(false);
+
+      toast({
+        title: "Route Created Successfully",
+        description: `Route ${newRoute.name} has been added.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create route. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleDeleteBus = async (busId: string) => {
+    try {
+      await deleteBus(busId);
+      setBuses(prev => prev.filter(bus => bus.id !== busId));
+      toast({
+        title: "Success",
+        description: "Bus deleted successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete bus",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
@@ -595,10 +703,82 @@ export default function AdminPage() {
         <TabsContent value="buses" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Bus Management</CardTitle>
-              <CardDescription>
-                Manage bus fleet and assignments.
-              </CardDescription>
+              <div className="flex justify-between items-center">
+                <div>
+                  <CardTitle>Bus Management</CardTitle>
+                  <CardDescription>
+                    Manage bus fleet and assignments.
+                  </CardDescription>
+                </div>
+                <Dialog open={isBusDialogOpen} onOpenChange={setIsBusDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button className="flex items-center gap-2">
+                      <Plus className="h-4 w-4" />
+                      Add Bus
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Add New Bus</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="plateNumber">Plate Number *</Label>
+                        <Input
+                          id="plateNumber"
+                          placeholder="e.g., ADU-003"
+                          value={newBus.plateNumber}
+                          onChange={(e) => setNewBus({...newBus, plateNumber: e.target.value})}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="capacity">Capacity *</Label>
+                        <Input
+                          id="capacity"
+                          type="number"
+                          placeholder="45"
+                          value={newBus.capacity}
+                          onChange={(e) => setNewBus({...newBus, capacity: parseInt(e.target.value) || 45})}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="model">Model</Label>
+                        <Input
+                          id="model"
+                          placeholder="e.g., Toyota Coaster"
+                          value={newBus.model}
+                          onChange={(e) => setNewBus({...newBus, model: e.target.value})}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="year">Year</Label>
+                        <Input
+                          id="year"
+                          placeholder="e.g., 2022"
+                          value={newBus.year}
+                          onChange={(e) => setNewBus({...newBus, year: e.target.value})}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="status">Status</Label>
+                        <Select value={newBus.status} onValueChange={(value: any) => setNewBus({...newBus, status: value})}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="available">Available</SelectItem>
+                            <SelectItem value="in-service">In Service</SelectItem>
+                            <SelectItem value="maintenance">Maintenance</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <Button onClick={handleCreateBus} className="w-full">
+                        Create Bus
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
             </CardHeader>
             <CardContent>
               <Table>
@@ -618,10 +798,10 @@ export default function AdminPage() {
                       <TableCell className="font-medium">{bus.plateNumber}</TableCell>
                       <TableCell>{bus.capacity} seats</TableCell>
                       <TableCell>
-                        {bus.driverId ? drivers.find(d => d.id === bus.driverId)?.name || 'Unknown' : 'Unassigned'}
+                        {bus.driverName || 'Unassigned'}
                       </TableCell>
                       <TableCell>
-                        {bus.routeId ? routes.find(r => r.id === bus.routeId)?.name || 'Unknown' : 'Unassigned'}
+                        {bus.routeName || 'Unassigned'}
                       </TableCell>
                       <TableCell>
                         <Badge variant={
@@ -635,6 +815,13 @@ export default function AdminPage() {
                         <Button variant="outline" size="sm">
                           <Edit className="h-4 w-4" />
                         </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDeleteBus(bus.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -647,10 +834,86 @@ export default function AdminPage() {
         <TabsContent value="routes" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Route Management</CardTitle>
-              <CardDescription>
-                Manage bus routes and schedules.
-              </CardDescription>
+              <div className="flex justify-between items-center">
+                <div>
+                  <CardTitle>Route Management</CardTitle>
+                  <CardDescription>
+                    Manage bus routes and schedules.
+                  </CardDescription>
+                </div>
+                <Dialog open={isRouteDialogOpen} onOpenChange={setIsRouteDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button className="flex items-center gap-2">
+                      <Plus className="h-4 w-4" />
+                      Add Route
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Add New Route</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="routeName">Route Name *</Label>
+                        <Input
+                          id="routeName"
+                          placeholder="e.g., Campus to Mall"
+                          value={newRoute.name}
+                          onChange={(e) => setNewRoute({...newRoute, name: e.target.value})}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="startPoint">Start Point *</Label>
+                        <Input
+                          id="startPoint"
+                          placeholder="e.g., ADUSTECH Main Gate"
+                          value={newRoute.startPoint}
+                          onChange={(e) => setNewRoute({...newRoute, startPoint: e.target.value})}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="endPoint">End Point *</Label>
+                        <Input
+                          id="endPoint"
+                          placeholder="e.g., City Mall"
+                          value={newRoute.endPoint}
+                          onChange={(e) => setNewRoute({...newRoute, endPoint: e.target.value})}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="distance">Distance</Label>
+                        <Input
+                          id="distance"
+                          placeholder="e.g., 15 km"
+                          value={newRoute.distance}
+                          onChange={(e) => setNewRoute({...newRoute, distance: e.target.value})}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="estimatedTime">Estimated Time</Label>
+                        <Input
+                          id="estimatedTime"
+                          placeholder="e.g., 30 minutes"
+                          value={newRoute.estimatedTime}
+                          onChange={(e) => setNewRoute({...newRoute, estimatedTime: e.target.value})}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="description">Description</Label>
+                        <Input
+                          id="description"
+                          placeholder="Brief description of the route"
+                          value={newRoute.description}
+                          onChange={(e) => setNewRoute({...newRoute, description: e.target.value})}
+                        />
+                      </div>
+                      <Button onClick={handleCreateRoute} className="w-full">
+                        Create Route
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
             </CardHeader>
             <CardContent>
               <Table>
