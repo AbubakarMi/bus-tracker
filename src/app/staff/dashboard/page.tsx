@@ -3,7 +3,9 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
+import { getAvailableBusesWithSeats, getBookingsByPassenger } from '@/lib/booking-service';
 import { DashboardHeader } from '@/components/dashboard-header';
+import { StudentBookingModal } from '@/components/student-booking-modal';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';

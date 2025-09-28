@@ -4,7 +4,9 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { getAllBuses, getAllRoutes, type Bus as BusType, type Route as RouteType } from '@/lib/bus-service';
+import { getAvailableBusesWithSeats, getBookingsByPassenger } from '@/lib/booking-service';
 import { DashboardHeader } from '@/components/dashboard-header';
+import { StudentBookingModal } from '@/components/student-booking-modal';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -134,6 +136,7 @@ export default function StudentDashboard() {
   const [showBookSeatModal, setShowBookSeatModal] = useState(false);
   const [showTrackBusModal, setShowTrackBusModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [userBookings, setUserBookings] = useState([]);
 
   const [recentActivity, setRecentActivity] = useState([
     { id: 1, type: 'booking', message: 'Seat confirmed for Lagos Express', time: '2h ago', status: 'success', icon: CheckCircle },
@@ -152,17 +155,31 @@ export default function StudentDashboard() {
     const loadRealData = async () => {
       try {
         const [busesData, routesData] = await Promise.all([
-          getAllBuses(),
+          getAvailableBusesWithSeats(),
           getAllRoutes()
         ]);
         setActualBuses(busesData);
         setRoutes(routesData);
+
+        // Load user bookings if user data is available
+        if (userData?.id) {
+          const bookings = await getBookingsByPassenger(userData.id);
+          setUserBookings(bookings);
+
+          // Update stats based on real bookings
+          setStats({
+            totalTrips: bookings.filter(b => b.status === 'completed').length,
+            pendingBookings: bookings.filter(b => b.status === 'confirmed').length,
+            onTimeRate: 92, // This would be calculated based on real data
+            totalSpent: bookings.reduce((total, booking) => total + booking.amount, 0)
+          });
+        }
       } catch (error) {
         console.error('Error loading bus data:', error);
       }
     };
     loadRealData();
-  }, []);
+  }, [userData]);
 
   // Simulate real-time bus updates
   useEffect(() => {
@@ -363,7 +380,7 @@ export default function StudentDashboard() {
               {/* Premium Action Buttons */}
               <div className="flex flex-wrap gap-3">
                 <Button
-                  onClick={() => router.push('/student/book')}
+                  onClick={() => setShowBookSeatModal(true)}
                   className="bg-blue-600 hover:bg-blue-700 text-white border-0 px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow-md"
                 >
                   <Calendar className="h-4 w-4 mr-2" />
@@ -941,6 +958,13 @@ export default function StudentDashboard() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Student Booking Modal */}
+      <StudentBookingModal
+        isOpen={showBookSeatModal}
+        onClose={() => setShowBookSeatModal(false)}
+        userData={userData}
+      />
     </>
   );
 }

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { createBus, getAllBuses, updateBus, deleteBus, createRoute, getAllRoutes, initializeDefaultData, type Bus as BusType, type Route as RouteType } from '@/lib/bus-service';
+import { getAllBusBookingSummaries, getSeatAvailability, getAllBookings, type BusBookingSummary, type SeatAvailability, type Booking } from '@/lib/booking-service';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -32,7 +33,9 @@ import {
   DollarSign,
   Target,
   Zap,
-  Shield
+  Shield,
+  Eye,
+  Download
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -64,6 +67,9 @@ export default function AdminPage() {
 
   const [routes, setRoutes] = useState<RouteType[]>([]);
   const [buses, setBuses] = useState<BusType[]>([]);
+  const [busBookingSummaries, setBusBookingSummaries] = useState<BusBookingSummary[]>([]);
+  const [seatAvailabilities, setSeatAvailabilities] = useState<Record<string, SeatAvailability>>({});
+  const [recentBookings, setRecentBookings] = useState<Booking[]>([]);
   const [isBusDialogOpen, setIsBusDialogOpen] = useState(false);
   const [isRouteDialogOpen, setIsRouteDialogOpen] = useState(false);
   const [newBus, setNewBus] = useState({
@@ -96,12 +102,30 @@ export default function AdminPage() {
     const loadData = async () => {
       try {
         await initializeDefaultData();
-        const [busesData, routesData] = await Promise.all([
+        const [busesData, routesData, bookingSummaries, allBookings] = await Promise.all([
           getAllBuses(),
-          getAllRoutes()
+          getAllRoutes(),
+          getAllBusBookingSummaries(),
+          getAllBookings()
         ]);
+
         setBuses(busesData);
         setRoutes(routesData);
+        setBusBookingSummaries(bookingSummaries);
+        setRecentBookings(allBookings.slice(0, 10)); // Show recent 10 bookings
+
+        // Load seat availabilities for all buses
+        const availabilities: Record<string, SeatAvailability> = {};
+        for (const bus of busesData) {
+          try {
+            const availability = await getSeatAvailability(bus.id);
+            availabilities[bus.id] = availability;
+          } catch (error) {
+            console.error(`Error loading availability for bus ${bus.id}:`, error);
+          }
+        }
+        setSeatAvailabilities(availabilities);
+
       } catch (error) {
         console.error('Error loading data:', error);
         toast({
@@ -113,6 +137,38 @@ export default function AdminPage() {
     };
     loadData();
   }, []);
+
+  // Real-time updates every 30 seconds
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        const [bookingSummaries, allBookings] = await Promise.all([
+          getAllBusBookingSummaries(),
+          getAllBookings()
+        ]);
+
+        setBusBookingSummaries(bookingSummaries);
+        setRecentBookings(allBookings.slice(0, 10));
+
+        // Update seat availabilities
+        const availabilities: Record<string, SeatAvailability> = {};
+        for (const bus of buses) {
+          try {
+            const availability = await getSeatAvailability(bus.id);
+            availabilities[bus.id] = availability;
+          } catch (error) {
+            console.error(`Error updating availability for bus ${bus.id}:`, error);
+          }
+        }
+        setSeatAvailabilities(availabilities);
+
+      } catch (error) {
+        console.error('Error updating real-time data:', error);
+      }
+    }, 30000); // Update every 30 seconds
+
+    return () => clearInterval(interval);
+  }, [buses]);
 
   const DEFAULT_PASSWORD = 'pass123';
 
@@ -343,7 +399,7 @@ export default function AdminPage() {
                 <p className="text-3xl font-bold text-blue-600">{buses.length}</p>
                 <p className="text-xs text-green-600 flex items-center mt-1">
                   <TrendingUp className="h-3 w-3 mr-1" />
-                  +2 this month
+                  {buses.filter(b => b.status === 'available').length} available
                 </p>
               </div>
               <div className="h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -393,11 +449,11 @@ export default function AdminPage() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground mb-1">Today's Trips</p>
-                <p className="text-3xl font-bold text-purple-600">147</p>
+                <p className="text-sm font-medium text-muted-foreground mb-1">Total Bookings</p>
+                <p className="text-3xl font-bold text-purple-600">{recentBookings.length}</p>
                 <p className="text-xs text-green-600 flex items-center mt-1">
-                  <TrendingUp className="h-3 w-3 mr-1" />
-                  +12% from yesterday
+                  <CheckCircle className="h-3 w-3 mr-1" />
+                  {recentBookings.filter(b => b.status === 'confirmed').length} confirmed
                 </p>
               </div>
               <div className="h-12 w-12 bg-purple-100 rounded-lg flex items-center justify-center">
@@ -559,10 +615,13 @@ export default function AdminPage() {
       </div>
 
       <Tabs defaultValue="drivers" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="drivers">Driver Management</TabsTrigger>
-          <TabsTrigger value="buses">Bus Management</TabsTrigger>
-          <TabsTrigger value="routes">Route Management</TabsTrigger>
+        <TabsList className="grid grid-cols-6 gap-2">
+          <TabsTrigger value="drivers">Drivers</TabsTrigger>
+          <TabsTrigger value="buses">Buses</TabsTrigger>
+          <TabsTrigger value="routes">Routes</TabsTrigger>
+          <TabsTrigger value="users">Users</TabsTrigger>
+          <TabsTrigger value="activity">Activity</TabsTrigger>
+          <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
 
         <TabsContent value="drivers" className="space-y-4">
@@ -786,6 +845,8 @@ export default function AdminPage() {
                   <TableRow>
                     <TableHead>Plate Number</TableHead>
                     <TableHead>Capacity</TableHead>
+                    <TableHead>Available Seats</TableHead>
+                    <TableHead>Bookings</TableHead>
                     <TableHead>Driver</TableHead>
                     <TableHead>Route</TableHead>
                     <TableHead>Status</TableHead>
@@ -793,38 +854,64 @@ export default function AdminPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {buses.map((bus) => (
-                    <TableRow key={bus.id}>
-                      <TableCell className="font-medium">{bus.plateNumber}</TableCell>
-                      <TableCell>{bus.capacity} seats</TableCell>
-                      <TableCell>
-                        {bus.driverName || 'Unassigned'}
-                      </TableCell>
-                      <TableCell>
-                        {bus.routeName || 'Unassigned'}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={
-                          bus.status === 'in-service' ? 'default' :
-                          bus.status === 'available' ? 'secondary' : 'destructive'
-                        }>
-                          {bus.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="flex gap-2">
-                        <Button variant="outline" size="sm">
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleDeleteBus(bus.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {buses.map((bus) => {
+                    const availability = seatAvailabilities[bus.id];
+                    const summary = busBookingSummaries.find(s => s.busId === bus.id);
+                    return (
+                      <TableRow key={bus.id}>
+                        <TableCell className="font-medium">{bus.plateNumber}</TableCell>
+                        <TableCell>{bus.capacity} seats</TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <span className={`font-medium ${availability?.availableSeats === 0 ? 'text-red-600' : 'text-green-600'}`}>
+                              {availability?.availableSeats || bus.capacity}
+                            </span>
+                            <Progress
+                              value={availability ? ((availability.bookedSeats / bus.capacity) * 100) : 0}
+                              className="w-16 h-2"
+                            />
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="text-center">
+                            <div className="font-medium text-blue-600">
+                              {summary?.confirmedBookings || 0}
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              ₦{summary?.revenue?.toLocaleString() || 0}
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          {bus.driverName || 'Unassigned'}
+                        </TableCell>
+                        <TableCell>
+                          {bus.routeName || 'Unassigned'}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={
+                            bus.status === 'in-service' ? 'default' :
+                            bus.status === 'available' ? 'secondary' : 'destructive'
+                          }>
+                            {bus.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="flex gap-2">
+                          <Button variant="outline" size="sm" title="View Details">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleDeleteBus(bus.id)}
+                            title="Delete Bus"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </CardContent>
@@ -952,6 +1039,274 @@ export default function AdminPage() {
               </Table>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="users" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>User Management</CardTitle>
+              <CardDescription>
+                View and manage all registered students and staff members.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>ID/Reg Number</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Course/Department</TableHead>
+                    <TableHead>Bookings</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {/* Sample users - in real implementation, fetch from database */}
+                  <TableRow>
+                    <TableCell className="font-medium">John Doe</TableCell>
+                    <TableCell>UG20/COMS/1284</TableCell>
+                    <TableCell>john.doe@student.adustech.edu.ng</TableCell>
+                    <TableCell>
+                      <Badge variant="secondary">Student</Badge>
+                    </TableCell>
+                    <TableCell>Computer Science</TableCell>
+                    <TableCell className="text-center">
+                      <span className="font-medium text-blue-600">
+                        {recentBookings.filter(b => b.passengerRegNumber === 'UG20/COMS/1284').length}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="default">Active</Badge>
+                    </TableCell>
+                    <TableCell className="flex gap-2">
+                      <Button variant="outline" size="sm">
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">Dr. Sarah Ahmed</TableCell>
+                    <TableCell>Staff/Adustech/0001</TableCell>
+                    <TableCell>sarah.ahmed@adustech.edu.ng</TableCell>
+                    <TableCell>
+                      <Badge variant="outline">Staff</Badge>
+                    </TableCell>
+                    <TableCell>Computer Science Dept</TableCell>
+                    <TableCell className="text-center">
+                      <span className="font-medium text-blue-600">0</span>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="default">Active</Badge>
+                    </TableCell>
+                    <TableCell className="flex gap-2">
+                      <Button variant="outline" size="sm">
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="activity" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Activity Logs</CardTitle>
+              <CardDescription>
+                Real-time system activity and user actions.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {recentBookings.slice(0, 10).map((booking, index) => (
+                  <div key={booking.id} className="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg">
+                    <div className={`h-2 w-2 rounded-full mt-2 ${
+                      booking.status === 'confirmed' ? 'bg-green-500' :
+                      booking.status === 'cancelled' ? 'bg-red-500' : 'bg-yellow-500'
+                    }`} />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium">
+                        {booking.status === 'confirmed' ? '✅ New Booking' :
+                         booking.status === 'cancelled' ? '❌ Booking Cancelled' : '⏳ Booking Pending'}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {booking.passengerName} booked seat {booking.seatNumber} on bus {booking.busPlateNumber}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(booking.createdAt).toLocaleString()}
+                      </p>
+                    </div>
+                    <Badge variant={
+                      booking.status === 'confirmed' ? 'default' :
+                      booking.status === 'cancelled' ? 'destructive' : 'secondary'
+                    }>
+                      {booking.status}
+                    </Badge>
+                  </div>
+                ))}
+
+                {/* Bus Creation Activity */}
+                <div className="flex items-start space-x-3 p-4 bg-blue-50 rounded-lg">
+                  <div className="h-2 w-2 bg-blue-500 rounded-full mt-2" />
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">🚌 Bus Added to Fleet</p>
+                    <p className="text-xs text-muted-foreground">
+                      Admin added new bus to the system
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {new Date().toLocaleString()}
+                    </p>
+                  </div>
+                  <Badge variant="secondary">System</Badge>
+                </div>
+
+                {/* Route Creation Activity */}
+                <div className="flex items-start space-x-3 p-4 bg-purple-50 rounded-lg">
+                  <div className="h-2 w-2 bg-purple-500 rounded-full mt-2" />
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">🛣️ New Route Created</p>
+                    <p className="text-xs text-muted-foreground">
+                      Admin created new route in the system
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {new Date().toLocaleString()}
+                    </p>
+                  </div>
+                  <Badge variant="secondary">System</Badge>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="settings" className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>System Settings</CardTitle>
+                <CardDescription>
+                  Configure system-wide settings and preferences.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="bookingPrice">Default Booking Price (₦)</Label>
+                  <Input
+                    id="bookingPrice"
+                    type="number"
+                    defaultValue="2500"
+                    placeholder="2500"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="maxBookingDays">Max Advance Booking Days</Label>
+                  <Input
+                    id="maxBookingDays"
+                    type="number"
+                    defaultValue="7"
+                    placeholder="7"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="cancelationTime">Cancellation Window (hours)</Label>
+                  <Input
+                    id="cancelationTime"
+                    type="number"
+                    defaultValue="24"
+                    placeholder="24"
+                  />
+                </div>
+                <Button className="w-full">Save Settings</Button>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Notification Settings</CardTitle>
+                <CardDescription>
+                  Configure notification preferences.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="emailNotifications">Email Notifications</Label>
+                  <input type="checkbox" id="emailNotifications" defaultChecked className="toggle" />
+                </div>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="smsNotifications">SMS Notifications</Label>
+                  <input type="checkbox" id="smsNotifications" className="toggle" />
+                </div>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="pushNotifications">Push Notifications</Label>
+                  <input type="checkbox" id="pushNotifications" defaultChecked className="toggle" />
+                </div>
+                <Button className="w-full">Update Preferences</Button>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Backup & Security</CardTitle>
+                <CardDescription>
+                  Manage data backup and security settings.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Button variant="outline" className="w-full">
+                  <Download className="h-4 w-4 mr-2" />
+                  Export All Data
+                </Button>
+                <Button variant="outline" className="w-full">
+                  <Shield className="h-4 w-4 mr-2" />
+                  Generate Backup
+                </Button>
+                <Button variant="destructive" className="w-full">
+                  <AlertTriangle className="h-4 w-4 mr-2" />
+                  Reset System
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>System Information</CardTitle>
+                <CardDescription>
+                  Current system status and information.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <p className="font-medium">Version</p>
+                    <p className="text-muted-foreground">v2.1.0</p>
+                  </div>
+                  <div>
+                    <p className="font-medium">Last Backup</p>
+                    <p className="text-muted-foreground">2 hours ago</p>
+                  </div>
+                  <div>
+                    <p className="font-medium">Database Status</p>
+                    <p className="text-green-600">✅ Connected</p>
+                  </div>
+                  <div>
+                    <p className="font-medium">Storage Used</p>
+                    <p className="text-muted-foreground">2.3 GB</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
       </Tabs>
     </div>
