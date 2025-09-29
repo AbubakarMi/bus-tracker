@@ -37,40 +37,71 @@ let db: Firestore | null = null;
 
 // Initialize Firebase
 function initializeFirebaseApp() {
+  console.log('🚀 Starting Firebase initialization...');
+
   if (!isFirebaseConfigured) {
     console.error("❌ Firebase config is incomplete. Required variables:", requiredEnvVars);
     console.error("📋 See FIREBASE_SETUP.md for configuration help");
     return;
   }
 
+  console.log('📋 Firebase config validation passed');
+
   try {
-    if (!getApps().length) {
-      app = initializeApp(firebaseConfig);
-      console.log("✅ Firebase app initialized successfully");
-    } else {
+    // Check if already initialized
+    if (getApps().length > 0) {
+      console.log("♻️ Firebase apps already exist, using existing app");
       app = getApps()[0];
-      console.log("✅ Firebase app already initialized");
+      auth = getAuth(app);
+      db = getFirestore(app);
+      console.log("✅ Using existing Firebase initialization");
+      return;
     }
 
-    // Initialize services
-    auth = getAuth(app);
-    db = getFirestore(app);
+    console.log('🔧 Initializing new Firebase app...');
 
-    console.log("✅ Firebase services initialized");
-    console.log("🔥 Project ID:", firebaseConfig.projectId);
-    console.log("🔥 Firestore database connected");
+    // Initialize new app
+    app = initializeApp(firebaseConfig);
+    console.log("✅ Firebase app created successfully");
 
-    // Test database connection
-    if (typeof window !== 'undefined') {
-      // Quick connection test
-      import('./firebase-test').then(({ testFirebaseConnection }) => {
-        testFirebaseConnection();
-      }).catch(err => console.warn('Firebase test import failed:', err));
+    // Initialize auth service
+    try {
+      auth = getAuth(app);
+      console.log("✅ Firebase Auth service initialized");
+    } catch (authError) {
+      console.error("❌ Firebase Auth initialization failed:", authError);
     }
+
+    // Initialize Firestore service
+    try {
+      db = getFirestore(app);
+      console.log("✅ Firestore service initialized");
+      console.log("🔥 Project ID:", firebaseConfig.projectId);
+
+      // Immediate connection test
+      if (typeof window !== 'undefined') {
+        setTimeout(() => {
+          import('./firebase-test').then(({ testFirebaseConnection }) => {
+            console.log('🧪 Running Firebase connection test...');
+            testFirebaseConnection();
+          }).catch(err => console.warn('Firebase test import failed:', err));
+        }, 1000);
+      }
+
+    } catch (firestoreError) {
+      console.error("❌ Firestore initialization failed:", firestoreError);
+      db = null;
+    }
+
+    console.log("🎉 Firebase initialization process completed");
 
   } catch (error) {
-    console.error("❌ Failed to initialize Firebase:", error);
-    console.error("🔧 Check your Firebase configuration and project settings");
+    console.error("❌ Critical Firebase initialization failure:", error);
+    console.error("🔧 Error details:", {
+      name: error instanceof Error ? error.name : 'Unknown',
+      message: error instanceof Error ? error.message : String(error),
+      code: (error as any)?.code || 'No code'
+    });
 
     // Reset to null on failure
     app = null;
@@ -81,6 +112,13 @@ function initializeFirebaseApp() {
 
 // Initialize immediately if configuration is available
 initializeFirebaseApp();
+
+// Import debug utilities
+if (typeof window !== 'undefined') {
+  import('./firebase-debug').catch(err =>
+    console.warn('Firebase debug module failed to load:', err)
+  );
+}
 
 // Test Firebase connection
 if (db) {
@@ -126,22 +164,49 @@ export function isFirebaseReady(): boolean {
 // Helper function to wait for Firebase to be ready
 export function waitForFirebase(timeout: number = 5000): Promise<boolean> {
   return new Promise((resolve) => {
+    console.log('⏳ Waiting for Firebase to be ready...', { timeout });
+
+    // Quick check first
     if (isFirebaseReady()) {
+      console.log('✅ Firebase already ready');
       resolve(true);
       return;
     }
 
     const startTime = Date.now();
+    let attempts = 0;
+
     const checkInterval = setInterval(() => {
-      if (isFirebaseReady()) {
+      attempts++;
+      const ready = isFirebaseReady();
+      const elapsed = Date.now() - startTime;
+
+      console.log(`🔄 Firebase check #${attempts}:`, {
+        ready,
+        elapsed,
+        hasApp: !!app,
+        hasDb: !!db,
+        hasAuth: !!auth,
+        isConfigured: isFirebaseConfigured
+      });
+
+      if (ready) {
         clearInterval(checkInterval);
+        console.log('✅ Firebase ready after', elapsed, 'ms');
         resolve(true);
-      } else if (Date.now() - startTime > timeout) {
+      } else if (elapsed > timeout) {
         clearInterval(checkInterval);
-        console.warn('⏰ Firebase initialization timeout after', timeout, 'ms');
+        console.error('⏰ Firebase initialization timeout after', timeout, 'ms');
+        console.error('🔍 Final state:', {
+          app: !!app,
+          auth: !!auth,
+          db: !!db,
+          isConfigured: isFirebaseConfigured,
+          attempts
+        });
         resolve(false);
       }
-    }, 100);
+    }, 200); // Check every 200ms
   });
 }
 
