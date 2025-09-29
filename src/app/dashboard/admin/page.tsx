@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { createBus, getAllBuses, updateBus, deleteBus, createRoute, getAllRoutes, initializeDefaultData, type Bus as BusType, type Route as RouteType } from '@/lib/bus-service';
 import { getAllBusBookingSummaries, getSeatAvailability, getAllBookings, type BusBookingSummary, type SeatAvailability, type Booking } from '@/lib/booking-service';
+import { dataService, type ActivityLog, type SystemSettings } from '@/lib/data-service';
+import { useRealTimeSystemData } from '@/hooks/use-real-time-data';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -52,18 +54,12 @@ interface Driver {
 
 export default function AdminPage() {
   const { toast } = useToast();
-  const [drivers, setDrivers] = useState<Driver[]>([
-    {
-      id: '1',
-      email: 'driver1@adustech.edu.ng',
-      name: 'Mohammed Ali',
-      phone: '+2348123456789',
-      licenseNumber: 'ABC123456',
-      busAssigned: 'BUS-001',
-      status: 'active',
-      createdAt: '2024-01-15'
-    }
-  ]);
+  const { data: realTimeData, loading: realTimeLoading, error: realTimeError } = useRealTimeSystemData();
+  const [drivers, setDrivers] = useState<Driver[]>([]);
+  const [activities, setActivities] = useState<ActivityLog[]>([]);
+  const [settings, setSettings] = useState<SystemSettings | null>(null);
+  const [currentUser] = useState('admin@adustech.edu.ng'); // Current admin user
+  const [lastUpdateTime, setLastUpdateTime] = useState<string>('');
 
   const [routes, setRoutes] = useState<RouteType[]>([]);
   const [buses, setBuses] = useState<BusType[]>([]);
@@ -102,6 +98,9 @@ export default function AdminPage() {
     const loadData = async () => {
       try {
         await initializeDefaultData();
+
+        // Load all data using DataService
+        const allData = await dataService.loadAllData();
         const [busesData, routesData, bookingSummaries, allBookings] = await Promise.all([
           getAllBuses(),
           getAllRoutes(),
@@ -112,7 +111,14 @@ export default function AdminPage() {
         setBuses(busesData);
         setRoutes(routesData);
         setBusBookingSummaries(bookingSummaries);
-        setRecentBookings(allBookings.slice(0, 10)); // Show recent 10 bookings
+        setRecentBookings(allBookings.slice(0, 10));
+        setActivities(allData.activities);
+        setSettings(allData.settings);
+
+        // Load drivers from localStorage
+        const registeredDrivers = JSON.parse(localStorage.getItem('registeredDrivers') || '{}');
+        const driversArray = Object.values(registeredDrivers) as Driver[];
+        setDrivers(driversArray);
 
         // Load seat availabilities for all buses
         const availabilities: Record<string, SeatAvailability> = {};
@@ -136,6 +142,13 @@ export default function AdminPage() {
       }
     };
     loadData();
+
+    // Subscribe to real-time activity updates
+    const unsubscribe = dataService.subscribeToActivities((newActivities) => {
+      setActivities(newActivities);
+    });
+
+    return unsubscribe;
   }, []);
 
   // Real-time updates every 30 seconds
@@ -212,7 +225,7 @@ export default function AdminPage() {
     }
   }, []);
 
-  const handleCreateDriver = () => {
+  const handleCreateDriver = async () => {
     if (!newDriver.email || !newDriver.name) {
       toast({
         title: "Error",
@@ -233,35 +246,47 @@ export default function AdminPage() {
       return;
     }
 
-    const driver: Driver = {
-      id: Date.now().toString(),
-      email: newDriver.email,
-      name: newDriver.name,
-      phone: newDriver.phone,
-      licenseNumber: newDriver.licenseNumber,
-      status: 'active',
-      createdAt: new Date().toISOString().split('T')[0]
-    };
-
-    // Store driver with default password in localStorage
-    if (typeof window !== 'undefined') {
-      const existingDrivers = JSON.parse(localStorage.getItem('registeredDrivers') || '{}');
-      existingDrivers[newDriver.email] = {
-        ...driver,
+    try {
+      const driverData = {
+        id: Date.now().toString(),
+        email: newDriver.email,
+        name: newDriver.name,
+        phone: newDriver.phone,
+        licenseNumber: newDriver.licenseNumber,
+        status: 'active',
         password: DEFAULT_PASSWORD,
         role: 'driver'
       };
-      localStorage.setItem('registeredDrivers', JSON.stringify(existingDrivers));
+
+      // Create driver using DataService
+      const createdDriver = await dataService.createUser(driverData, currentUser);
+
+      // Update local state
+      setDrivers([...drivers, {
+        id: createdDriver.id,
+        email: createdDriver.email,
+        name: createdDriver.name,
+        phone: createdDriver.phone,
+        licenseNumber: createdDriver.licenseNumber,
+        status: createdDriver.status,
+        createdAt: createdDriver.createdAt
+      }]);
+
+      setNewDriver({ email: '', name: '', phone: '', licenseNumber: '' });
+      setIsDriverDialogOpen(false);
+
+      toast({
+        title: "Driver Created Successfully",
+        description: `Email: ${newDriver.email}\nDefault Password: ${DEFAULT_PASSWORD}\n\nThe driver can now log in using these credentials.`,
+      });
+    } catch (error) {
+      console.error('Error creating driver:', error);
+      toast({
+        title: "Error",
+        description: "Failed to create driver. Please try again.",
+        variant: "destructive"
+      });
     }
-
-    setDrivers([...drivers, driver]);
-    setNewDriver({ email: '', name: '', phone: '', licenseNumber: '' });
-    setIsDriverDialogOpen(false);
-
-    toast({
-      title: "Driver Created Successfully",
-      description: `Email: ${newDriver.email}\nDefault Password: ${DEFAULT_PASSWORD}\n\nThe driver can now log in using these credentials.`,
-    });
   };
 
   const handleDeleteDriver = (id: string) => {
@@ -283,6 +308,7 @@ export default function AdminPage() {
     }
 
     try {
+      // Create bus using both traditional service and DataService for activity logging
       const createdBus = await createBus({
         plateNumber: newBus.plateNumber,
         capacity: newBus.capacity,
@@ -290,6 +316,15 @@ export default function AdminPage() {
         year: newBus.year,
         status: newBus.status
       });
+
+      // Log activity using DataService
+      await dataService.createBus({
+        plateNumber: newBus.plateNumber,
+        capacity: newBus.capacity,
+        model: newBus.model,
+        year: newBus.year,
+        status: newBus.status
+      }, currentUser);
 
       setBuses(prev => [...prev, createdBus]);
       setNewBus({
@@ -325,6 +360,7 @@ export default function AdminPage() {
     }
 
     try {
+      // Create route using both traditional service and DataService for activity logging
       const createdRoute = await createRoute({
         name: newRoute.name,
         startPoint: newRoute.startPoint,
@@ -334,6 +370,17 @@ export default function AdminPage() {
         status: newRoute.status,
         description: newRoute.description
       });
+
+      // Log activity using DataService
+      await dataService.createRoute({
+        name: newRoute.name,
+        startPoint: newRoute.startPoint,
+        endPoint: newRoute.endPoint,
+        estimatedTime: newRoute.estimatedTime,
+        distance: newRoute.distance,
+        status: newRoute.status,
+        description: newRoute.description
+      }, currentUser);
 
       setRoutes(prev => [...prev, createdRoute]);
       setNewRoute({
@@ -363,6 +410,7 @@ export default function AdminPage() {
   const handleDeleteBus = async (busId: string) => {
     try {
       await deleteBus(busId);
+      await dataService.deleteBus(busId, currentUser); // Log deletion activity
       setBuses(prev => prev.filter(bus => bus.id !== busId));
       toast({
         title: "Success",
@@ -377,16 +425,40 @@ export default function AdminPage() {
     }
   };
 
+  // Update data when real-time data changes
+  useEffect(() => {
+    if (realTimeData) {
+      setActivities(realTimeData.activities);
+      setSettings(realTimeData.settings);
+      setLastUpdateTime(realTimeData.lastUpdate);
+    }
+  }, [realTimeData]);
+
   return (
     <div className="space-y-8 p-6">
-      {/* Welcome Section */}
+      {/* Welcome Section with Real-time Status */}
       <div className="flex flex-col space-y-2">
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-          Welcome Back, Admin
-        </h1>
-        <p className="text-muted-foreground text-lg">
-          Manage your bus fleet and monitor operations from your central command center
-        </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              Welcome Back, Admin
+            </h1>
+            <p className="text-muted-foreground text-lg">
+              Manage your bus fleet and monitor operations from your central command center
+            </p>
+          </div>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className={`h-2 w-2 rounded-full ${realTimeError ? 'bg-red-500' : 'bg-green-500 animate-pulse'}`} />
+            <span>
+              {realTimeError ? 'Offline' : 'Live Data'}
+            </span>
+            {lastUpdateTime && (
+              <span className="text-xs">
+                • Updated {new Date(lastUpdateTime).toLocaleTimeString()}
+              </span>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Key Metrics Cards */}
@@ -1129,62 +1201,52 @@ export default function AdminPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {recentBookings.slice(0, 10).map((booking, index) => (
-                  <div key={booking.id} className="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg">
-                    <div className={`h-2 w-2 rounded-full mt-2 ${
-                      booking.status === 'confirmed' ? 'bg-green-500' :
-                      booking.status === 'cancelled' ? 'bg-red-500' : 'bg-yellow-500'
-                    }`} />
-                    <div className="flex-1">
-                      <p className="text-sm font-medium">
-                        {booking.status === 'confirmed' ? '✅ New Booking' :
-                         booking.status === 'cancelled' ? '❌ Booking Cancelled' : '⏳ Booking Pending'}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {booking.passengerName} booked seat {booking.seatNumber} on bus {booking.busPlateNumber}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {new Date(booking.createdAt).toLocaleString()}
-                      </p>
+                {activities.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Activity className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                    <p>No activity recorded yet</p>
+                    <p className="text-sm">System activities will appear here as they happen</p>
+                  </div>
+                ) : (
+                  activities.slice(0, 20).map((activity) => (
+                    <div key={activity.id} className="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg">
+                      <div className={`h-2 w-2 rounded-full mt-2 ${
+                        activity.type.includes('created') ? 'bg-green-500' :
+                        activity.type.includes('deleted') ? 'bg-red-500' :
+                        activity.type.includes('updated') ? 'bg-blue-500' : 'bg-yellow-500'
+                      }`} />
+                      <div className="flex-1">
+                        <p className="text-sm font-medium">
+                          {activity.type.includes('user_created') ? '👤 New User Created' :
+                           activity.type.includes('bus_created') ? '🚌 Bus Added to Fleet' :
+                           activity.type.includes('bus_deleted') ? '🗑️ Bus Removed' :
+                           activity.type.includes('route_created') ? '🛣️ New Route Created' :
+                           activity.type.includes('booking_created') ? '🎫 New Booking' :
+                           activity.type.includes('settings_updated') ? '⚙️ Settings Updated' :
+                           activity.description}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {activity.description}
+                        </p>
+                        <div className="flex items-center justify-between mt-1">
+                          <p className="text-xs text-muted-foreground">
+                            {new Date(activity.timestamp).toLocaleString()}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {activity.metadata?.userName || 'System'}
+                          </p>
+                        </div>
+                      </div>
+                      <Badge variant={
+                        activity.type.includes('created') ? 'default' :
+                        activity.type.includes('deleted') ? 'destructive' :
+                        activity.type.includes('updated') ? 'secondary' : 'outline'
+                      }>
+                        {activity.type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                      </Badge>
                     </div>
-                    <Badge variant={
-                      booking.status === 'confirmed' ? 'default' :
-                      booking.status === 'cancelled' ? 'destructive' : 'secondary'
-                    }>
-                      {booking.status}
-                    </Badge>
-                  </div>
-                ))}
-
-                {/* Bus Creation Activity */}
-                <div className="flex items-start space-x-3 p-4 bg-blue-50 rounded-lg">
-                  <div className="h-2 w-2 bg-blue-500 rounded-full mt-2" />
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">🚌 Bus Added to Fleet</p>
-                    <p className="text-xs text-muted-foreground">
-                      Admin added new bus to the system
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {new Date().toLocaleString()}
-                    </p>
-                  </div>
-                  <Badge variant="secondary">System</Badge>
-                </div>
-
-                {/* Route Creation Activity */}
-                <div className="flex items-start space-x-3 p-4 bg-purple-50 rounded-lg">
-                  <div className="h-2 w-2 bg-purple-500 rounded-full mt-2" />
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">🛣️ New Route Created</p>
-                    <p className="text-xs text-muted-foreground">
-                      Admin created new route in the system
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {new Date().toLocaleString()}
-                    </p>
-                  </div>
-                  <Badge variant="secondary">System</Badge>
-                </div>
+                  ))
+                )}
               </div>
             </CardContent>
           </Card>
@@ -1200,34 +1262,86 @@ export default function AdminPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="bookingPrice">Default Booking Price (₦)</Label>
-                  <Input
-                    id="bookingPrice"
-                    type="number"
-                    defaultValue="2500"
-                    placeholder="2500"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="maxBookingDays">Max Advance Booking Days</Label>
-                  <Input
-                    id="maxBookingDays"
-                    type="number"
-                    defaultValue="7"
-                    placeholder="7"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="cancelationTime">Cancellation Window (hours)</Label>
-                  <Input
-                    id="cancelationTime"
-                    type="number"
-                    defaultValue="24"
-                    placeholder="24"
-                  />
-                </div>
-                <Button className="w-full">Save Settings</Button>
+                {settings ? (
+                  <>
+                    <div>
+                      <Label htmlFor="bookingPrice">Default Booking Price (₦)</Label>
+                      <Input
+                        id="bookingPrice"
+                        type="number"
+                        defaultValue={settings.bookingPrice}
+                        placeholder="2500"
+                        onChange={(e) => setSettings(prev => prev ? {...prev, bookingPrice: parseInt(e.target.value) || 2500} : null)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="maxBookingDays">Max Advance Booking Days</Label>
+                      <Input
+                        id="maxBookingDays"
+                        type="number"
+                        defaultValue={settings.maxAdvanceBookingDays}
+                        placeholder="7"
+                        onChange={(e) => setSettings(prev => prev ? {...prev, maxAdvanceBookingDays: parseInt(e.target.value) || 7} : null)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="cancelationTime">Cancellation Window (hours)</Label>
+                      <Input
+                        id="cancelationTime"
+                        type="number"
+                        defaultValue={settings.cancellationWindowHours}
+                        placeholder="24"
+                        onChange={(e) => setSettings(prev => prev ? {...prev, cancellationWindowHours: parseInt(e.target.value) || 24} : null)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="systemName">System Name</Label>
+                      <Input
+                        id="systemName"
+                        defaultValue={settings.systemName}
+                        placeholder="ADUSTECH Bus Tracker"
+                        onChange={(e) => setSettings(prev => prev ? {...prev, systemName: e.target.value} : null)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="supportEmail">Support Email</Label>
+                      <Input
+                        id="supportEmail"
+                        type="email"
+                        defaultValue={settings.supportEmail}
+                        placeholder="support@adustech.edu.ng"
+                        onChange={(e) => setSettings(prev => prev ? {...prev, supportEmail: e.target.value} : null)}
+                      />
+                    </div>
+                    <Button
+                      className="w-full"
+                      onClick={async () => {
+                        if (settings) {
+                          try {
+                            await dataService.updateSettings(settings, currentUser);
+                            toast({
+                              title: "Settings Updated",
+                              description: "System settings have been saved successfully.",
+                            });
+                          } catch (error) {
+                            toast({
+                              title: "Error",
+                              description: "Failed to save settings. Please try again.",
+                              variant: "destructive"
+                            });
+                          }
+                        }
+                      }}
+                    >
+                      Save Settings
+                    </Button>
+                  </>
+                ) : (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <div className="h-4 w-4 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+                    <p>Loading settings...</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
@@ -1239,19 +1353,87 @@ export default function AdminPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="emailNotifications">Email Notifications</Label>
-                  <input type="checkbox" id="emailNotifications" defaultChecked className="toggle" />
-                </div>
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="smsNotifications">SMS Notifications</Label>
-                  <input type="checkbox" id="smsNotifications" className="toggle" />
-                </div>
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="pushNotifications">Push Notifications</Label>
-                  <input type="checkbox" id="pushNotifications" defaultChecked className="toggle" />
-                </div>
-                <Button className="w-full">Update Preferences</Button>
+                {settings ? (
+                  <>
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="emailNotifications">Email Notifications</Label>
+                      <input
+                        type="checkbox"
+                        id="emailNotifications"
+                        checked={settings.emailNotifications}
+                        onChange={(e) => setSettings(prev => prev ? {...prev, emailNotifications: e.target.checked} : null)}
+                        className="toggle"
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="smsNotifications">SMS Notifications</Label>
+                      <input
+                        type="checkbox"
+                        id="smsNotifications"
+                        checked={settings.smsNotifications}
+                        onChange={(e) => setSettings(prev => prev ? {...prev, smsNotifications: e.target.checked} : null)}
+                        className="toggle"
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="pushNotifications">Push Notifications</Label>
+                      <input
+                        type="checkbox"
+                        id="pushNotifications"
+                        checked={settings.pushNotifications}
+                        onChange={(e) => setSettings(prev => prev ? {...prev, pushNotifications: e.target.checked} : null)}
+                        className="toggle"
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="autoApproveBookings">Auto-approve Bookings</Label>
+                      <input
+                        type="checkbox"
+                        id="autoApproveBookings"
+                        checked={settings.autoApproveBookings}
+                        onChange={(e) => setSettings(prev => prev ? {...prev, autoApproveBookings: e.target.checked} : null)}
+                        className="toggle"
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="maintenanceMode">Maintenance Mode</Label>
+                      <input
+                        type="checkbox"
+                        id="maintenanceMode"
+                        checked={settings.maintenanceMode}
+                        onChange={(e) => setSettings(prev => prev ? {...prev, maintenanceMode: e.target.checked} : null)}
+                        className="toggle"
+                      />
+                    </div>
+                    <Button
+                      className="w-full"
+                      onClick={async () => {
+                        if (settings) {
+                          try {
+                            await dataService.updateSettings(settings, currentUser);
+                            toast({
+                              title: "Notification Settings Updated",
+                              description: "Your notification preferences have been saved.",
+                            });
+                          } catch (error) {
+                            toast({
+                              title: "Error",
+                              description: "Failed to update notification settings.",
+                              variant: "destructive"
+                            });
+                          }
+                        }
+                      }}
+                    >
+                      Update Preferences
+                    </Button>
+                  </>
+                ) : (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <div className="h-4 w-4 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+                    <p>Loading notification settings...</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
 

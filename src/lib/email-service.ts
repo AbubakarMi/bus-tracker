@@ -1,4 +1,5 @@
-'use client';
+// Server-side only email service
+// This file should only be imported on the server side
 
 export interface EmailConfig {
   service: 'gmail' | 'nodemailer' | 'resend' | 'sendgrid';
@@ -10,6 +11,14 @@ export interface EmailConfig {
     pass: string;
   };
   apiKey?: string;
+}
+
+export interface EmailOtpData {
+  email: string;
+  userName: string;
+  otp: string;
+  userType: string;
+  expiresAt: string;
 }
 
 export interface ResetEmailData {
@@ -346,3 +355,6 @@ export function markTokenAsUsed(token: string): void {
     tokenData.used = true;
   }
 }
+
+// This file now contains legacy token-based functions and server-side email configuration
+// The actual email sending has been moved to server-side API routes for security

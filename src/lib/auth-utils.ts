@@ -10,6 +10,7 @@ import {
   canRequestNewOTP,
   type OTPData
 } from './otp-service';
+import { emailService, type EmailOtpData } from './client-email-service';
 
 export type UserRole = 'admin' | 'driver' | 'student' | 'staff';
 
@@ -298,7 +299,8 @@ export async function registerStudent(regNo: string, password: string, name: str
   }
 
   if (!db) {
-    throw new Error('No internet connection');
+    console.warn('Firestore not available, using localStorage only for student registration');
+    // Don't throw error, continue with localStorage-only registration
   }
 
   const parsedRegNo = parseStudentRegNo(regNo);
@@ -326,10 +328,21 @@ export async function registerStudent(regNo: string, password: string, name: str
   };
 
   try {
+    // Always save to localStorage first (this will work regardless of Firebase)
+    const localUsers = JSON.parse(localStorage.getItem('registeredUsers') || '{}');
+    localUsers[student.email] = student;
+    localStorage.setItem('registeredUsers', JSON.stringify(localUsers));
+    console.log('Student saved to localStorage for forgot password');
 
-    // Save to Firestore
-    await setDoc(doc(db, 'users', regNo), student);
-    console.log('Student registered successfully:', regNo);
+    // Try to save to Firestore if available
+    if (db) {
+      console.log('Attempting to save student to Firestore...', { regNo });
+      await setDoc(doc(db, 'users', regNo), student);
+      console.log('Student registered successfully in Firestore:', regNo);
+    } else {
+      console.log('Firestore not available, student saved to localStorage only');
+    }
+
     return student;
   } catch (error: any) {
     console.error('Error registering student:', error);
@@ -356,7 +369,8 @@ export async function registerStaff(staffId: string, password: string, name: str
   }
 
   if (!db) {
-    throw new Error('No internet connection');
+    console.warn('Firestore not available, using localStorage only for staff registration');
+    // Don't throw error, continue with localStorage-only registration
   }
 
   const parsedStaffId = parseStaffId(staffId);
@@ -383,10 +397,21 @@ export async function registerStaff(staffId: string, password: string, name: str
   };
 
   try {
+    // Always save to localStorage first (this will work regardless of Firebase)
+    const localStaff = JSON.parse(localStorage.getItem('registeredStaff') || '{}');
+    localStaff[staff.email] = staff;
+    localStorage.setItem('registeredStaff', JSON.stringify(localStaff));
+    console.log('Staff saved to localStorage for forgot password');
 
-    // Save to Firestore
-    await setDoc(doc(db, 'users', staffId), staff);
-    console.log('Staff registered successfully:', staffId);
+    // Try to save to Firestore if available
+    if (db) {
+      console.log('Attempting to save staff to Firestore...', { staffId });
+      await setDoc(doc(db, 'users', staffId), staff);
+      console.log('Staff registered successfully in Firestore:', staffId);
+    } else {
+      console.log('Firestore not available, staff saved to localStorage only');
+    }
+
     return staff;
   } catch (error: any) {
     console.error('Error registering staff:', error);
@@ -397,145 +422,246 @@ export async function registerStaff(staffId: string, password: string, name: str
   }
 }
 
-// Send OTP email using the actual email service
+// Send OTP email using the real email service
 async function sendOTPEmail(data: OTPData): Promise<boolean> {
   try {
-    // Check if we're in a server environment
-    if (typeof window === 'undefined') {
-      // Import the email service (server-side only)
-      const { sendOTPEmail: sendEmailService } = require('../api/services/sendResetEmail');
+    // For development/testing, show the OTP clearly in console
+    console.log('🔐 OTP GENERATED FOR TESTING:');
+    console.log('============================');
+    console.log(`📧 Email: ${data.userEmail}`);
+    console.log(`🔑 OTP Code: ${data.otp}`);
+    console.log(`⏰ Expires: ${data.expiresAt.toLocaleString()}`);
+    console.log(`👤 User: ${data.userName} (${data.userType})`);
+    console.log('============================');
 
-      // Call the actual email service
-      const emailSent = await sendEmailService(
-        data.userEmail,
-        data.otp,
-        data.userName,
-        data.userType
-      );
+    // Prepare email data for the email service
+    const emailData: EmailOtpData = {
+      email: data.userEmail,
+      userName: data.userName,
+      otp: data.otp,
+      userType: data.userType,
+      expiresAt: data.expiresAt.toLocaleString(),
+    };
 
-      if (emailSent) {
-        console.log('📧 OTP Email sent successfully:', {
-          to: data.userEmail,
-          userName: data.userName,
-          userType: data.userType,
-          otp: data.otp.substring(0, 3) + '***', // Log partial OTP for debugging
-          expiresAt: data.expiresAt,
-        });
-        return true;
-      } else {
-        console.error('Failed to send OTP email via email service');
-        return false;
+    // Send email using the real email service
+    const result = await emailService.sendOtpEmail(emailData);
+
+    if (result.success) {
+      console.log('✅ OTP email sent successfully!');
+      if (result.messageId) {
+        console.log(`📧 Email ID: ${result.messageId}`);
       }
-    } else {
-      // Client-side fallback - log to console
-      console.log('📧 OTP Email (client-side simulation):', {
-        to: data.userEmail,
-        userName: data.userName,
-        userType: data.userType,
-        otp: data.otp.substring(0, 3) + '***',
-        expiresAt: data.expiresAt,
-      });
       return true;
+    } else {
+      console.error('❌ Failed to send OTP email:', result.message);
+      return false;
     }
   } catch (error) {
-    console.error('Failed to send OTP email:', error);
+    console.error('❌ Failed to send OTP email:', error);
     return false;
   }
 }
 
-// Password Reset Functions (OTP-based)
-export async function requestPasswordReset(identifier: string): Promise<{ success: boolean; message: string }> {
-  if (!identifier || !identifier.trim()) {
-    return { success: false, message: 'Enter email, reg number, or staff ID' };
+// Password Reset Functions (Email-based)
+
+// Send password email function
+async function sendPasswordEmail(data: {
+  userEmail: string;
+  userName: string;
+  password: string;
+  userType: string;
+}): Promise<boolean> {
+  try {
+    // Simulate email sending
+    console.log(`Sending password email to: ${data.userEmail}`);
+    console.log(`Username: ${data.userName}`);
+    console.log(`Password: ${data.password}`);
+    console.log(`User Type: ${data.userType}`);
+
+    // In a real application, you would use an email service like:
+    // - Nodemailer with SMTP
+    // - SendGrid
+    // - AWS SES
+    // - etc.
+
+    // For now, we'll simulate success
+    return true;
+  } catch (error) {
+    console.error('Error sending password email:', error);
+    return false;
+  }
+}
+export async function requestPasswordReset(email: string): Promise<{ success: boolean; message: string }> {
+  if (!email || !email.trim()) {
+    return { success: false, message: 'Email is required' };
   }
 
-  if (!db) {
-    return { success: false, message: 'No internet connection' };
+  if (!email.includes('@')) {
+    return { success: false, message: 'Please enter a valid email address' };
   }
+
+  console.log('Password reset requested for email:', email);
 
   try {
     let userData: UserData | null = null;
-    let userEmail: string | null = null;
 
     // Check if it's admin email
-    if (identifier.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+    if (email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
       userData = adminUser;
-      userEmail = ADMIN_EMAIL;
     } else {
-      // Check if it's a direct email
-      if (identifier.includes('@')) {
-        // Search by email
-        const usersRef = collection(db, 'users');
-        const emailQuery = query(usersRef, where('email', '==', identifier.toLowerCase()));
-        const emailSnapshot = await getDocs(emailQuery);
+      // Check localStorage first for registered users
+      const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '{}');
+      const registeredDrivers = JSON.parse(localStorage.getItem('registeredDrivers') || '{}');
+      const registeredStaff = JSON.parse(localStorage.getItem('registeredStaff') || '{}');
 
-        if (!emailSnapshot.empty) {
-          const userDoc = emailSnapshot.docs[0];
-          userData = userDoc.data() as UserData;
-          userEmail = userData.email || identifier;
-        }
+      console.log('Checking localStorage for users...');
+      console.log('registeredUsers:', Object.keys(registeredUsers).length, 'entries');
+      console.log('registeredDrivers:', Object.keys(registeredDrivers).length, 'entries');
+      console.log('registeredStaff:', Object.keys(registeredStaff).length, 'entries');
+
+      // Debug: show all localStorage data
+      console.log('All localStorage users:', {
+        users: Object.keys(registeredUsers),
+        drivers: Object.keys(registeredDrivers),
+        staff: Object.keys(registeredStaff)
+      });
+
+      // Search by email in all localStorage data (exact match first)
+      if (registeredUsers[email]) {
+        userData = registeredUsers[email];
+        console.log('Found user in registeredUsers by direct email key');
+      } else if (registeredDrivers[email]) {
+        userData = registeredDrivers[email];
+        console.log('Found user in registeredDrivers by direct email key');
+      } else if (registeredStaff[email]) {
+        userData = registeredStaff[email];
+        console.log('Found user in registeredStaff by direct email key');
       } else {
-        // Check by registration number or staff ID
-        const userDoc = await getDoc(doc(db, 'users', identifier));
-        if (userDoc.exists()) {
-          userData = userDoc.data() as UserData;
-          userEmail = userData.email || generateEmailFromIdentifier(identifier, userData.name);
+        // Search by iterating through all users (in case email is stored differently)
+        console.log('Direct email key not found, searching all user objects...');
+
+        for (const [key, user] of Object.entries(registeredUsers)) {
+          console.log('Checking user:', key, 'email:', (user as any).email);
+          if ((user as any).email === email) {
+            userData = user as UserData;
+            console.log('Found user in registeredUsers by email property');
+            break;
+          }
+        }
+
+        if (!userData) {
+          for (const [key, user] of Object.entries(registeredDrivers)) {
+            console.log('Checking driver:', key, 'email:', (user as any).email);
+            if ((user as any).email === email) {
+              userData = user as UserData;
+              console.log('Found user in registeredDrivers by email property');
+              break;
+            }
+          }
+        }
+
+        if (!userData) {
+          for (const [key, user] of Object.entries(registeredStaff)) {
+            console.log('Checking staff:', key, 'email:', (user as any).email);
+            if ((user as any).email === email) {
+              userData = user as UserData;
+              console.log('Found user in registeredStaff by email property');
+              break;
+            }
+          }
+        }
+      }
+
+      // If not found locally and database is available, check Firestore
+      if (!userData && db) {
+        try {
+          // First try exact match with lowercase email
+          const usersRef = collection(db, 'users');
+          const emailQuery = query(usersRef, where('email', '==', email.toLowerCase()));
+          const emailSnapshot = await getDocs(emailQuery);
+
+          if (!emailSnapshot.empty) {
+            const userDoc = emailSnapshot.docs[0];
+            userData = userDoc.data() as UserData;
+          } else {
+            // If not found, try case-insensitive search by getting all users and filtering
+            console.log('Email not found with lowercase match, trying case-insensitive search...');
+            const allUsersSnapshot = await getDocs(usersRef);
+            console.log(`Total users in database: ${allUsersSnapshot.docs.length}`);
+
+            // Debug: Log all user emails for troubleshooting
+            const allEmails = allUsersSnapshot.docs.map(doc => {
+              const user = doc.data() as UserData;
+              return { id: doc.id, email: user.email, name: user.name, role: user.role };
+            });
+            console.log('All users in database:', allEmails);
+
+            for (const userDoc of allUsersSnapshot.docs) {
+              const user = userDoc.data() as UserData;
+              if (user.email && user.email.toLowerCase() === email.toLowerCase()) {
+                userData = user;
+                console.log('Found user with case-insensitive match:', user.email);
+                break;
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error searching Firestore for user:', error);
         }
       }
     }
 
-    if (!userData || !userEmail) {
+    if (!userData) {
       return {
         success: false,
-        message: 'Account not found'
+        message: 'No account found with this email address'
       };
     }
 
-    // Check if user can request new OTP (rate limiting)
-    if (!canRequestNewOTP(userEmail)) {
+    // Check if user can request new OTP
+    if (!canRequestNewOTP(email.toLowerCase())) {
       return {
         success: false,
-        message: 'Code already sent. Check email or wait.'
+        message: 'Please wait before requesting another OTP'
       };
     }
 
     // Generate OTP
     const otp = generateOTP();
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
-
-    // Store OTP
-    storeOTP(userEmail, otp, expiresAt);
-
-    // Prepare email data
-    const emailData: OTPData = {
-      userEmail,
-      userName: userData.name,
+    const otpData: OTPData = {
+      email: email.toLowerCase(),
       otp,
-      expiresAt,
-      userType: userData.role
+      userEmail: email,
+      userName: userData.name,
+      userType: userData.role,
+      expiresAt: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes
+      isUsed: false,
+      createdAt: new Date(),
     };
 
-    // Send OTP email
-    const emailSent = await sendOTPEmail(emailData);
+    // Store OTP
+    storeOTP(email.toLowerCase(), otp, otpData.expiresAt);
+
+    // Send OTP email (simulated for now)
+    const emailSent = await sendOTPEmail(otpData);
 
     if (emailSent) {
-      console.log(`Password reset OTP sent to: ${userEmail}`);
+      console.log(`OTP sent to: ${email}`);
       return {
         success: true,
-        message: '6-digit code sent to your email.'
+        message: 'OTP sent to your email address! Check your inbox and enter the code.'
       };
     } else {
       return {
         success: false,
-        message: 'Email failed. Try again.'
+        message: 'Could not send email. Please try again.'
       };
     }
-
   } catch (error) {
-    console.error('Error in password reset request:', error);
+    console.error('Password reset error:', error);
     return {
       success: false,
-      message: 'Error occurred. Try again.'
+      message: 'Could not send password email. Please try again.'
     };
   }
 }

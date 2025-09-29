@@ -1,6 +1,7 @@
 import { db } from './firebase';
 import { doc, setDoc, getDoc, collection, query, getDocs, updateDoc, deleteDoc, addDoc, where, increment } from 'firebase/firestore';
 import { getAllBuses, updateBus, type Bus } from './bus-service';
+import { dataService } from './data-service';
 
 export interface Booking {
   id: string;
@@ -47,7 +48,7 @@ export interface BusBookingSummary {
 }
 
 // Booking Management Functions
-export async function createBooking(bookingData: Omit<Booking, 'id' | 'createdAt' | 'updatedAt'>): Promise<Booking> {
+export async function createBooking(bookingData: Omit<Booking, 'id' | 'createdAt' | 'updatedAt'>, createdBy?: string): Promise<Booking> {
   const timestamp = new Date().toISOString();
   const newBooking: Booking = {
     ...bookingData,
@@ -73,6 +74,24 @@ export async function createBooking(bookingData: Omit<Booking, 'id' | 'createdAt
     const existingBookings = JSON.parse(localStorage.getItem('bookings') || '[]');
     existingBookings.push(newBooking);
     localStorage.setItem('bookings', JSON.stringify(existingBookings));
+
+    // Log booking activity using DataService
+    try {
+      await dataService.createBooking({
+        busPlateNumber: bookingData.busPlateNumber,
+        seatNumber: bookingData.seatNumber,
+        routeName: bookingData.routeName || '',
+        amount: bookingData.amount,
+        passengerName: bookingData.passengerName,
+        passengerRegNumber: bookingData.passengerRegNumber || bookingData.passengerStaffId || '',
+        passengerType: bookingData.passengerType,
+        tripDate: bookingData.tripDate,
+        tripTime: bookingData.tripTime
+      }, createdBy || bookingData.passengerId);
+    } catch (activityError) {
+      console.error('Error logging booking activity:', activityError);
+      // Don't fail the booking if activity logging fails
+    }
 
     // Update seat availability
     await updateSeatAvailability(bookingData.busId);

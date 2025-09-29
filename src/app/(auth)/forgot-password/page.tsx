@@ -10,27 +10,32 @@ import { motion } from 'framer-motion';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Logo } from '@/components/logo';
 import { RoadAnimation } from '@/components/auth/road-animation';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { requestPasswordReset } from '@/lib/auth-utils';
+import { requestPasswordReset, resetPasswordWithOTP } from '@/lib/auth-utils';
 import { Loader2, Mail, ArrowLeft, CheckCircle, Sparkles, Shield, KeyRound } from 'lucide-react';
 
 const forgotPasswordSchema = z.object({
-  identifier: z.string().min(1, 'Please enter your email, registration number, or staff ID'),
+  email: z.string().email('Please enter a valid email address').min(1, 'Email is required'),
 });
 
 export default function ForgotPasswordPage() {
   const [isLoading, setIsLoading] = React.useState(false);
   const [emailSent, setEmailSent] = React.useState(false);
+  const [showOtpInput, setShowOtpInput] = React.useState(false);
+  const [userEmail, setUserEmail] = React.useState('');
+  const [otp, setOtp] = React.useState('');
+  const [isVerifyingOtp, setIsVerifyingOtp] = React.useState(false);
   const { toast } = useToast();
   const router = useRouter();
 
   const form = useForm<z.infer<typeof forgotPasswordSchema>>({
     resolver: zodResolver(forgotPasswordSchema),
     defaultValues: {
-      identifier: '',
+      email: '',
     },
   });
 
@@ -38,22 +43,20 @@ export default function ForgotPasswordPage() {
     setIsLoading(true);
 
     try {
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
-      const result = await requestPasswordReset(values.identifier);
+      const result = await requestPasswordReset(values.email);
 
       if (result.success) {
-        setEmailSent(true);
+        setUserEmail(values.email);
+        setShowOtpInput(true);
         toast({
-          title: 'Reset Email Sent!',
+          title: 'OTP Sent!',
           description: result.message,
           variant: 'default',
         });
       } else {
         toast({
           variant: 'destructive',
-          title: 'Error Sending Reset Email',
+          title: 'Error',
           description: result.message,
         });
       }
@@ -61,12 +64,129 @@ export default function ForgotPasswordPage() {
       console.error('Password Reset Error:', error);
       toast({
         variant: 'destructive',
-        title: 'Error Sending Reset Email',
+        title: 'Error',
         description: 'An unexpected error occurred. Please try again.',
       });
     } finally {
       setIsLoading(false);
     }
+  }
+
+  async function handleOtpSubmit() {
+    if (!otp || otp.length !== 6) {
+      toast({
+        variant: 'destructive',
+        title: 'Invalid OTP',
+        description: 'Please enter the 6-digit code sent to your email.',
+      });
+      return;
+    }
+
+    setIsVerifyingOtp(true);
+
+    // For now, redirect to reset password page with OTP
+    // In a real app, you'd verify the OTP first
+    router.push(`/reset-password?email=${encodeURIComponent(userEmail)}&otp=${otp}`);
+  }
+
+  if (showOtpInput) {
+    return (
+      <div className="container relative min-h-screen w-full lg:grid lg:grid-cols-2 xl:min-h-[800px]">
+        {/* Background gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5" />
+
+        <motion.div
+          className="flex items-center justify-center py-12 relative z-10"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6 }}
+        >
+          <div className="mx-auto grid w-[420px] gap-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="space-y-6 text-center"
+            >
+              <div className="space-y-4">
+                <motion.h1
+                  className="font-headline text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.4 }}
+                >
+                  Enter OTP Code
+                </motion.h1>
+
+                <motion.p
+                  className="text-lg text-muted-foreground leading-relaxed"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.6 }}
+                >
+                  We've sent a 6-digit code to<br />
+                  <strong>{userEmail}</strong>
+                </motion.p>
+              </div>
+
+              <motion.div
+                className="space-y-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.8 }}
+              >
+                <div>
+                  <Label htmlFor="otp" className="text-base font-semibold">
+                    Enter 6-digit OTP
+                  </Label>
+                  <Input
+                    id="otp"
+                    type="text"
+                    maxLength={6}
+                    placeholder="000000"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
+                    className="h-12 text-2xl text-center tracking-widest font-mono"
+                  />
+                </div>
+
+                <Button
+                  onClick={handleOtpSubmit}
+                  className="w-full h-12 text-lg font-semibold"
+                  disabled={isVerifyingOtp || otp.length !== 6}
+                >
+                  {isVerifyingOtp ? (
+                    <span className="flex items-center justify-center">
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      Verifying...
+                    </span>
+                  ) : (
+                    'Verify & Continue'
+                  )}
+                </Button>
+
+                <div className="text-center">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setShowOtpInput(false);
+                      setOtp('');
+                    }}
+                  >
+                    Back to Email
+                  </Button>
+                </div>
+              </motion.div>
+            </motion.div>
+          </div>
+        </motion.div>
+
+        {/* Enhanced Background with Road Animation */}
+        <div className="hidden bg-muted lg:block relative">
+          <RoadAnimation />
+        </div>
+      </div>
+    );
   }
 
   if (emailSent) {
@@ -111,8 +231,8 @@ export default function ForgotPasswordPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.6 }}
                 >
-                  We've sent password reset instructions to your email address.
-                  Please check your inbox and follow the link to reset your password.
+                  We've sent your password to your email address.
+                  Please check your inbox for your login credentials.
                 </motion.p>
 
                 <motion.div
@@ -236,7 +356,7 @@ export default function ForgotPasswordPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.8 }}
               >
-                Enter your email address and we'll send you instructions to reset your password.
+                Enter your email address and we'll send your password to your email.
                 <span className="font-semibold text-primary"> Don't worry, it happens!</span>
               </motion.p>
             </motion.div>
@@ -291,17 +411,17 @@ export default function ForgotPasswordPage() {
                 >
                   <FormField
                     control={form.control}
-                    name="identifier"
+                    name="email"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-base font-semibold flex items-center gap-2">
                           <Mail className="h-4 w-4 text-primary" />
-                          Email / Registration Number / Staff ID
+                          Email Address
                         </FormLabel>
                         <FormControl>
                           <Input
-                            type="text"
-                            placeholder="Enter your email, UG20/COMS/1284, or Staff/Adustech/1022"
+                            type="email"
+                            placeholder="Enter your email address"
                             {...field}
                             className="h-12 text-lg border-2 focus:border-primary transition-all duration-300 bg-background/50 backdrop-blur-sm"
                           />
@@ -331,12 +451,12 @@ export default function ForgotPasswordPage() {
                       {isLoading ? (
                         <span className="flex items-center justify-center">
                           <Loader2 className="mr-3 h-5 w-5 animate-spin" />
-                          Sending reset email...
+                          Sending password...
                         </span>
                       ) : (
                         <span className="flex items-center justify-center">
                           <Mail className="mr-3 h-5 w-5" />
-                          Send Reset Instructions
+                          Send Password to Email
                         </span>
                       )}
                     </Button>
