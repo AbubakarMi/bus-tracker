@@ -95,3 +95,10 @@ export async function resetPassword(email: string): Promise<void> {
 }
 
 export { auth, db, isFirebaseConfigured };
+
+// Auto-run Firebase tests on client side
+if (typeof window !== 'undefined' && isFirebaseConfigured) {
+  import('./firebase-test').then(({ initFirebaseTest }) => {
+    initFirebaseTest();
+  });
+}

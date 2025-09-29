@@ -2,6 +2,7 @@ import { db } from './firebase';
 import { doc, setDoc, getDoc, collection, query, getDocs, updateDoc, deleteDoc, addDoc, where, increment } from 'firebase/firestore';
 import { getAllBuses, updateBus, type Bus } from './bus-service';
 import { dataService } from './data-service';
+import { realTimeSync } from './real-time-sync';
 
 export interface Booking {
   id: string;
@@ -67,7 +68,10 @@ export async function createBooking(bookingData: Omit<Booking, 'id' | 'createdAt
     if (db) {
       // Save to Firestore
       await setDoc(doc(db, 'bookings', newBooking.id), newBooking);
-      console.log('Booking saved to Firestore:', newBooking.id);
+      console.log('✅ Booking saved to Firestore:', newBooking.id);
+
+      // Trigger real-time update
+      realTimeSync.triggerUpdate('booking_created', newBooking, createdBy || bookingData.passengerId);
     }
 
     // Also save to localStorage as backup
@@ -156,6 +160,13 @@ export async function updateBooking(bookingId: string, updates: Partial<Booking>
     if (db) {
       // Update in Firestore
       await updateDoc(doc(db, 'bookings', bookingId), updateData);
+
+      // Get the updated booking for real-time update
+      const updatedBookingDoc = await getDoc(doc(db, 'bookings', bookingId));
+      if (updatedBookingDoc.exists()) {
+        const updatedBooking = { id: updatedBookingDoc.id, ...updatedBookingDoc.data() };
+        realTimeSync.triggerUpdate('booking_updated', updatedBooking, 'system');
+      }
     }
 
     // Update in localStorage

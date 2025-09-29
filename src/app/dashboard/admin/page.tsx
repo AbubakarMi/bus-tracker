@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { createBus, getAllBuses, updateBus, deleteBus, createRoute, getAllRoutes, initializeDefaultData, type Bus as BusType, type Route as RouteType } from '@/lib/bus-service';
 import { getAllBusBookingSummaries, getSeatAvailability, getAllBookings, type BusBookingSummary, type SeatAvailability, type Booking } from '@/lib/booking-service';
 import { dataService, type ActivityLog, type SystemSettings } from '@/lib/data-service';
-import { useRealTimeSystemData } from '@/hooks/use-real-time-data';
+import { useRealTimeSystemData, useRealTimeBuses, useRealTimeRoutes, useRealTimeBookings } from '@/hooks/use-real-time-data';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

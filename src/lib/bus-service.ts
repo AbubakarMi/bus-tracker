@@ -1,5 +1,6 @@
 import { db } from './firebase';
 import { doc, setDoc, getDoc, collection, query, getDocs, updateDoc, deleteDoc, addDoc } from 'firebase/firestore';
+import { realTimeSync } from './real-time-sync';
 
 export interface Bus {
   id: string;
@@ -44,7 +45,10 @@ export async function createBus(busData: Omit<Bus, 'id' | 'createdAt' | 'updated
     if (db) {
       // Save to Firestore
       await setDoc(doc(db, 'buses', newBus.id), newBus);
-      console.log('Bus saved to Firestore:', newBus.id);
+      console.log('✅ Bus saved to Firestore:', newBus.id);
+
+      // Trigger real-time update
+      realTimeSync.triggerUpdate('bus_created', newBus, 'admin');
     }
 
     // Also save to localStorage as backup
@@ -138,6 +142,10 @@ export async function createRoute(routeData: Omit<Route, 'id' | 'createdAt' | 'u
     if (db) {
       // Save to Firestore
       await setDoc(doc(db, 'routes', newRoute.id), newRoute);
+      console.log('✅ Route saved to Firestore:', newRoute.id);
+
+      // Trigger real-time update
+      realTimeSync.triggerUpdate('route_created', newRoute, 'admin');
     }
 
     // Also save to localStorage as backup

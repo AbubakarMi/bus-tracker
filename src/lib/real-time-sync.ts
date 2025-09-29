@@ -1,7 +1,9 @@
 import { dataService } from './data-service';
+import { db } from './firebase';
+import { collection, onSnapshot, query, orderBy, limit } from 'firebase/firestore';
 
 export interface SystemUpdate {
-  type: 'bus_created' | 'bus_updated' | 'bus_deleted' | 'route_created' | 'route_updated' | 'booking_created' | 'booking_updated' | 'settings_updated' | 'user_created';
+  type: 'bus_created' | 'bus_updated' | 'bus_deleted' | 'route_created' | 'route_updated' | 'booking_created' | 'booking_updated' | 'settings_updated' | 'user_created' | 'activity_updated';
   data: any;
   timestamp: string;
   updatedBy: string;
@@ -11,6 +13,7 @@ class RealTimeSync {
   private static instance: RealTimeSync;
   private listeners: Map<string, Set<(update: SystemUpdate) => void>> = new Map();
   private isInitialized = false;
+  private unsubscribeFunctions: Map<string, () => void> = new Map();
 
   static getInstance(): RealTimeSync {
     if (!RealTimeSync.instance) {
@@ -34,7 +37,91 @@ class RealTimeSync {
       this.broadcastUpdate(update);
     });
 
+    // Initialize Firebase real-time listeners if available
+    if (db) {
+      this.setupFirebaseListeners();
+    }
+
     this.isInitialized = true;
+  }
+
+  private setupFirebaseListeners() {
+    // Listen to bookings collection in real-time
+    const bookingsQuery = query(
+      collection(db, 'bookings'),
+      orderBy('createdAt', 'desc')
+    );
+    const unsubscribeBookings = onSnapshot(bookingsQuery, (snapshot) => {
+      snapshot.docChanges().forEach((change) => {
+        const booking = { id: change.doc.id, ...change.doc.data() };
+        let updateType: SystemUpdate['type'];
+
+        if (change.type === 'added') {
+          updateType = 'booking_created';
+        } else if (change.type === 'modified') {
+          updateType = 'booking_updated';
+        } else {
+          return; // Skip removed for now
+        }
+
+        this.triggerUpdate(updateType, booking, 'firebase');
+      });
+    });
+    this.unsubscribeFunctions.set('bookings', unsubscribeBookings);
+
+    // Listen to buses collection
+    const busesQuery = query(collection(db, 'buses'));
+    const unsubscribeBuses = onSnapshot(busesQuery, (snapshot) => {
+      snapshot.docChanges().forEach((change) => {
+        const bus = { id: change.doc.id, ...change.doc.data() };
+        let updateType: SystemUpdate['type'];
+
+        if (change.type === 'added') {
+          updateType = 'bus_created';
+        } else if (change.type === 'modified') {
+          updateType = 'bus_updated';
+        } else if (change.type === 'removed') {
+          updateType = 'bus_deleted';
+        } else {
+          return;
+        }
+
+        this.triggerUpdate(updateType, bus, 'firebase');
+      });
+    });
+    this.unsubscribeFunctions.set('buses', unsubscribeBuses);
+
+    // Listen to routes collection
+    const routesQuery = query(collection(db, 'routes'));
+    const unsubscribeRoutes = onSnapshot(routesQuery, (snapshot) => {
+      snapshot.docChanges().forEach((change) => {
+        const route = { id: change.doc.id, ...change.doc.data() };
+        let updateType: SystemUpdate['type'];
+
+        if (change.type === 'added') {
+          updateType = 'route_created';
+        } else if (change.type === 'modified') {
+          updateType = 'route_updated';
+        } else {
+          return; // Skip removed for now
+        }
+
+        this.triggerUpdate(updateType, route, 'firebase');
+      });
+    });
+    this.unsubscribeFunctions.set('routes', unsubscribeRoutes);
+
+    // Listen to activities for real-time notifications
+    const activitiesQuery = query(
+      collection(db, 'activities'),
+      orderBy('timestamp', 'desc'),
+      limit(50)
+    );
+    const unsubscribeActivities = onSnapshot(activitiesQuery, (snapshot) => {
+      const activities = snapshot.docs.map(doc => ({ id: doc.id, ...doc.doc.data() }));
+      this.triggerUpdate('activity_updated' as any, activities, 'firebase');
+    });
+    this.unsubscribeFunctions.set('activities', unsubscribeActivities);
   }
 
   // Subscribe to specific update types
@@ -64,8 +151,18 @@ class RealTimeSync {
 
   // Subscribe to all updates
   subscribeToAll(callback: (update: SystemUpdate) => void): () => void {
-    const allTypes = ['bus_created', 'bus_updated', 'bus_deleted', 'route_created', 'route_updated', 'booking_created', 'booking_updated', 'settings_updated', 'user_created'];
+    const allTypes = ['bus_created', 'bus_updated', 'bus_deleted', 'route_created', 'route_updated', 'booking_created', 'booking_updated', 'settings_updated', 'user_created', 'activity_updated'];
     return this.subscribe(allTypes, callback);
+  }
+
+  // Cleanup method
+  cleanup() {
+    this.unsubscribeFunctions.forEach((unsubscribe) => {
+      unsubscribe();
+    });
+    this.unsubscribeFunctions.clear();
+    this.listeners.clear();
+    this.isInitialized = false;
   }
 
   private broadcastUpdate(update: SystemUpdate) {
