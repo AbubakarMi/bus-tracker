@@ -13,7 +13,23 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-const isFirebaseConfigured = !!firebaseConfig.apiKey;
+// Enhanced validation
+const requiredEnvVars = [
+  'NEXT_PUBLIC_FIREBASE_API_KEY',
+  'NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN',
+  'NEXT_PUBLIC_FIREBASE_PROJECT_ID',
+  'NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET',
+  'NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID',
+  'NEXT_PUBLIC_FIREBASE_APP_ID'
+];
+
+const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
+const isFirebaseConfigured = missingEnvVars.length === 0;
+
+if (missingEnvVars.length > 0) {
+  console.error("❌ Missing Firebase environment variables:", missingEnvVars);
+  console.error("🔧 Please check your .env.local file and ensure all NEXT_PUBLIC_FIREBASE_* variables are set");
+}
 
 let app: FirebaseApp;
 let auth: Auth | null = null;
@@ -26,8 +42,10 @@ if (isFirebaseConfigured) {
       auth = getAuth(app);
       db = getFirestore(app);
       console.log("✅ Firebase initialized successfully");
+      console.log("🔥 Project ID:", firebaseConfig.projectId);
     } catch (e) {
-      console.error("❌ Failed to initialize Firebase", e)
+      console.error("❌ Failed to initialize Firebase:", e);
+      console.error("🔧 Check your Firebase configuration and project settings");
     }
   } else {
     app = getApps()[0];
@@ -36,7 +54,8 @@ if (isFirebaseConfigured) {
     console.log("✅ Firebase already initialized");
   }
 } else {
-  console.error("❌ Firebase config is missing. Please set up your .env file.");
+  console.error("❌ Firebase config is incomplete. Required variables:", requiredEnvVars);
+  console.error("📋 See FIREBASE_SETUP.md for configuration help");
 }
 
 // Test Firebase connection
