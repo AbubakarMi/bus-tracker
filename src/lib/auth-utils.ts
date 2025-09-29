@@ -1,4 +1,5 @@
 import { db, isFirebaseReady, waitForFirebase } from './firebase';
+import { db as simpleDb, isSimpleFirebaseReady } from './firebase-fix';
 import { doc, setDoc, getDoc, collection, query, where, getDocs, updateDoc } from 'firebase/firestore';
 import {
   generateOTP,
@@ -298,12 +299,22 @@ export async function registerStudent(regNo: string, password: string, name: str
     throw new Error('Name too short (min 2 chars)');
   }
 
-  // Wait for Firebase to be ready if possible
+  // Try primary Firebase first, then fallback to simple Firebase
   const firebaseReady = await waitForFirebase(3000);
+  const useSimpleFirebase = !firebaseReady && isSimpleFirebaseReady();
+  const activeDb = firebaseReady && db ? db : (useSimpleFirebase ? simpleDb : null);
 
-  if (!firebaseReady || !db) {
-    console.warn('🔥 Firestore not ready, using localStorage only for student registration');
-    console.log('💡 Firebase status:', { firebaseReady, dbAvailable: !!db });
+  console.log('🔥 Firebase status check:', {
+    primaryReady: firebaseReady,
+    primaryDb: !!db,
+    simpleReady: isSimpleFirebaseReady(),
+    simpleDb: !!simpleDb,
+    activeDb: !!activeDb,
+    usingSimple: useSimpleFirebase
+  });
+
+  if (!activeDb) {
+    console.warn('🔥 No Firestore available (primary or simple), using localStorage only');
     // Don't throw error, continue with localStorage-only registration
   }
 
@@ -339,13 +350,13 @@ export async function registerStudent(regNo: string, password: string, name: str
     console.log('Student saved to localStorage for forgot password');
 
     // Try to save to Firestore if available
-    if (firebaseReady && db) {
-      console.log('🔄 Attempting to save student to Firestore...', { regNo });
-      await setDoc(doc(db, 'users', regNo), student);
-      console.log('✅ Student registered successfully in Firestore:', regNo);
+    if (activeDb) {
+      const dbType = useSimpleFirebase ? 'Simple Firebase' : 'Primary Firebase';
+      console.log(`🔄 Attempting to save student to ${dbType}...`, { regNo });
+      await setDoc(doc(activeDb, 'users', regNo), student);
+      console.log(`✅ Student registered successfully in ${dbType}:`, regNo);
     } else {
-      console.log('📱 Firestore not ready, student saved to localStorage only');
-      console.log('🔍 Debug info:', { firebaseReady, dbExists: !!db });
+      console.log('📱 No Firestore available, student saved to localStorage only');
     }
 
     return student;
