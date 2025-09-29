@@ -85,7 +85,7 @@ You can customize the email templates in:
 - `src/lib/email-service.ts` - Email service logic
 
 ## 🚨 Security Best Practices
-
+b
 1. **Never commit API keys** to version control
 2. **Use different API keys** for development and production
 3. **Monitor email usage** in Resend dashboard
