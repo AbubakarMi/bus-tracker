@@ -31,32 +31,56 @@ if (missingEnvVars.length > 0) {
   console.error("🔧 Please check your .env.local file and ensure all NEXT_PUBLIC_FIREBASE_* variables are set");
 }
 
-let app: FirebaseApp;
+let app: FirebaseApp | null = null;
 let auth: Auth | null = null;
 let db: Firestore | null = null;
 
-if (isFirebaseConfigured) {
-  if (!getApps().length) {
-    try {
+// Initialize Firebase
+function initializeFirebaseApp() {
+  if (!isFirebaseConfigured) {
+    console.error("❌ Firebase config is incomplete. Required variables:", requiredEnvVars);
+    console.error("📋 See FIREBASE_SETUP.md for configuration help");
+    return;
+  }
+
+  try {
+    if (!getApps().length) {
       app = initializeApp(firebaseConfig);
-      auth = getAuth(app);
-      db = getFirestore(app);
-      console.log("✅ Firebase initialized successfully");
-      console.log("🔥 Project ID:", firebaseConfig.projectId);
-    } catch (e) {
-      console.error("❌ Failed to initialize Firebase:", e);
-      console.error("🔧 Check your Firebase configuration and project settings");
+      console.log("✅ Firebase app initialized successfully");
+    } else {
+      app = getApps()[0];
+      console.log("✅ Firebase app already initialized");
     }
-  } else {
-    app = getApps()[0];
+
+    // Initialize services
     auth = getAuth(app);
     db = getFirestore(app);
-    console.log("✅ Firebase already initialized");
+
+    console.log("✅ Firebase services initialized");
+    console.log("🔥 Project ID:", firebaseConfig.projectId);
+    console.log("🔥 Firestore database connected");
+
+    // Test database connection
+    if (typeof window !== 'undefined') {
+      // Quick connection test
+      import('./firebase-test').then(({ testFirebaseConnection }) => {
+        testFirebaseConnection();
+      }).catch(err => console.warn('Firebase test import failed:', err));
+    }
+
+  } catch (error) {
+    console.error("❌ Failed to initialize Firebase:", error);
+    console.error("🔧 Check your Firebase configuration and project settings");
+
+    // Reset to null on failure
+    app = null;
+    auth = null;
+    db = null;
   }
-} else {
-  console.error("❌ Firebase config is incomplete. Required variables:", requiredEnvVars);
-  console.error("📋 See FIREBASE_SETUP.md for configuration help");
 }
+
+// Initialize immediately if configuration is available
+initializeFirebaseApp();
 
 // Test Firebase connection
 if (db) {
@@ -94,11 +118,31 @@ export async function resetPassword(email: string): Promise<void> {
   }
 }
 
-export { auth, db, isFirebaseConfigured };
+// Helper function to check if Firebase is ready
+export function isFirebaseReady(): boolean {
+  return !!(app && auth && db && isFirebaseConfigured);
+}
 
-// Auto-run Firebase tests on client side
-if (typeof window !== 'undefined' && isFirebaseConfigured) {
-  import('./firebase-test').then(({ initFirebaseTest }) => {
-    initFirebaseTest();
+// Helper function to wait for Firebase to be ready
+export function waitForFirebase(timeout: number = 5000): Promise<boolean> {
+  return new Promise((resolve) => {
+    if (isFirebaseReady()) {
+      resolve(true);
+      return;
+    }
+
+    const startTime = Date.now();
+    const checkInterval = setInterval(() => {
+      if (isFirebaseReady()) {
+        clearInterval(checkInterval);
+        resolve(true);
+      } else if (Date.now() - startTime > timeout) {
+        clearInterval(checkInterval);
+        console.warn('⏰ Firebase initialization timeout after', timeout, 'ms');
+        resolve(false);
+      }
+    }, 100);
   });
 }
+
+export { auth, db, isFirebaseConfigured, app };

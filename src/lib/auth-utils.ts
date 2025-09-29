@@ -1,4 +1,4 @@
-import { db } from './firebase';
+import { db, isFirebaseReady, waitForFirebase } from './firebase';
 import { doc, setDoc, getDoc, collection, query, where, getDocs, updateDoc } from 'firebase/firestore';
 import {
   generateOTP,
@@ -298,8 +298,12 @@ export async function registerStudent(regNo: string, password: string, name: str
     throw new Error('Name too short (min 2 chars)');
   }
 
-  if (!db) {
-    console.warn('Firestore not available, using localStorage only for student registration');
+  // Wait for Firebase to be ready if possible
+  const firebaseReady = await waitForFirebase(3000);
+
+  if (!firebaseReady || !db) {
+    console.warn('🔥 Firestore not ready, using localStorage only for student registration');
+    console.log('💡 Firebase status:', { firebaseReady, dbAvailable: !!db });
     // Don't throw error, continue with localStorage-only registration
   }
 
@@ -335,12 +339,13 @@ export async function registerStudent(regNo: string, password: string, name: str
     console.log('Student saved to localStorage for forgot password');
 
     // Try to save to Firestore if available
-    if (db) {
-      console.log('Attempting to save student to Firestore...', { regNo });
+    if (firebaseReady && db) {
+      console.log('🔄 Attempting to save student to Firestore...', { regNo });
       await setDoc(doc(db, 'users', regNo), student);
-      console.log('Student registered successfully in Firestore:', regNo);
+      console.log('✅ Student registered successfully in Firestore:', regNo);
     } else {
-      console.log('Firestore not available, student saved to localStorage only');
+      console.log('📱 Firestore not ready, student saved to localStorage only');
+      console.log('🔍 Debug info:', { firebaseReady, dbExists: !!db });
     }
 
     return student;
