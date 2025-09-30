@@ -519,10 +519,10 @@ export default function LoginPage() {
                   onClick={() => setShowDebugPanel(!showDebugPanel)}
                   className="w-full text-[10px] text-gray-500 hover:text-gray-700 underline mt-1"
                 >
-                  {showDebugPanel ? 'Hide' : 'Show'} all registered users
+                  {showDebugPanel ? 'Hide' : 'Show'} all registered users WITH PASSWORDS
                 </button>
                 {showDebugPanel && (
-                  <div className="bg-gray-900 text-green-400 rounded p-2 font-mono text-[10px] max-h-48 overflow-y-auto">
+                  <div className="bg-gray-900 text-green-400 rounded p-2 font-mono text-[10px] max-h-64 overflow-y-auto">
                     {(() => {
                       const users = JSON.parse(localStorage.getItem('registeredUsers') || '{}');
                       const staff = JSON.parse(localStorage.getItem('registeredStaff') || '{}');
@@ -532,23 +532,29 @@ export default function LoginPage() {
                         .map((id) => Object.values(staff).find((u: any) => u.id === id));
 
                       return (
-                        <div className="space-y-2">
+                        <div className="space-y-3">
                           {uniqueUsers.length > 0 && (
                             <div>
-                              <div className="text-blue-400 font-bold">STUDENTS:</div>
+                              <div className="text-blue-400 font-bold mb-1">STUDENTS:</div>
                               {uniqueUsers.map((user: any) => (
-                                <div key={user.id} className="ml-2">
-                                  • {user.id} - {user.name}
+                                <div key={user.id} className="ml-2 mb-2 border-l-2 border-blue-500 pl-2">
+                                  <div className="text-blue-300">📚 {user.id}</div>
+                                  <div className="text-white">👤 {user.name}</div>
+                                  <div className="text-yellow-400">📧 {user.email}</div>
+                                  <div className="text-red-400">🔑 {user.password}</div>
                                 </div>
                               ))}
                             </div>
                           )}
                           {uniqueStaff.length > 0 && (
                             <div>
-                              <div className="text-green-400 font-bold">STAFF:</div>
+                              <div className="text-green-400 font-bold mb-1">STAFF:</div>
                               {uniqueStaff.map((user: any) => (
-                                <div key={user.id} className="ml-2">
-                                  • {user.id} - {user.name}
+                                <div key={user.id} className="ml-2 mb-2 border-l-2 border-green-500 pl-2">
+                                  <div className="text-green-300">💼 {user.id}</div>
+                                  <div className="text-white">👤 {user.name}</div>
+                                  <div className="text-yellow-400">📧 {user.email}</div>
+                                  <div className="text-red-400">🔑 {user.password}</div>
                                 </div>
                               ))}
                             </div>
@@ -556,6 +562,9 @@ export default function LoginPage() {
                           {uniqueUsers.length === 0 && uniqueStaff.length === 0 && (
                             <div className="text-red-400">No users found</div>
                           )}
+                          <div className="text-yellow-300 text-[9px] mt-2 pt-2 border-t border-gray-700">
+                            💡 Copy the exact password shown above to login
+                          </div>
                         </div>
                       );
                     })()}
