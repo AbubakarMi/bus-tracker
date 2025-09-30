@@ -195,6 +195,40 @@ export default function RegisterPage() {
       }
 
       if (result) {
+        console.log('✅ Registration successful, result:', result);
+
+        // VERIFY IMMEDIATELY that user is saved
+        const storageKey = userType === 'student' ? 'registeredUsers' : 'registeredStaff';
+        const savedUsers = JSON.parse(localStorage.getItem(storageKey) || '{}');
+
+        console.log('🔍 Verifying user was saved...');
+        console.log('Storage key:', storageKey);
+        console.log('Looking for:', result.id);
+        console.log('User by ID:', savedUsers[result.id] ? '✅ FOUND' : '❌ NOT FOUND');
+        console.log('User by email:', savedUsers[result.email] ? '✅ FOUND' : '❌ NOT FOUND');
+
+        // Force re-save if not found
+        if (!savedUsers[result.id] || !savedUsers[result.email]) {
+          console.warn('⚠️ User not found after registration, force re-saving...');
+          savedUsers[result.id] = result;
+          if (result.email) {
+            savedUsers[result.email] = result;
+          }
+          localStorage.setItem(storageKey, JSON.stringify(savedUsers));
+          console.log('✅ Force re-save complete');
+        }
+
+        // Final verification
+        const finalCheck = JSON.parse(localStorage.getItem(storageKey) || '{}');
+        if (finalCheck[result.id]) {
+          console.log('✅✅✅ FINAL VERIFICATION: User is in database!');
+          console.log('You can login with:', result.id);
+          console.log('Or with email:', result.email);
+          console.log('Password:', result.password);
+        } else {
+          console.error('❌❌❌ CRITICAL: User still not in database after force save!');
+        }
+
         // Set authentication state immediately after successful registration
         localStorage.setItem('isLoggedIn', 'true');
         localStorage.setItem('userData', JSON.stringify(result));
@@ -202,6 +236,13 @@ export default function RegisterPage() {
         // Set user data for welcome popup and show it
         setRegisteredUser(result);
         setShowWelcomePopup(true);
+
+        // Show success with login credentials
+        toast({
+          title: "Registration Successful!",
+          description: `You can now login with ${result.id}`,
+          duration: 8000,
+        });
       } else {
         throw new Error('Registration failed - user may already exist');
       }

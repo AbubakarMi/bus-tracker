@@ -40,32 +40,55 @@ const ADMIN_EMAIL = 'admin@adustech.edu.ng';
 const DEFAULT_PASSWORD = 'pass123';
 
 export function detectUserRole(identifier: string): UserRole | null {
+  console.log('🔍 Detecting role for:', identifier);
+
   // Check if it's admin email
   if (identifier.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+    console.log('✅ Detected as: admin');
     return 'admin';
   }
 
   // Check if it's a student registration number
   if (STUDENT_REG_PATTERN.test(identifier)) {
+    console.log('✅ Detected as: student (by reg number)');
     return 'student';
   }
 
   // Check if it's a staff ID
   if (STAFF_ID_PATTERN.test(identifier)) {
+    console.log('✅ Detected as: staff (by staff ID)');
     return 'staff';
   }
 
-  // Check if it's a driver email (any email created by admin)
-  if (identifier.includes('@') && !identifier.toLowerCase().includes('admin')) {
-    // Check if it's in the registered drivers (created by admin)
-    if (typeof window !== 'undefined') {
-      const registeredDrivers = JSON.parse(localStorage.getItem('registeredDrivers') || '{}');
-      if (registeredDrivers[identifier]) {
-        return 'driver';
-      }
+  // Check if it's an email - search in localStorage to find role
+  if (identifier.includes('@') && typeof window !== 'undefined') {
+    console.log('📧 Email detected, searching in localStorage...');
+
+    // Check students
+    const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '{}');
+    if (registeredUsers[identifier]) {
+      console.log('✅ Found in students, detected as: student');
+      return 'student';
     }
+
+    // Check staff
+    const registeredStaff = JSON.parse(localStorage.getItem('registeredStaff') || '{}');
+    if (registeredStaff[identifier]) {
+      console.log('✅ Found in staff, detected as: staff');
+      return 'staff';
+    }
+
+    // Check drivers
+    const registeredDrivers = JSON.parse(localStorage.getItem('registeredDrivers') || '{}');
+    if (registeredDrivers[identifier]) {
+      console.log('✅ Found in drivers, detected as: driver');
+      return 'driver';
+    }
+
+    console.log('⚠️ Email not found in any storage');
   }
 
+  console.log('❌ Could not detect role');
   return null;
 }
 
@@ -131,26 +154,147 @@ const adminUser: UserData = {
 };
 
 export async function authenticateUser(identifier: string, password: string): Promise<UserData | null> {
+  console.log('🔐 Authenticating user:', identifier);
+
   // Check admin credentials
   if (identifier.toLowerCase() === ADMIN_EMAIL.toLowerCase() && password === DEFAULT_PASSWORD) {
+    console.log('✅ Admin login successful');
     return adminUser;
   }
 
   const role = detectUserRole(identifier);
-  if (!role || !db) return null;
+  if (!role) {
+    console.error('❌ Could not detect user role for:', identifier);
+    return null;
+  }
+
+  console.log('🔍 Detected role:', role);
 
   try {
-    // Check user credentials in Firestore
-    const userDoc = await getDoc(doc(db, 'users', identifier));
+    // Try Firestore first if available
+    if (db) {
+      console.log('🔥 Checking Firestore database...');
+      const userDoc = await getDoc(doc(db, 'users', identifier));
 
-    if (userDoc.exists()) {
-      const userData = userDoc.data() as UserData;
-      if (userData.password === password) {
-        return userData;
+      if (userDoc.exists()) {
+        const userData = userDoc.data() as UserData;
+        console.log('📄 User found in Firestore:', userData.name);
+        if (userData.password === password) {
+          console.log('✅ Password match - Firestore authentication successful');
+          return userData;
+        } else {
+          console.error('❌ Password mismatch in Firestore');
+        }
+      } else {
+        console.log('⚠️ User not found in Firestore, checking localStorage...');
+      }
+    } else {
+      console.log('⚠️ Firestore not available, checking localStorage...');
+    }
+
+    // Fallback to localStorage for students and staff
+    console.log('📱 Checking localStorage...');
+    if (role === 'student') {
+      const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '{}');
+      const allKeys = Object.keys(registeredUsers);
+      console.log('📚 Registered users in localStorage:', allKeys.length);
+      console.log('📋 All keys:', allKeys);
+
+      // Debug: Show all unique user IDs
+      const uniqueUsers = new Set();
+      Object.values(registeredUsers).forEach((user: any) => {
+        if (user && user.id) uniqueUsers.add(user.id);
+      });
+      console.log('👥 Unique student IDs:', Array.from(uniqueUsers));
+      console.log('🔍 Looking for:', identifier);
+
+      // Check by identifier (regNumber)
+      if (registeredUsers[identifier]) {
+        const userData = registeredUsers[identifier];
+        console.log('📄 Student found by ID:', userData.name);
+        console.log('🔑 Expected password:', password);
+        console.log('🔑 Stored password:', userData.password);
+        if (userData.password === password) {
+          console.log('✅ Student authenticated from localStorage');
+          return userData;
+        } else {
+          console.error('❌ Password mismatch for student in localStorage');
+          console.error('   You entered:', password);
+          console.error('   Database has:', userData.password);
+        }
+      } else {
+        console.log('❌ Identifier not found as direct key');
+        console.log('💡 Try these IDs instead:', Array.from(uniqueUsers));
+      }
+
+      // Also check by email if identifier looks like email
+      if (identifier.includes('@')) {
+        for (const [key, user] of Object.entries(registeredUsers)) {
+          const userData = user as UserData;
+          if (userData.email?.toLowerCase() === identifier.toLowerCase()) {
+            console.log('📄 Student found by email:', userData.name);
+            if (userData.password === password) {
+              console.log('✅ Student authenticated from localStorage by email');
+              return userData;
+            } else {
+              console.error('❌ Password mismatch for student (by email) in localStorage');
+            }
+          }
+        }
+      }
+    } else if (role === 'staff') {
+      const registeredStaff = JSON.parse(localStorage.getItem('registeredStaff') || '{}');
+      const allKeys = Object.keys(registeredStaff);
+      console.log('👔 Registered staff in localStorage:', allKeys.length);
+      console.log('📋 All keys:', allKeys);
+
+      // Debug: Show all unique staff IDs
+      const uniqueStaff = new Set();
+      Object.values(registeredStaff).forEach((user: any) => {
+        if (user && user.id) uniqueStaff.add(user.id);
+      });
+      console.log('👥 Unique staff IDs:', Array.from(uniqueStaff));
+      console.log('🔍 Looking for:', identifier);
+
+      // Check by identifier (staffId)
+      if (registeredStaff[identifier]) {
+        const userData = registeredStaff[identifier];
+        console.log('📄 Staff found by ID:', userData.name);
+        console.log('🔑 Expected password:', password);
+        console.log('🔑 Stored password:', userData.password);
+        if (userData.password === password) {
+          console.log('✅ Staff authenticated from localStorage');
+          return userData;
+        } else {
+          console.error('❌ Password mismatch for staff in localStorage');
+          console.error('   You entered:', password);
+          console.error('   Database has:', userData.password);
+        }
+      } else {
+        console.log('❌ Identifier not found as direct key');
+        console.log('💡 Try these IDs instead:', Array.from(uniqueStaff));
+      }
+
+      // Also check by email if identifier looks like email
+      if (identifier.includes('@')) {
+        for (const [key, user] of Object.entries(registeredStaff)) {
+          const userData = user as UserData;
+          if (userData.email?.toLowerCase() === identifier.toLowerCase()) {
+            console.log('📄 Staff found by email:', userData.name);
+            if (userData.password === password) {
+              console.log('✅ Staff authenticated from localStorage by email');
+              return userData;
+            } else {
+              console.error('❌ Password mismatch for staff (by email) in localStorage');
+            }
+          }
+        }
       }
     }
+
+    console.error('❌ User not found in Firestore or localStorage');
   } catch (error) {
-    console.error('Error authenticating user:', error);
+    console.error('❌ Error authenticating user:', error);
   }
 
   return null;
@@ -209,24 +353,76 @@ export function isValidStaffId(staffId: string): boolean {
 
 // Helper function to check for existing users by email or ID with enhanced validation
 async function checkForDuplicateUser(identifier: string, email: string, expectedRole: 'student' | 'staff'): Promise<{ exists: boolean; message: string }> {
+  console.log('🔍 Checking for duplicate user:', { identifier, email, expectedRole });
+
+  // Always check localStorage first (faster and works offline)
+  try {
+    const localStorageKey = expectedRole === 'student' ? 'registeredUsers' : 'registeredStaff';
+    const localUsers = JSON.parse(localStorage.getItem(localStorageKey) || '{}');
+
+    // Check by identifier
+    if (localUsers[identifier]) {
+      console.log('❌ Duplicate found in localStorage by ID:', identifier);
+      return {
+        exists: true,
+        message: `${identifier} already exists. Please login instead.`
+      };
+    }
+
+    // Check by email
+    if (localUsers[email]) {
+      console.log('❌ Duplicate found in localStorage by email:', email);
+      return {
+        exists: true,
+        message: `Email ${email} already exists. Try logging in.`
+      };
+    }
+
+    // Also check if email is used in any user object (not just as key)
+    for (const [key, user] of Object.entries(localUsers)) {
+      const userData = user as UserData;
+      if (userData.email?.toLowerCase() === email.toLowerCase()) {
+        console.log('❌ Duplicate email found in localStorage:', email);
+        return {
+          exists: true,
+          message: `Email ${email} already exists. Try logging in.`
+        };
+      }
+      if (userData.id === identifier || userData.regNumber === identifier || userData.staffId === identifier) {
+        console.log('❌ Duplicate ID found in localStorage:', identifier);
+        return {
+          exists: true,
+          message: `${identifier} already exists. Please login instead.`
+        };
+      }
+    }
+
+    console.log('✅ No duplicates in localStorage');
+  } catch (error) {
+    console.error('Error checking localStorage for duplicates:', error);
+  }
+
+  // Then check Firestore if available
   if (!db) {
+    console.log('⚠️ Firestore not available, skipping Firestore duplicate check');
     return { exists: false, message: '' };
   }
 
   try {
+    console.log('🔥 Checking Firestore for duplicates...');
+
     // Check by ID/registration number
     const userDocById = await getDoc(doc(db, 'users', identifier));
     if (userDocById.exists()) {
       const existingUser = userDocById.data() as UserData;
+      console.log('❌ Duplicate found in Firestore by ID:', identifier);
 
       if (existingUser.role === expectedRole) {
-        // Same role, same ID - duplicate account
         return {
           exists: true,
           message: `${identifier} already exists. Please login instead.`
         };
       } else {
-        // Different role, same ID - prevent cross-role usage
         const existingRole = existingUser.role === 'student' ? 'student' : 'staff';
         return {
           exists: true,
@@ -242,8 +438,7 @@ async function checkForDuplicateUser(identifier: string, email: string, expected
 
     if (!emailSnapshot.empty) {
       const existingUser = emailSnapshot.docs[0].data() as UserData;
-      const userType = existingUser.role === 'student' ? 'student' : 'staff member';
-      const userIdentifier = existingUser.regNumber || existingUser.staffId || existingUser.id;
+      console.log('❌ Duplicate email found in Firestore:', email);
 
       if (existingUser.role === expectedRole) {
         return {
@@ -251,6 +446,7 @@ async function checkForDuplicateUser(identifier: string, email: string, expected
           message: `Email ${email} already exists. Try logging in.`
         };
       } else {
+        const userType = existingUser.role === 'student' ? 'student' : 'staff member';
         return {
           exists: true,
           message: `Email used by ${userType}. Use different email.`
@@ -258,27 +454,10 @@ async function checkForDuplicateUser(identifier: string, email: string, expected
       }
     }
 
-    // Additional check: Look for similar identifiers that might be confused
-    // This helps prevent registration number/staff ID conflicts
-    const usersCollection = collection(db, 'users');
-    const allUsersSnapshot = await getDocs(usersCollection);
-
-    for (const userDoc of allUsersSnapshot.docs) {
-      const userData = userDoc.data() as UserData;
-      const existingId = userData.regNumber || userData.staffId || userData.id;
-
-      // Check if identifier is very similar (case-insensitive)
-      if (existingId && existingId.toLowerCase() === identifier.toLowerCase() && existingId !== identifier) {
-        return {
-          exists: true,
-          message: `Similar ID "${existingId}" exists. Check your ${expectedRole === 'student' ? 'reg number' : 'staff ID'}.`
-        };
-      }
-    }
-
+    console.log('✅ No duplicates in Firestore');
     return { exists: false, message: '' };
   } catch (error) {
-    console.error('Error checking for duplicate user:', error);
+    console.error('Error checking Firestore for duplicates:', error);
     return { exists: false, message: '' };
   }
 }
@@ -343,25 +522,35 @@ export async function registerStudent(regNo: string, password: string, name: str
   };
 
   try {
-    // Always save to localStorage first (this will work regardless of Firebase)
+    // Save to localStorage with BOTH regNo and email as keys for easy lookup
     const localUsers = JSON.parse(localStorage.getItem('registeredUsers') || '{}');
-    localUsers[student.email] = student;
+    localUsers[student.id] = student; // Save by registration number (primary key)
+    localUsers[student.email] = student; // Also save by email for forgot password
     localStorage.setItem('registeredUsers', JSON.stringify(localUsers));
-    console.log('Student saved to localStorage for forgot password');
+    console.log('✅ Student saved to localStorage:', {
+      regNo: student.id,
+      email: student.email,
+      name: student.name
+    });
 
     // Try to save to Firestore if available
     if (activeDb) {
       const dbType = useSimpleFirebase ? 'Simple Firebase' : 'Primary Firebase';
       console.log(`🔄 Attempting to save student to ${dbType}...`, { regNo });
-      await setDoc(doc(activeDb, 'users', regNo), student);
-      console.log(`✅ Student registered successfully in ${dbType}:`, regNo);
+      try {
+        await setDoc(doc(activeDb, 'users', regNo), student);
+        console.log(`✅ Student registered successfully in ${dbType}:`, regNo);
+      } catch (firestoreError) {
+        console.error(`❌ Failed to save to ${dbType}:`, firestoreError);
+        console.warn('⚠️ User saved to localStorage only - they can still login');
+      }
     } else {
       console.log('📱 No Firestore available, student saved to localStorage only');
     }
 
     return student;
   } catch (error: any) {
-    console.error('Error registering student:', error);
+    console.error('❌ Error registering student:', error);
     if (error.message) {
       throw error; // Re-throw with original message
     }
@@ -413,24 +602,34 @@ export async function registerStaff(staffId: string, password: string, name: str
   };
 
   try {
-    // Always save to localStorage first (this will work regardless of Firebase)
+    // Save to localStorage with BOTH staffId and email as keys for easy lookup
     const localStaff = JSON.parse(localStorage.getItem('registeredStaff') || '{}');
-    localStaff[staff.email] = staff;
+    localStaff[staff.id] = staff; // Save by staff ID (primary key)
+    localStaff[staff.email] = staff; // Also save by email for forgot password
     localStorage.setItem('registeredStaff', JSON.stringify(localStaff));
-    console.log('Staff saved to localStorage for forgot password');
+    console.log('✅ Staff saved to localStorage:', {
+      staffId: staff.id,
+      email: staff.email,
+      name: staff.name
+    });
 
     // Try to save to Firestore if available
     if (db) {
-      console.log('Attempting to save staff to Firestore...', { staffId });
-      await setDoc(doc(db, 'users', staffId), staff);
-      console.log('Staff registered successfully in Firestore:', staffId);
+      console.log('🔄 Attempting to save staff to Firestore...', { staffId });
+      try {
+        await setDoc(doc(db, 'users', staffId), staff);
+        console.log('✅ Staff registered successfully in Firestore:', staffId);
+      } catch (firestoreError) {
+        console.error('❌ Failed to save to Firestore:', firestoreError);
+        console.warn('⚠️ User saved to localStorage only - they can still login');
+      }
     } else {
-      console.log('Firestore not available, staff saved to localStorage only');
+      console.log('📱 Firestore not available, staff saved to localStorage only');
     }
 
     return staff;
   } catch (error: any) {
-    console.error('Error registering staff:', error);
+    console.error('❌ Error registering staff:', error);
     if (error.message) {
       throw error; // Re-throw with original message
     }

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Database Checker</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 20px;
+        }
+        .section {
+            background: #2a2a2a;
+            border: 2px solid #00ff00;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .user {
+            background: #1a1a1a;
+            padding: 10px;
+            margin: 5px 0;
+            border-left: 3px solid #00ff00;
+        }
+        .key {
+            color: #ffaa00;
+            font-weight: bold;
+        }
+        .value {
+            color: #00aaff;
+        }
+        button {
+            background: #00ff00;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background: #00aa00;
+        }
+        .error {
+            color: #ff0000;
+        }
+        .success {
+            color: #00ff00;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Database Inspector</h1>
+
+    <div class="section">
+        <h2>Quick Actions</h2>
+        <button onclick="loadData()">🔄 Refresh Data</button>
+        <button onclick="clearAll()">🗑️ Clear All Data</button>
+        <button onclick="exportData()">💾 Export Data</button>
+    </div>
+
+    <div class="section">
+        <h2>📚 Registered Students</h2>
+        <div id="students"></div>
+    </div>
+
+    <div class="section">
+        <h2>👔 Registered Staff</h2>
+        <div id="staff"></div>
+    </div>
+
+    <div class="section">
+        <h2>🔑 All localStorage Keys</h2>
+        <div id="allKeys"></div>
+    </div>
+
+    <script>
+        function loadData() {
+            // Get students
+            const studentsDiv = document.getElementById('students');
+            const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '{}');
+
+            // Get unique students
+            const uniqueStudents = {};
+            Object.entries(registeredUsers).forEach(([key, value]) => {
+                if (value && value.id) {
+                    uniqueStudents[value.id] = value;
+                }
+            });
+
+            if (Object.keys(uniqueStudents).length === 0) {
+                studentsDiv.innerHTML = '<div class="error">❌ No students found</div>';
+            } else {
+                studentsDiv.innerHTML = Object.entries(uniqueStudents).map(([id, user]) => `
+                    <div class="user">
+                        <div><span class="key">ID:</span> <span class="value">${user.id}</span></div>
+                        <div><span class="key">Name:</span> <span class="value">${user.name}</span></div>
+                        <div><span class="key">Email:</span> <span class="value">${user.email}</span></div>
+                        <div><span class="key">Password:</span> <span class="value">${user.password}</span></div>
+                        <div><span class="key">Course:</span> <span class="value">${user.course || 'N/A'}</span></div>
+                        <div><span class="key">Role:</span> <span class="value">${user.role}</span></div>
+                    </div>
+                `).join('');
+            }
+
+            // Get staff
+            const staffDiv = document.getElementById('staff');
+            const registeredStaff = JSON.parse(localStorage.getItem('registeredStaff') || '{}');
+
+            // Get unique staff
+            const uniqueStaff = {};
+            Object.entries(registeredStaff).forEach(([key, value]) => {
+                if (value && value.id) {
+                    uniqueStaff[value.id] = value;
+                }
+            });
+
+            if (Object.keys(uniqueStaff).length === 0) {
+                staffDiv.innerHTML = '<div class="error">❌ No staff found</div>';
+            } else {
+                staffDiv.innerHTML = Object.entries(uniqueStaff).map(([id, user]) => `
+                    <div class="user">
+                        <div><span class="key">ID:</span> <span class="value">${user.id}</span></div>
+                        <div><span class="key">Name:</span> <span class="value">${user.name}</span></div>
+                        <div><span class="key">Email:</span> <span class="value">${user.email}</span></div>
+                        <div><span class="key">Password:</span> <span class="value">${user.password}</span></div>
+                        <div><span class="key">Department:</span> <span class="value">${user.department || 'N/A'}</span></div>
+                        <div><span class="key">Role:</span> <span class="value">${user.role}</span></div>
+                    </div>
+                `).join('');
+            }
+
+            // Show all keys
+            const allKeysDiv = document.getElementById('allKeys');
+            const allKeys = Object.keys(localStorage);
+            allKeysDiv.innerHTML = `
+                <div><span class="success">Total keys: ${allKeys.length}</span></div>
+                <div style="margin-top: 10px;">
+                    ${allKeys.map(key => `<div>• ${key}</div>`).join('')}
+                </div>
+            `;
+        }
+
+        function clearAll() {
+            if (confirm('⚠️ Are you sure you want to clear ALL data? This cannot be undone!')) {
+                localStorage.clear();
+                alert('✅ All data cleared!');
+                loadData();
+            }
+        }
+
+        function exportData() {
+            const data = {
+                students: JSON.parse(localStorage.getItem('registeredUsers') || '{}'),
+                staff: JSON.parse(localStorage.getItem('registeredStaff') || '{}'),
+                allData: {}
+            };
+
+            // Get all localStorage
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                data.allData[key] = localStorage.getItem(key);
+            }
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'database-export.json';
+            a.click();
+        }
+
+        // Load data on page load
+        loadData();
+    </script>
+</body>
+</html>

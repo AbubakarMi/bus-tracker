@@ -23,6 +23,8 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { cn } from '@/lib/utils';
 import { authenticateUser, detectUserRole, getDashboardPath, formatDisplayName, type UserRole, type UserData } from '@/lib/auth-utils';
 import { WorldClassWelcomePopup } from '@/components/world-class-welcome-popup';
+import { seedUsersToLocalStorage, checkLocalStorageUsers } from '@/lib/seed-users';
+import '@/lib/admin-user-management'; // Load admin utilities
 
 const loginFormSchema = z.object({
   identifier: z.string().min(1, 'Please enter your credentials'),
@@ -35,6 +37,8 @@ export default function LoginPage() {
   const [detectedRole, setDetectedRole] = React.useState<UserRole | null>(null);
   const [showWelcomePopup, setShowWelcomePopup] = React.useState(false);
   const [loggedInUser, setLoggedInUser] = React.useState<UserData | null>(null);
+  const [showDebugPanel, setShowDebugPanel] = React.useState(false);
+  const [registeredUsersCount, setRegisteredUsersCount] = React.useState({ students: 0, staff: 0 });
   const { toast } = useToast();
   const router = useRouter();
 
@@ -48,6 +52,40 @@ export default function LoginPage() {
 
   const identifier = form.watch('identifier');
 
+  // Auto-seed test users on component mount if localStorage is empty
+  React.useEffect(() => {
+    const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '{}');
+    const registeredStaff = JSON.parse(localStorage.getItem('registeredStaff') || '{}');
+
+    // Count unique users (divide by 2 because we store by both ID and email)
+    const uniqueStudents = new Set(Object.values(registeredUsers).map((u: any) => u.id)).size;
+    const uniqueStaff = new Set(Object.values(registeredStaff).map((u: any) => u.id)).size;
+
+    setRegisteredUsersCount({ students: uniqueStudents, staff: uniqueStaff });
+
+    if (uniqueStudents === 0 && uniqueStaff === 0) {
+      console.log('🌱 No users found in localStorage, seeding test users...');
+      const result = seedUsersToLocalStorage();
+      if (result.success) {
+        toast({
+          title: 'Test Users Loaded',
+          description: 'Sample users have been added for testing. Check console for credentials.',
+        });
+        // Update count after seeding
+        const newRegisteredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '{}');
+        const newRegisteredStaff = JSON.parse(localStorage.getItem('registeredStaff') || '{}');
+        const newUniqueStudents = new Set(Object.values(newRegisteredUsers).map((u: any) => u.id)).size;
+        const newUniqueStaff = new Set(Object.values(newRegisteredStaff).map((u: any) => u.id)).size;
+        setRegisteredUsersCount({ students: newUniqueStudents, staff: newUniqueStaff });
+      }
+    } else {
+      console.log(`📊 Found ${uniqueStudents} students and ${uniqueStaff} staff in localStorage`);
+    }
+
+    // Log available users for debugging
+    checkLocalStorageUsers();
+  }, []);
+
   React.useEffect(() => {
     if (identifier) {
       const role = detectUserRole(identifier);
@@ -59,14 +97,14 @@ export default function LoginPage() {
 
   async function onSubmit(values: z.infer<typeof loginFormSchema>) {
     setIsLoading(true);
-    
+
     try {
       // Simulate network delay
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       // Authenticate user using the new system
       const user = await authenticateUser(values.identifier, values.password);
-      
+
       if (user) {
         // Store auth state in localStorage
         localStorage.setItem('isLoggedIn', 'true');
@@ -81,7 +119,20 @@ export default function LoginPage() {
           description: `Welcome back, ${formatDisplayName(user)}!`,
         });
       } else {
-        throw new Error('Invalid credentials. Please check your ID/email and password.');
+        // Get available users to provide helpful error message
+        const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '{}');
+        const registeredStaff = JSON.parse(localStorage.getItem('registeredStaff') || '{}');
+        const studentCount = Object.keys(registeredUsers).length / 2; // Divided by 2 because we store by both ID and email
+        const staffCount = Object.keys(registeredStaff).length / 2;
+
+        let helpMessage = 'User not found. ';
+        if (studentCount === 0 && staffCount === 0) {
+          helpMessage += 'No users registered yet. Please register first or use test credentials from the box below.';
+        } else {
+          helpMessage += `${Math.floor(studentCount)} student(s) and ${Math.floor(staffCount)} staff registered. Check test credentials below or register a new account.`;
+        }
+
+        throw new Error(helpMessage);
       }
     } catch (error: any) {
       console.error('Login Error:', error);
@@ -89,6 +140,7 @@ export default function LoginPage() {
         variant: 'destructive',
         title: 'Login Failed',
         description: error.message || 'Please check your credentials and try again.',
+        duration: 6000, // Show for 6 seconds so user can read it
       });
     } finally {
       setIsLoading(false);
@@ -422,20 +474,104 @@ export default function LoginPage() {
           </motion.div>
 
           {/* Enhanced Footer */}
-          <motion.div 
+          <motion.div
             className="mt-6 text-center space-y-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 2.4 }}
           >
-            <motion.div 
+            {/* Test Credentials Info */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 2.6 }}
+              className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-4 text-left"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="text-sm font-semibold text-gray-800 flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-primary" />
+                  Test Credentials
+                </h4>
+                <div className="text-xs bg-white/80 rounded px-2 py-1">
+                  <span className="text-primary font-semibold">{registeredUsersCount.students}</span> students ·
+                  <span className="text-green-600 font-semibold ml-1">{registeredUsersCount.staff}</span> staff
+                </div>
+              </div>
+              <div className="space-y-2 text-xs text-gray-700">
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="bg-white/60 rounded p-2">
+                    <p className="font-medium text-primary">Student</p>
+                    <p className="font-mono">UG20/COMS/1184</p>
+                    <p className="text-gray-500">password123</p>
+                  </div>
+                  <div className="bg-white/60 rounded p-2">
+                    <p className="font-medium text-green-600">Staff</p>
+                    <p className="font-mono text-[10px]">Staff/Adustech/1001</p>
+                    <p className="text-gray-500">password123</p>
+                  </div>
+                </div>
+                <div className="bg-white/60 rounded p-2">
+                  <p className="font-medium text-purple-600">Admin</p>
+                  <p className="font-mono text-[10px]">admin@adustech.edu.ng</p>
+                  <p className="text-gray-500">pass123</p>
+                </div>
+                <button
+                  onClick={() => setShowDebugPanel(!showDebugPanel)}
+                  className="w-full text-[10px] text-gray-500 hover:text-gray-700 underline mt-1"
+                >
+                  {showDebugPanel ? 'Hide' : 'Show'} all registered users
+                </button>
+                {showDebugPanel && (
+                  <div className="bg-gray-900 text-green-400 rounded p-2 font-mono text-[10px] max-h-48 overflow-y-auto">
+                    {(() => {
+                      const users = JSON.parse(localStorage.getItem('registeredUsers') || '{}');
+                      const staff = JSON.parse(localStorage.getItem('registeredStaff') || '{}');
+                      const uniqueUsers = Array.from(new Set(Object.values(users).map((u: any) => u.id)))
+                        .map((id) => Object.values(users).find((u: any) => u.id === id));
+                      const uniqueStaff = Array.from(new Set(Object.values(staff).map((u: any) => u.id)))
+                        .map((id) => Object.values(staff).find((u: any) => u.id === id));
+
+                      return (
+                        <div className="space-y-2">
+                          {uniqueUsers.length > 0 && (
+                            <div>
+                              <div className="text-blue-400 font-bold">STUDENTS:</div>
+                              {uniqueUsers.map((user: any) => (
+                                <div key={user.id} className="ml-2">
+                                  • {user.id} - {user.name}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          {uniqueStaff.length > 0 && (
+                            <div>
+                              <div className="text-green-400 font-bold">STAFF:</div>
+                              {uniqueStaff.map((user: any) => (
+                                <div key={user.id} className="ml-2">
+                                  • {user.id} - {user.name}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          {uniqueUsers.length === 0 && uniqueStaff.length === 0 && (
+                            <div className="text-red-400">No users found</div>
+                          )}
+                        </div>
+                      );
+                    })()}
+                  </div>
+                )}
+              </div>
+            </motion.div>
+
+            <motion.div
               className="text-sm text-muted-foreground"
               whileHover={{ scale: 1.02 }}
               transition={{ type: "spring", stiffness: 400, damping: 10 }}
             >
               Don't have an account?{' '}
-              <Link 
-                href="/register" 
+              <Link
+                href="/register"
                 className="font-semibold text-primary hover:text-accent transition-colors duration-200 relative group"
               >
                 <span className="relative z-10">Create one here</span>
